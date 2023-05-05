@@ -49,7 +49,7 @@ class Blurb extends Component
      */
     public function __construct($post, $size = "medium")
     {
-        $this->post = \Aventyret_headless_wp_content::get_post_in_archive(
+        $this->post = \Akka_headless_wp_content::get_post_in_archive(
             $post
         );
 

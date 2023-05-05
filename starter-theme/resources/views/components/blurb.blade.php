@@ -1,8 +1,8 @@
 <article class="{{$class_name}}">
   <a class="Blurb__link" href="{{ $post['url'] }}">
-    @if($image_id && class_exists('\Aventyret_headless_wp_utils'))
+    @if($image_id && class_exists('\Akka_headless_wp_utils'))
     <figure class="Blurb__image-container">
-4.      @php echo Aventyret_headless_wp_utils::internal_img_tag($image_id, ['sizes' => $image_sizes]) @endphp
+4.      @php echo Akka_headless_wp_utils::internal_img_tag($image_id, ['sizes' => $image_sizes]) @endphp
     </figure>
     @endif
     <div class="Blurb__content">
