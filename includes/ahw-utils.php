@@ -103,6 +103,26 @@ class Akka_headless_wp_utils {
     return '<img src="' . $img_attributes['src'] . '" alt="' . $img_attributes['alt'] . '" />';
   }
 
+  public static function strip_single_wrapping_paragraph($html) {
+    if (substr_count($html, "</p>") == 1) {
+      if (
+        preg_match("/<p>/", $html) &&
+        preg_match(
+          '/<\/p>$/',
+          str_replace("\n", "", $html)
+        )
+      ) {
+        $html = preg_replace("/^<p>/", "", $html);
+        $html = preg_replace(
+          '/<\/p>$/',
+          "",
+          $html
+        );
+      }
+    }
+    return $html;
+  }
+
   public static function redirect_to_frontend() {
     if (wp_is_json_request()) {
       return;
