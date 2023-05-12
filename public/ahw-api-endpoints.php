@@ -25,4 +25,9 @@ add_action( 'rest_api_init', function () {
     'callback' => 'Akka_headless_wp_content::get_author',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
   ) );
+  register_rest_route( AKKA_API_BASE, '/search/(?P<query>[a-zA-Z0-9-%+]+)', array(
+    'methods' => 'GET',
+    'callback' => 'Akka_headless_wp_content::search',
+    'permission_callback' => 'Akka_headless_wp_content::can_get_content',
+  ) );
 } );

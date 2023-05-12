@@ -432,6 +432,41 @@ class Akka_headless_wp_content {
     return apply_filters('awh_post_in_archive', $post_in_archive, $post);
   }
 
+  public static function search($data) {
+    $query = str_replace('-', '_', Akka_headless_wp_utils::getRouteParam($data, 'query'));
+
+    if (empty($query) || strlen($query) < 2) {
+      return [
+        'count' => 0,
+        'pages' => 0,
+        'posts' => [],
+      ];
+    }
+
+    $query_args = [
+      's' => $query,
+    ];
+
+    $page = Akka_headless_wp_utils::getQueryParam('page', 1);
+    $query = self::get_posts_query($query_args, [
+      'page' => $page,
+    ]);
+
+    if (function_exists('relevanssi_do_query')) {
+      relevanssi_do_query( $query );
+    }
+
+    $posts = self::get_posts($query->posts);
+
+    $search_result_data = [
+      'count' => $query->post_count,
+      'pages' => $query->max_num_pages,
+      'posts' => $posts,
+    ];
+
+    return apply_filters('ahw_search_result_data', $search_result_data);
+  }
+
   private static function get_post_seo_meta($post, $post_thumbnail_id = NULL) {
     $seo_meta = [
     ];
