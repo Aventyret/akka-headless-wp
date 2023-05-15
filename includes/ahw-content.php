@@ -423,7 +423,7 @@ class Akka_headless_wp_content {
       "image_alt" => "",
       "title" => $post->post_title,
       "post_type" => $post->post_type,
-      "description" => $post->post_excerpt,
+      "description" => get_the_excerpt($post->ID),
       "categories" => $categories,
       "primary_category" => self::get_primary_term('category', $categories),
       "tags" => $tags,
@@ -511,7 +511,7 @@ class Akka_headless_wp_content {
       $seo_meta['seo_title'] = $post->post_title;
     }
     if (!isset($seo_meta['seo_description'])) {
-      $seo_meta['seo_description'] = $post->post_excerpt;
+      $seo_meta['seo_description'] = get_the_excerpt($post->ID);
     }
     if (!isset($seo_meta['seo_image_id']) && $post_thumbnail_id) {
       $seo_meta['seo_image_id'] = $post_thumbnail_id;
