@@ -175,7 +175,7 @@ class Akka_headless_wp_content {
       'post_type' => 'post_type',
       'slug' => $archive_post_type,
       'name' => $post_type_object->label,
-      'count' => $query->post_count,
+      'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
       'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
@@ -228,7 +228,7 @@ class Akka_headless_wp_content {
       'term_id' => $archive_taxonomy_term->term_id,
       'slug' => $archive_taxonomy_term->slug,
       'name' => $archive_taxonomy_term->name,
-      'count' => $query->post_count,
+      'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
       'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
@@ -453,13 +453,14 @@ class Akka_headless_wp_content {
     ]);
 
     if (function_exists('relevanssi_do_query')) {
-      relevanssi_do_query( $query );
+      // TODO: support relevanssi
+      // relevanssi_do_query( $query );
     }
 
     $posts = self::get_posts($query->posts);
 
     $search_result_data = [
-      'count' => $query->post_count,
+      'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
     ];
