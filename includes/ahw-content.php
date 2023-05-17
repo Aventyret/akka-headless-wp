@@ -453,7 +453,7 @@ class Akka_headless_wp_content {
   }
 
   public static function search($data) {
-    $query = str_replace('-', '_', Akka_headless_wp_utils::getRouteParam($data, 'query'));
+    $query = urldecode(Akka_headless_wp_utils::getRouteParam($data, 'query'));
 
     if (empty($query) || strlen($query) < 2) {
       return [
