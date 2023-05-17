@@ -340,14 +340,34 @@ class Akka_headless_wp_content {
 
   private static function get_posts_query($query_args, $options = []) {
     if (isset($options['page']) && $options['page'] > 1) {
-      $posts_per_page = get_option('posts_per_page');
-      $query_args['offset'] = ((int)$options['page'] - 1) * $posts_per_page;
-      $query_args['posts_per_page'] = $posts_per_page;
+      $query_args = self::set_offset_and_per_page($query_args, $options['page']);
+    }
+
+    if (isset($query_args['s']) && function_exists('relevanssi_do_query')) {
+      return self::get_relevanssi_query($query_args);
     }
 
     $query = new WP_Query($query_args);
 
     return $query;
+  }
+
+  private static function get_relevanssi_query($query_args) {
+    $query_args = self::set_offset_and_per_page($query_args);
+    $query = new WP_Query();
+    $query->parse_query($query_args);
+    relevanssi_do_query( $query );
+
+    return $query;
+  }
+
+  private static function set_offset_and_per_page($query_args, $page = 1) {
+    if (!isset($query_args['offset']) && !isset($query_args['posts_per_page'])) {
+      $posts_per_page = get_option('posts_per_page');
+      $query_args['offset'] = ((int)$page - 1) * $posts_per_page;
+      $query_args['posts_per_page'] = $posts_per_page;
+    }
+    return $query_args;
   }
 
   private static function get_posts_html($posts) {
@@ -451,11 +471,6 @@ class Akka_headless_wp_content {
     $query = self::get_posts_query($query_args, [
       'page' => $page,
     ]);
-
-    if (function_exists('relevanssi_do_query')) {
-      // TODO: support relevanssi
-      // relevanssi_do_query( $query );
-    }
 
     $posts = self::get_posts($query->posts);
 
