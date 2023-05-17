@@ -22,6 +22,7 @@ class Akka_headless_wp_blocks {
         'core/heading',
         // 'core/gallery',
         'core/list',
+        'core/list-item',
         'core/quote',
         'core/audio',
         'core/file',
