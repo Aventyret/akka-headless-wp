@@ -30,6 +30,9 @@ define('AKKA_CMS_MEDIA_BUCKET_BASE', getenv('AKKA_CMS_MEDIA_BUCKET_HOSTNAME') ? 
 define('AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT', '/api/cache');
 define('AKKA_FRONTEND_FLUSH_CACHE_KEY', getenv('AKKA_FRONTEND_FLUSH_CACHE_KEY') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_KEY') : "");
 
+if (!function_exists('file_get_html')) {
+    require_once(AKKA_HEADLESS_WP_DIR . 'vendor/simplehtmldom/simple_html_dom.php');
+}
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-utils.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-blocks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-content.php');
