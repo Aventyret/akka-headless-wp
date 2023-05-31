@@ -1,5 +1,4 @@
 <?php
-
 class Akka_headless_wp_utils {
   public static function isHeadless() {
     return defined('REST_REQUEST') && !is_user_logged_in();
@@ -197,5 +196,44 @@ class Akka_headless_wp_utils {
       }
     }
     return NULL;
+  }
+
+  public static function wrap_left_and_right_aligned_blocks($html_string, $options = []) {
+    $dom = self::parse_html($html_string);
+    $dom_with_wraps = $dom;
+    $wrap_node = false;
+    $wrapper_html = NULL;
+    foreach($dom->nodes as $index => $node) {
+      $parent_tag = $node->parent ? $node->parent->tag : NULL;
+      if ($parent_tag == 'root') {
+        if (!$wrap_node && isset($node->attr['class']) && in_array('alignleft', explode(' ', $node->attr['class']))) {
+          $wrap_node = true;
+          $wrapper_html = '<div class="align-wrapper align-wrapper--left">';
+        }
+        if (!$wrap_node && isset($node->attr['class']) && in_array('alignrught', explode(' ', $node->attr['class']))) {
+          $wrap_node = true;
+          $wrapper_html = '<div class="align-wrapper align-wrapper--right">';
+        }
+        if ($wrap_node && in_array($node->tag, ['text', 'p', 'ul', 'li', 'figure'])) {
+          $wrapper_html .= $node->outertext;
+          $dom_with_wraps->nodes[$index]->outertext = '';
+        } else if($wrap_node) {
+          $wrapper_html .= '</div>';
+          $dom_with_wraps->nodes[$index]->outertext = $wrapper_html . $node->outertext;
+          $wrap_node = false;
+          $wrapper = NULL;
+        }
+      }
+    }
+    if ($wrap_node) {
+      $wrapper_html .= '</div>';
+      return $dom_with_wraps->save() . $wrapper_html;
+    }
+    //$dom->nodes[] = $dom->$nodes[0];
+    return $dom_with_wraps->save();
+  }
+
+  public static function parse_html($html_string) {
+    return str_get_html($html_string);
   }
 }
