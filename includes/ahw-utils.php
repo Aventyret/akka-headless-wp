@@ -199,7 +199,15 @@ class Akka_headless_wp_utils {
   }
 
   public static function wrap_left_and_right_aligned_blocks($html_string, $options = []) {
+    if (strpos($html_string, 'alignleft') === FALSE && strpos($html_string, 'alignright') === FALSE) {
+      return $html_string;
+    }
+
     $dom = self::parse_html($html_string);
+    if ($dom) {
+      return $html_string;
+    }
+
     $dom_with_wraps = $dom;
     $wrap_node = false;
     $wrapper_html = NULL;
