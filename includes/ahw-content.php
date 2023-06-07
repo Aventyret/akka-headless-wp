@@ -231,6 +231,7 @@ class Akka_headless_wp_content {
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
+      'pages' => $query->max_num_pages,
       'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
     ];
 
