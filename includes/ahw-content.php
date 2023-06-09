@@ -118,7 +118,7 @@ class Akka_headless_wp_content {
     return [
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
-      'posts' => self::parse_posts($posts),
+      'posts' => $posts,
       'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
     ];
   }
@@ -412,6 +412,9 @@ class Akka_headless_wp_content {
 
   private static function parse_posts($posts) {
     $post_datas = array_map(function($post) {
+      if (is_array($post)) {
+        return $post;
+      }
       return self::get_post_in_archive($post);
     }, $posts);
     return $post_datas;
