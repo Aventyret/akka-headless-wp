@@ -4,12 +4,12 @@ class Akka_headless_wp_utils {
     return defined('REST_REQUEST') && !is_user_logged_in();
   }
 
-  public static function getRouteParam($data, $param) {
-    return isset($data[$param]) ? $data[$param] : NULL;
+  public static function getRouteParam($data, $param, $default = NULL) {
+    return isset($data[$param]) ? $data[$param] : $default;
   }
 
-  public static function getQueryParam($param) {
-    return isset($_GET[$param]) ? $_GET[$param] : NULL;
+  public static function getQueryParam($param, $default = NULL) {
+    return isset($_GET[$param]) ? $_GET[$param] : $default;
   }
 
   public static function stringToRoute($string) {
