@@ -101,10 +101,26 @@ class Akka_headless_wp_content {
     $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post'));
     $per_page = Akka_headless_wp_utils::getQueryParam('per_page', -1);
 
-    return self::parse_posts(get_posts([
-        'post_type' => $post_types,
-        'posts_per_page' => $per_page,
-    ]));
+    $query_args = [
+      'post_type' => $post_types,
+      'posts_per_page' => $per_page,
+    ];
+
+    $page = Akka_headless_wp_utils::getQueryParam('page', 1);
+    $query = self::get_posts_query($query_args, [
+      'page' => $page,
+    ]);
+
+    $posts = self::parse_posts($query->posts);
+
+    $post_type_object = get_post_type_object($archive_post_type);
+
+    return [
+      'count' => $query->found_posts,
+      'pages' => $query->max_num_pages,
+      'posts' => self::parse_posts($posts),
+      'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
+    ];
   }
 
   public static function get_post_by_id($data) {
