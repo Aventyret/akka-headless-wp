@@ -586,7 +586,7 @@ class Akka_headless_wp_content {
     if (isset($seo_meta['seo_image_url']) && strpos($seo_meta['seo_image_url'], '/') === 0) {
       $seo_meta['seo_image_url'] = WP_HOME . $seo_meta['seo_image_url'];
     }
-    return $seo_meta;
+    return apply_filters("ahw_seo_meta", $seo_meta);
   }
 
   private static function get_term_seo_meta($term) {
