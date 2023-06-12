@@ -264,7 +264,7 @@ class Akka_headless_wp_content {
       'pages' => $query->max_num_pages,
       'posts' => $posts,
       'pages' => $query->max_num_pages,
-      'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
+      'next_page' => $query->max_num_pages > $page + 1 ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1) : NULL,
     ];
 
     return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data);
