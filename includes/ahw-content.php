@@ -76,7 +76,8 @@ class Akka_headless_wp_content {
 
     // Is this a taxonomy term archive?
     if (!$post_id) {
-      $taxonomy_term_archive_data = self::get_taxonomy_term_archive_data($permalink);
+      $year = Akka_headless_wp_utils::getQueryParam('year', NULL);
+      $taxonomy_term_archive_data = self::get_taxonomy_term_archive_data($permalink, $year);
       if ($taxonomy_term_archive_data) {
         return $taxonomy_term_archive_data;
       }
@@ -214,7 +215,7 @@ class Akka_headless_wp_content {
     return apply_filters('ahw_post_type_data', $post_type_data);
   }
 
-  private static function get_taxonomy_term_archive_data($permalink) {
+  private static function get_taxonomy_term_archive_data($permalink, $year = NULL) {
     $archive_taxonomy = NULL;
     foreach(get_taxonomies([], 'objects') as $taxonomy) {
       if($taxonomy->rewrite && isset($taxonomy->rewrite['slug']) && str_starts_with($permalink, $taxonomy->rewrite['slug'] . '/')) {
@@ -239,6 +240,11 @@ class Akka_headless_wp_content {
         ],
       ],
     ];
+    if ($year) {
+      $query_args["date_query"] = [
+        "year" => $year,
+      ];
+    }
 
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
     $query = self::get_posts_query($query_args, [
