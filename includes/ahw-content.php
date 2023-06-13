@@ -289,9 +289,11 @@ class Akka_headless_wp_content {
             'term_id' => $term->term_id,
             'name' => $term->name,
             'slug' => $term->slug,
+            'url' => \Akka_headless_wp_utils::parseUrl(get_term_link($term->term_id)),
           ];
         }, $taxonomy_terms ? $taxonomy_terms : []),
       ];
+      $terms[$taxonomy_slug]['primary_term'] = self::get_primary_term($taxonomy_slug, $terms[$taxonomy_slug]['terms']);
       return $terms;
     }, []);
   }
@@ -446,6 +448,7 @@ class Akka_headless_wp_content {
               "id" => $category->term_id,
               "name" => $category->name,
               "slug" => $category->slug,
+              "url" => \Akka_headless_wp_utils::parseUrl(get_term_link($category->term_id)),
           ];
       }, $category_terms)
       : [];
@@ -459,6 +462,7 @@ class Akka_headless_wp_content {
               "id" => $tag->term_id,
               "name" => $tag->name,
               "slug" => $tag->slug,
+              "url" => \Akka_headless_wp_utils::parseUrl(get_term_link($tag->term_id)),
           ];
       }, $tag_terms)
       : [];
