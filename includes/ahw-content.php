@@ -168,6 +168,11 @@ class Akka_headless_wp_content {
       'fields' => get_fields($post_id),
       'seo_meta' => self::get_post_seo_meta($post, $post_thumbnail_id),
     ];
+    foreach(['category', 'post_tag'] as $taxonomy_slug) {
+      if (isset($data['taxonomy_terms'][$taxonomy_slug])) {
+        $data['primary_' . str_replace('post_tag', 'tag', $taxonomy_slug)] = $data['taxonomy_terms'][$taxonomy_slug]['primary_term'];
+      }
+    }
 
     $data = apply_filters('ahw_post_data', $data);
     unset($data['fields']);
