@@ -562,10 +562,10 @@ class Akka_headless_wp_content {
       if (isset($yoast_data['description'])) {
         $seo_meta['og_description'] = $yoast_data['description'];
       }
-      if (isset($yoast_data['og_image']) && $yoast_data['og_image']) {
-        $seo_meta['seo_image_url'] = $yoast_data['og_image']['url'];
-        $seo_meta['seo_image_width'] = $yoast_data['og_image']['width'];
-        $seo_meta['seo_image_height'] = $yoast_data['og_image']['height'];
+      if (isset($yoast_data['og_image']) && !empty($yoast_data['og_image'])) {
+        $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
+        $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
+        $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
       }
     }
     if (!isset($seo_meta['seo_title'])) {
