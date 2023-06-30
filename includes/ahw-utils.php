@@ -222,7 +222,7 @@ class Akka_headless_wp_utils {
           $wrap_node = true;
           $wrapper_html = '<div class="align-wrapper align-wrapper--left">';
         }
-        if (!$wrap_node && isset($node->attr['class']) && in_array('alignrught', explode(' ', $node->attr['class']))) {
+        if (!$wrap_node && isset($node->attr['class']) && in_array('alignright', explode(' ', $node->attr['class']))) {
           $wrap_node = true;
           $wrapper_html = '<div class="align-wrapper align-wrapper--right">';
         }
