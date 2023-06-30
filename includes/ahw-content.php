@@ -149,7 +149,7 @@ class Akka_headless_wp_content {
     return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
   }
 
-  private function get_post_id_by_story_id($story_id)
+  private static function get_post_id_by_story_id($story_id)
   {
       global $wpdb;
       $row = $wpdb->get_row("SELECT min(post_id) AS post_id FROM wp_postmeta WHERE meta_key = 'story_id' and meta_value = '$story_id'");
