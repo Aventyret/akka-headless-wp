@@ -134,6 +134,31 @@ class Akka_headless_wp_content {
     return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
   }
 
+  public static function post_by_story_id($data) {
+    $story_id = Akka_headless_wp_utils::getRouteParam($data, 'story_id');
+
+    if (!$story_id) {
+      return new WP_REST_Response(array('message' => 'Post not found'), 404);
+    }
+
+    $post_id = self::get_post_id_by_story_id($story_id);
+    if (!$post_id) {
+      return new WP_REST_Response(array('message' => 'Post not found'), 404);
+    }
+
+    return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
+  }
+
+  private function get_post_id_by_story_id($story_id)
+  {
+      global $wpdb;
+      $row = $wpdb->get_row("SELECT min(post_id) AS post_id FROM wp_postmeta WHERE meta_key = 'story_id' and meta_value = '$story_id'");
+      if ($row->post_id) {
+          $post_id = $row->post_id;
+          return $post_id;
+      }
+      return null;
+  }
   private static function get_post_data($post_id, $post_status = 'publish') {
     global $post;
     $posts = get_posts([
