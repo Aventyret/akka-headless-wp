@@ -101,8 +101,10 @@ class Akka_headless_wp_content {
   public static function get_posts($data) {
     $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post'));
     $per_page = Akka_headless_wp_utils::getQueryParam('per_page', -1);
+    $offset = Akka_headless_wp_utils::getQueryParam('offset', 0);
 
     $query_args = [
+      'offset' => $offset,
       'post_type' => $post_types,
       'posts_per_page' => $per_page,
     ];
@@ -414,11 +416,15 @@ class Akka_headless_wp_content {
 
     $query = new WP_Query($query_args);
 
+    // Recalculate max_num_pages if there is an offset
+    if (isset($query_args["offset"]) && $query_args["offset"] > 0) {
+      $query->max_num_pages = ceil(max( 0, $query->found_posts - $query_args["offset"] ) / $query_args["posts_per_page"]);
+    }
+
     return $query;
   }
 
   private static function get_relevanssi_query($query_args) {
-    $query_args = self::set_offset_and_per_page($query_args);
     $query = new WP_Query();
     $query->parse_query($query_args);
     relevanssi_do_query( $query );
@@ -427,11 +433,14 @@ class Akka_headless_wp_content {
   }
 
   private static function set_offset_and_per_page($query_args, $page = 1) {
-    if (!isset($query_args['offset']) && !isset($query_args['posts_per_page'])) {
+    if (!isset($query_args['posts_per_page'])) {
       $posts_per_page = get_option('posts_per_page');
-      $query_args['offset'] = ((int)$page - 1) * $posts_per_page;
       $query_args['posts_per_page'] = $posts_per_page;
     }
+    if (!isset($query_args['offset'])) {
+      $query_args['offset'] = 0;
+    }
+    $query_args['offset'] += ((int)$page - 1) * $query_args['posts_per_page'];
     return $query_args;
   }
 
