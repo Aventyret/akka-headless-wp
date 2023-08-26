@@ -510,6 +510,7 @@ class Akka_headless_wp_content {
       "post_id" => $post->ID,
       "post_date" => get_the_date("Y-m-d", $post->ID),
       "url" => Akka_headless_wp_utils::parseUrl(get_permalink($post->ID)),
+      "image_id" => $thumbnail_id,
       "image_src" => !empty($thumbnail_attributes)
           ? $thumbnail_attributes["src"]
           : null,
