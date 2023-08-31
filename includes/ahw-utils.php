@@ -72,6 +72,7 @@ class Akka_headless_wp_utils {
     if (empty($img_src_data)) {
       return [];
     }
+    $img_attributes['id'] = $img_id;
     $img_attributes['src'] = $img_src_data[0];
     if (strpos($img_attributes['src'], '/') === 0) {
       $img_attributes['src'] = AKKA_CMS_INTERNAL_BASE . $img_attributes['src'];
