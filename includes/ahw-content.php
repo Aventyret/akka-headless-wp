@@ -107,6 +107,7 @@ class Akka_headless_wp_content {
       'offset' => $offset,
       'post_type' => $post_types,
       'posts_per_page' => $per_page,
+      'ignore_sticky_posts' => 1,
     ];
 
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
