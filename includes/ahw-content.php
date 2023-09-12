@@ -567,7 +567,7 @@ class Akka_headless_wp_content {
   private static function get_post_seo_meta($post, $post_thumbnail_id = NULL) {
     $seo_meta = [
     ];
-    $seo_image_is_defined = FALSE;
+    $specific_seo_image_is_defined = FALSE;
     if (function_exists('the_seo_framework')) {
       $seo_fields = [
         'seo_title' => '_genesis_title',
@@ -612,10 +612,11 @@ class Akka_headless_wp_content {
     if (!isset($seo_meta['seo_description'])) {
       $seo_meta['seo_description'] = get_the_excerpt($post->ID);
     }
-    if (!isset($seo_meta['seo_image_id']) && $post_thumbnail_id) {
-      $seo_meta['seo_image_id'] = $post_thumbnail_id;
-    } else {
+    if (!isset($seo_meta['seo_image_id']) && $seo_meta['seo_image_id']) {
       $specific_seo_image_is_defined = TRUE;
+    }
+    if (!isset($seo_meta['seo_image_id']) && !$seo_meta['seo_image_id'] && $post_thumbnail_id) {
+      $seo_meta['seo_image_id'] = $post_thumbnail_id;
     }
     if (isset($seo_meta['seo_image_id'])) {
       $image_src = wp_get_attachment_image_src($seo_meta['seo_image_id'], 'large');
