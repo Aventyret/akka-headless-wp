@@ -606,16 +606,16 @@ class Akka_headless_wp_content {
 
       }
     }
-    if (!isset($seo_meta['seo_title'])) {
+    if (!isset($seo_meta['seo_title']) || !$seo_meta['seo_title']) {
       $seo_meta['seo_title'] = $post->post_title;
     }
-    if (!isset($seo_meta['seo_description'])) {
+    if (!isset($seo_meta['seo_description'] || !$seo_meta['seo_description'])) {
       $seo_meta['seo_description'] = get_the_excerpt($post->ID);
     }
-    if (!isset($seo_meta['seo_image_id']) && $seo_meta['seo_image_id']) {
+    if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
       $specific_seo_image_is_defined = TRUE;
     }
-    if (!isset($seo_meta['seo_image_id']) && !$seo_meta['seo_image_id'] && $post_thumbnail_id) {
+    if ((!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) && $post_thumbnail_id) {
       $seo_meta['seo_image_id'] = $post_thumbnail_id;
     }
     if (isset($seo_meta['seo_image_id'])) {
@@ -624,16 +624,16 @@ class Akka_headless_wp_content {
       $seo_meta['seo_image_width'] = $image_src[1];
       $seo_meta['seo_image_height'] = $image_src[2];
     }
-    if (!isset($seo_meta['og_title'])) {
+    if (!isset($seo_meta['og_title']) || !$seo_meta['og_title']) {
       $seo_meta['og_title'] = $seo_meta['seo_title'];
     }
-    if (!isset($seo_meta['og_description'])) {
+    if (!isset($seo_meta['og_description']) || !$seo_meta['og_description']) {
       $seo_meta['og_description'] = $seo_meta['seo_description'];
     }
-    if (!isset($seo_meta['twitter_title'])) {
+    if (!isset($seo_meta['twitter_title']) || !$seo_meta['twitter_title']) {
       $seo_meta['twitter_title'] = $seo_meta['seo_title'];
     }
-    if (!isset($seo_meta['twitter_description'])) {
+    if (!isset($seo_meta['twitter_description']) || !$seo_meta['twitter_description']) {
       $seo_meta['twitter_description'] = $seo_meta['seo_description'];
     }
     $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
