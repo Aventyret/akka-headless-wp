@@ -609,7 +609,7 @@ class Akka_headless_wp_content {
     if (!isset($seo_meta['seo_title']) || !$seo_meta['seo_title']) {
       $seo_meta['seo_title'] = $post->post_title;
     }
-    if (!isset($seo_meta['seo_description'] || !$seo_meta['seo_description'])) {
+    if (!isset($seo_meta['seo_description']) || !$seo_meta['seo_description']) {
       $seo_meta['seo_description'] = get_the_excerpt($post->ID);
     }
     if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
