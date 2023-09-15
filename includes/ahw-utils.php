@@ -53,6 +53,14 @@ class Akka_headless_wp_utils {
     return $content;
   }
 
+  public static function parseWysiwyg($html) {
+    if (!self::isHeadless() || !$html) {
+        return $html;
+    }
+
+    return self::replaceHrefs($content);
+  }
+
   public static function internal_img_tag($img_id, $img_attributes = []) {
     $img_attributes = self::internal_img_attributes($img_id, $img_attributes);
     if (empty($img_attributes)) {
