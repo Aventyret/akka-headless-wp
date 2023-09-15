@@ -116,7 +116,7 @@ if (function_exists("acf_add_local_field_group")):
             [
                 "key" => "field_643e8882fae29",
                 "label" => __("Functional cookies name", "sage"),
-                "name" => "global_cookies_functional_name",
+                "name" => "global_cookies_functionality_name",
                 "type" => "text",
                 "instructions" => "",
                 "required" => 1,
@@ -125,7 +125,7 @@ if (function_exists("acf_add_local_field_group")):
                         [
                             "field" => "field_643eb90a5369a",
                             "operator" => "==contains",
-                            "value" => "functional",
+                            "value" => "functionality",
                         ],
                     ],
                 ],
@@ -134,7 +134,7 @@ if (function_exists("acf_add_local_field_group")):
             [
                 "key" => "field_643e884ffae28",
                 "label" => __("Analytical cookies name", "sage"),
-                "name" => "global_cookies_analytical_name",
+                "name" => "global_cookies_analytics_name",
                 "type" => "text",
                 "instructions" => "",
                 "required" => 1,
@@ -143,7 +143,7 @@ if (function_exists("acf_add_local_field_group")):
                         [
                             "field" => "field_643eb90a5369a",
                             "operator" => "==contains",
-                            "value" => "analytical",
+                            "value" => "analytics",
                         ],
                     ],
                 ],
@@ -152,7 +152,7 @@ if (function_exists("acf_add_local_field_group")):
             [
                 "key" => "field_643e88b3fae2a",
                 "label" => __("Marketing cookies name", "sage"),
-                "name" => "global_cookies_marketing_name",
+                "name" => "global_cookies_ad_name",
                 "type" => "text",
                 "instructions" => "",
                 "required" => 1,
@@ -161,7 +161,7 @@ if (function_exists("acf_add_local_field_group")):
                         [
                             "field" => "field_643eb90a5369a",
                             "operator" => "==contains",
-                            "value" => "marketing",
+                            "value" => "ad",
                         ],
                     ],
                 ],
