@@ -58,7 +58,7 @@ class Akka_headless_wp_utils {
         return $html;
     }
 
-    return self::replaceHrefs($content);
+    return self::replaceHrefs($html);
   }
 
   public static function internal_img_tag($img_id, $img_attributes = []) {
