@@ -187,6 +187,7 @@ class Akka_headless_wp_content {
       'post_date' => get_the_date("Y-m-d", $post_id),
       'post_title' => $post->post_title,
       'post_type' => $post->post_type,
+      'post_parent_id' => $post->post_parent,
       'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
       'post_content' => $post_content,
       'featured_image' => $featured_image_attributes,
