@@ -152,8 +152,11 @@ class Akka_headless_wp_utils {
       wp_redirect(WP_SITEURL . '/wp-admin');
     }
     $redirect_uri = $_SERVER['REQUEST_URI'];
-    if (isset($_GET['preview']) && $_GET['preview']) {
+    if (is_user_logged_in() && isset($_GET['p']) && $_GET['p'] && !str_starts_with($redirect_uri, '/draft/')) {
       $redirect_uri = '/draft' . $redirect_uri;
+      if (!isset($_GET['preview'])) {
+        $redirect_uri .= '&preview=true';
+      }
     }
     wp_redirect(AKKA_FRONTEND_BASE . $redirect_uri);
   }
