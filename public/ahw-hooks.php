@@ -25,6 +25,4 @@ add_action('enqueue_block_editor_assets', 'Akka_headless_wp_utils::enqueue_front
 
 add_action('save_post','Akka_headless_wp_utils::flush_frontend_cache');
 
-add_action('update_option','Akka_headless_wp_utils::flush_frontend_cache');
-
 add_action('acf/save_post','Akka_headless_wp_utils::flush_frontend_cache');
