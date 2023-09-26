@@ -598,7 +598,10 @@ class Akka_headless_wp_content {
         'og_site_name' => $yoast_data['og_site_name'],
       ];
       if (isset($yoast_data['description'])) {
-        $seo_meta['og_description'] = $yoast_data['description'];
+        $seo_meta['seo_description'] = $yoast_data['description'];
+      }
+      if (isset($yoast_data['og_description'])) {
+        $seo_meta['og_description'] = $yoast_data['og_description'];
       }
       if (isset($yoast_data['og_image']) && !empty($yoast_data['og_image'])) {
         $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
