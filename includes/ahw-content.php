@@ -137,31 +137,27 @@ class Akka_headless_wp_content {
     return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
   }
 
-  public static function post_by_story_id($data) {
-    $story_id = Akka_headless_wp_utils::getRouteParam($data, 'story_id');
+  public static function get_attachment_by_id($data) {
+    $attachment_id = Akka_headless_wp_utils::getRouteParam($data, 'attachment_id');
 
-    if (!$story_id) {
-      return new WP_REST_Response(array('message' => 'Post not found'), 404);
+    if (!$attachment_id) {
+      return new WP_REST_Response(array('message' => 'Attachment not found'), 404);
     }
 
-    $post_id = self::get_post_id_by_story_id($story_id);
-    if (!$post_id) {
-      return new WP_REST_Response(array('message' => 'Post not found'), 404);
+    $attachment_attributes = wp_get_attachment_image_src($attachment_id);
+
+    if (!$attachment_attributes) {
+      return new WP_REST_Response(array('message' => 'Attachment not found'), 404);
     }
 
-    return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
+    return [
+      "attachment_id" => $attachment_id,
+      "src" => AKKA_CMS_INTERNAL_BASE . $attachment_attributes[0],
+      "width" => isset($attachment_attributes[1]) ? $attachment_attributes[1] : NULL,
+      "height" => isset($attachment_attributes[2]) ? $attachment_attributes[2] : NULL,
+    ];
   }
 
-  private static function get_post_id_by_story_id($story_id)
-  {
-      global $wpdb;
-      $row = $wpdb->get_row("SELECT min(post_id) AS post_id FROM wp_postmeta WHERE meta_key = 'story_id' and meta_value = '$story_id'");
-      if ($row->post_id) {
-          $post_id = $row->post_id;
-          return $post_id;
-      }
-      return null;
-  }
   private static function get_post_data($post_id, $post_status = 'publish') {
     global $post;
     $posts = get_posts([
