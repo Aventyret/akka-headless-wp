@@ -92,6 +92,10 @@ class Akka_headless_wp_content {
     }
 
     if (!$post_id) {
+      $post_id = apply_filters("ahw_post_not_found_post_id", $post_id, $permalink);
+    }
+
+    if (!$post_id) {
       return new WP_REST_Response(array('message' => 'Post not found'), 404);
     }
 
