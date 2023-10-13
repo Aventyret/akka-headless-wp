@@ -92,7 +92,10 @@ class Akka_headless_wp_content {
     }
 
     if (!$post_id) {
-      $post_id = apply_filters("ahw_post_not_found_post_id", $post_id, $permalink);
+      $post_data = apply_filters("ahw_post_not_found_post_data", $post_id, $permalink);
+      if ($post_data) {
+        return $post_data;
+      }
     }
 
     if (!$post_id) {
