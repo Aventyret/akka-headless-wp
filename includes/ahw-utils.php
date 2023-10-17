@@ -39,6 +39,13 @@ class Akka_headless_wp_utils {
     return $content;
   }
 
+  public static function replaceHtmlCharachters($content) {
+    if (!self::isHeadless() || !$content) {
+        return $content;
+    }
+    return str_replace('&amp;shy;', '&shy;', $content);
+  }
+
   public static function replaceSrcs($content) {
     if (!self::isHeadless()) {
         return $content;

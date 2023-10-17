@@ -335,6 +335,9 @@ class Akka_headless_wp_content {
     }, []);
   }
 
+  /***
+   * Typically not used since taxonomy term archives are accessed by permalink
+   */
   public static function get_term($data) {
     $taxonomy_slug = str_replace('-', '_', Akka_headless_wp_utils::getRouteParam($data, 'taxonomy_slug'));
     $term_slug = Akka_headless_wp_utils::getRouteParam($data, 'term_slug');
@@ -373,6 +376,9 @@ class Akka_headless_wp_content {
     ];
   }
 
+  /***
+   * Typically not used since author archives are accessed by permalink
+   */
   public static function get_author($data) {
 
     $author_slug = isset($data['author_slug']) ? $data['author_slug'] : false;
