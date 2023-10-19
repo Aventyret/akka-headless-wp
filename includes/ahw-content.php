@@ -653,7 +653,7 @@ class Akka_headless_wp_content {
       $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
     }
     if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
-      $seo_meta['canonical_url'] = str_replace(WP_HOME, AKKA_FRONTEND_BASE, $seo_meta['canonical_url']);
+      $seo_meta['canonical_url'] = rtrim(str_replace(WP_HOME, AKKA_FRONTEND_BASE, $seo_meta['canonical_url']), '/');
     }
     $seo_meta['published_date'] = get_the_date('c', $post->ID);
     $seo_meta['modified_date'] = get_the_modified_date('c', $post->ID);
