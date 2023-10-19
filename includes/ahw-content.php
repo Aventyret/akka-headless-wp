@@ -649,7 +649,12 @@ class Akka_headless_wp_content {
     if (!isset($seo_meta['twitter_description']) || !$seo_meta['twitter_description']) {
       $seo_meta['twitter_description'] = $seo_meta['seo_description'];
     }
-    $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
+    if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
+      $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
+    }
+    if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
+      $seo_meta['canonical_url'] = str_replace(WP_HOME, AKKA_FRONTEND_BASE, $seo_meta['canonical_url']);
+    }
     $seo_meta['published_date'] = get_the_date('c', $post->ID);
     $seo_meta['modified_date'] = get_the_modified_date('c', $post->ID);
     if (isset($seo_meta['seo_image_url']) && strpos($seo_meta['seo_image_url'], '/') === 0) {
