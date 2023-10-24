@@ -165,7 +165,7 @@ class Akka_headless_wp_content {
     ];
   }
 
-  private static function get_post_data($post_id, $post_status = 'publish') {
+  public static function get_post_data($post_id, $post_status = 'publish') {
     global $post;
     $posts = get_posts([
       'post__in' => [$post_id],
