@@ -33,7 +33,8 @@ class Akka_headless_wp_utils {
     $content = str_replace('href="' . WP_HOME . '/', 'data-internal-link="true" href="/', $content);
     $content = str_replace('href="' . WP_HOME, 'data-internal-link="true" href="/', $content);
     $content = str_replace('href="#', 'data-internal-link="true" href="#', $content);
-    $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/', $content);
+    $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
+    $content = str_replace('href="' . AKKA_FRONTEND_BASE . '/wp-content/uploads/', 'href="' . WP_HOME . '/app/uploads/', $content);
     $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
     return $content;
