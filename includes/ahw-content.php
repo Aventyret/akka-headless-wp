@@ -194,7 +194,7 @@ class Akka_headless_wp_content {
       'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
       'post_content' => $post_content,
       'featured_image' => $featured_image_attributes,
-      'thumbnail_caption' => get_the_post_thumbnail_caption($post_id),
+      'thumbnail_caption' => apply_filters("ahw_image_caption", get_the_post_thumbnail_caption($post_id), $post_thumbnail_id),
       'permalink' => str_replace(WP_HOME, '', get_permalink($post_id)),
       'taxonomy_terms' => self::get_post_terms($post),
       'fields' => get_fields($post_id),
