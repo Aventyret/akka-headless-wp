@@ -141,7 +141,7 @@ class Akka_headless_wp_content {
       return new WP_REST_Response(array('message' => 'Post not found'), 404);
     }
 
-    return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
+    return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending']);
   }
 
   public static function get_attachment_by_id($data) {
@@ -165,7 +165,7 @@ class Akka_headless_wp_content {
     ];
   }
 
-  public static function get_post_data($post_id, $post_status = 'publish') {
+  public static function get_post_data($post_id, $post_status = ['publish']) {
     global $post;
     $posts = get_posts([
       'post__in' => [$post_id],
@@ -177,19 +177,27 @@ class Akka_headless_wp_content {
     }
     $post = $posts[0];
 
+    if ($post->post_password && !in_array('private', $post_status)) {
+      return [
+        "post_id" => $post->ID,
+        "post_type" => $post->post_type,
+        "redirect" => '/protected?p=' . $post->ID
+      ];
+    }
+
     $post_thumbnail_id = get_post_thumbnail_id($post_id);
     $featured_image_attributes = $post_thumbnail_id ? Akka_headless_wp_utils::internal_img_attributes($post_thumbnail_id, [
       'priority' => true,
     ]) : NULL;
 
-    $post_content = str_replace('<!-- wp:fof/external-ad', '<!-- wp:fof/disabled-external-ad', $post->post_content);
-    $post_content = apply_filters('the_content', $post_content);
+    $post_content = apply_filters('the_content', $post->post_content);
 
     $data = [
       'post_id' => $post_id,
       'post_date' => get_the_date("Y-m-d", $post_id),
       'post_title' => $post->post_title,
       'post_type' => $post->post_type,
+      'post_password' => $post->post_password,
       'post_parent_id' => $post->post_parent,
       'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
       'post_content' => $post_content,

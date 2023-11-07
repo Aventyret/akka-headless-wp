@@ -162,10 +162,17 @@ class Akka_headless_wp_utils {
       wp_redirect(WP_SITEURL . '/wp-admin');
     }
     $redirect_uri = $_SERVER['REQUEST_URI'];
-    if (is_user_logged_in() && isset($_GET['p']) && $_GET['p'] && !str_starts_with($redirect_uri, '/draft/')) {
-      $redirect_uri = '/draft' . $redirect_uri;
-      if (!isset($_GET['preview'])) {
-        $redirect_uri .= '&preview=true';
+    if (is_user_logged_in()) {
+      // Drafts
+      if (isset($_GET['p']) && $_GET['p'] && !str_starts_with($redirect_uri, '/draft/')) {
+        $redirect_uri = '/draft' . $redirect_uri;
+        if (!isset($_GET['preview'])) {
+          $redirect_uri .= '&preview=true';
+        }
+      }
+      // Private
+      if (get_post_status() == "private" && !isset($_GET['p'])) {
+        $redirect_uri = '/draft?p=' . get_the_id();
       }
     }
     wp_redirect(AKKA_FRONTEND_BASE . $redirect_uri);
