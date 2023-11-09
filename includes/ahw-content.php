@@ -194,7 +194,7 @@ class Akka_headless_wp_content {
 
     $data = [
       'post_id' => $post_id,
-      'post_date' => get_the_date("Y-m-d", $post_id),
+      'post_date' => get_the_date(get_option("date_format"), $post_id),
       'post_title' => $post->post_title,
       'post_type' => $post->post_type,
       'post_password' => $post->post_password,
@@ -527,7 +527,7 @@ class Akka_headless_wp_content {
 
     $post_in_archive = [
       "post_id" => $post->ID,
-      "post_date" => get_the_date("Y-m-d", $post->ID),
+      "post_date" => get_the_date(get_option("date_format"), $post->ID),
       "url" => Akka_headless_wp_utils::parseUrl(get_permalink($post->ID)),
       "image_id" => $thumbnail_id,
       "image_src" => !empty($thumbnail_attributes)
