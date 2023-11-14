@@ -107,6 +107,8 @@ class Akka_headless_wp_content {
 
   public static function get_posts($data) {
     $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post'));
+    $category = Akka_headless_wp_utils::getQueryParam('category', NULL);
+    $post_tag = Akka_headless_wp_utils::getQueryParam('post_tag', NULL);
     $per_page = Akka_headless_wp_utils::getQueryParam('per_page', -1);
     $offset = Akka_headless_wp_utils::getQueryParam('offset', 0);
 
@@ -117,6 +119,26 @@ class Akka_headless_wp_content {
       'ignore_sticky_posts' => 1,
     ];
 
+    if ($category || $post_tag) {
+      $query_args["tax_query"] = [];
+    }
+    if ($category) {
+      $query_args["tax_query"][] =
+        [
+            'taxonomy' => 'category',
+            'field'    => 'slug',
+            'terms'    => [$category]
+        ];
+    }
+    if ($post_tag) {
+      $query_args["tax_query"][] =
+        [
+            'taxonomy' => 'post_tag',
+            'field'    => 'slug',
+            'terms'    => [$post_tag]
+        ];
+    }
+
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
     $query = self::get_posts_query($query_args, [
       'page' => $page,
@@ -124,13 +146,11 @@ class Akka_headless_wp_content {
 
     $posts = self::parse_posts($query->posts);
 
-    $post_type_object = get_post_type_object($archive_post_type);
-
     return [
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
-      'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
+      'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_types[0]) . '?page=' . ($page + 1) : NULL,
     ];
   }
 

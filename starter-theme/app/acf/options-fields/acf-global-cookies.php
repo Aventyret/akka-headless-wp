@@ -43,7 +43,7 @@ if (function_exists("acf_add_local_field_group")):
             [
                 "key" => "field_643e8aa12ecea",
                 "label" => __(
-                    "Button text, reject all (except necessary)",
+                    __("Button text, reject all (except necessary)", "sage"),
                     "sage"
                 ),
                 "name" => "global_cookies_button_text_reject",
