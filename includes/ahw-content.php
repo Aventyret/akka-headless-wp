@@ -363,6 +363,18 @@ class Akka_headless_wp_content {
     }, []);
   }
 
+  public static function get_terms($taxonomy_slug) {
+    $taxonomy_terms = get_terms(["taxonomy" => $taxonomy_slug]);
+    return array_map(function($term) {
+      return [
+        'term_id' => $term->term_id,
+        'name' => $term->name,
+        'slug' => $term->slug,
+        'url' => \Akka_headless_wp_utils::parseUrl(get_term_link($term->term_id)),
+      ];
+    }, $taxonomy_terms ? $taxonomy_terms : []);
+  }
+
   /***
    * Typically not used since taxonomy term archives are accessed by permalink
    */
