@@ -24,15 +24,14 @@ class Akka_resolvers {
   }
 
   public static function resolve_wysiwyg_field($post_data, $field_name) {
-    return Akka_headless_wp_utils::parseWysiwyg(self::resolve_field($post_data, $field_name));
+    return \Akka_headless_wp_utils::parseWysiwyg(self::resolve_field($post_data, $field_name));
   }
 
-  public static function resolve_post_image($post_id, $size = "full") {
-    $post_image_id = get_post_thumbnail_id($post_id);
-    if (!$post_image_id) {
+  public static function resolve_image($image_id, $size = "full") {
+    if (!$image_id) {
       return NULL;
     }
-    $post_image_attributes = \Akka_headless_wp_utils::internal_img_attributes($post_image_id,
+    $post_image_attributes = \Akka_headless_wp_utils::internal_img_attributes($image_id,
       [
           "size" => $size,
       ]
@@ -41,5 +40,10 @@ class Akka_resolvers {
         return NULL;
     }
     return $post_image_attributes;
+  }
+
+  public static function resolve_post_image($post_id, $size = "full") {
+    $post_image_id = get_post_thumbnail_id($post_id);
+    return self::resolve_image($post_image_id, $size);
   }
 }
