@@ -364,7 +364,7 @@ class Akka_headless_wp_content {
   }
 
   public static function get_terms($taxonomy_slug) {
-    $taxonomy_terms = get_terms(["taxonomy" => $taxonomy_slug]);
+    $taxonomy_terms = get_terms(["taxonomy" => $taxonomy_slug, "hide_empty" => FALSE]);
     return array_map(function($term) {
       return [
         'term_id' => $term->term_id,
