@@ -15,6 +15,8 @@ add_action('the_content', 'Akka_headless_wp_utils::replaceHrefs');
 
 add_action('the_content', 'Akka_headless_wp_utils::replaceSrcs');
 
+add_action('the_content', 'Akka_headless_wp_utils::replaceHtmlCharachters');
+
 add_action('init', 'Akka_headless_wp_utils::check_cms_cookie');
 
 add_action('wp_login', 'Akka_headless_wp_utils::set_cms_cookie');

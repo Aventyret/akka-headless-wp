@@ -92,6 +92,13 @@ class Akka_headless_wp_content {
     }
 
     if (!$post_id) {
+      $post_data = apply_filters("ahw_post_not_found_post_data", $post_id, $permalink);
+      if ($post_data) {
+        return $post_data;
+      }
+    }
+
+    if (!$post_id) {
       return new WP_REST_Response(array('message' => 'Post not found'), 404);
     }
 
@@ -100,6 +107,8 @@ class Akka_headless_wp_content {
 
   public static function get_posts($data) {
     $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post'));
+    $category = Akka_headless_wp_utils::getQueryParam('category', NULL);
+    $post_tag = Akka_headless_wp_utils::getQueryParam('post_tag', NULL);
     $per_page = Akka_headless_wp_utils::getQueryParam('per_page', -1);
     $offset = Akka_headless_wp_utils::getQueryParam('offset', 0);
 
@@ -110,6 +119,26 @@ class Akka_headless_wp_content {
       'ignore_sticky_posts' => 1,
     ];
 
+    if ($category || $post_tag) {
+      $query_args["tax_query"] = [];
+    }
+    if ($category) {
+      $query_args["tax_query"][] =
+        [
+            'taxonomy' => 'category',
+            'field'    => 'slug',
+            'terms'    => [$category]
+        ];
+    }
+    if ($post_tag) {
+      $query_args["tax_query"][] =
+        [
+            'taxonomy' => 'post_tag',
+            'field'    => 'slug',
+            'terms'    => [$post_tag]
+        ];
+    }
+
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
     $query = self::get_posts_query($query_args, [
       'page' => $page,
@@ -117,13 +146,11 @@ class Akka_headless_wp_content {
 
     $posts = self::parse_posts($query->posts);
 
-    $post_type_object = get_post_type_object($archive_post_type);
-
     return [
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
-      'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1) : NULL,
+      'next_page' => $query->max_num_pages > $page + 1 ? '/' . self::get_post_type_archive_permalink($post_types[0]) . '?page=' . ($page + 1) : NULL,
     ];
   }
 
@@ -134,35 +161,31 @@ class Akka_headless_wp_content {
       return new WP_REST_Response(array('message' => 'Post not found'), 404);
     }
 
-    return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
+    return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending']);
   }
 
-  public static function post_by_story_id($data) {
-    $story_id = Akka_headless_wp_utils::getRouteParam($data, 'story_id');
+  public static function get_attachment_by_id($data) {
+    $attachment_id = Akka_headless_wp_utils::getRouteParam($data, 'attachment_id');
 
-    if (!$story_id) {
-      return new WP_REST_Response(array('message' => 'Post not found'), 404);
+    if (!$attachment_id) {
+      return new WP_REST_Response(array('message' => 'Attachment not found'), 404);
     }
 
-    $post_id = self::get_post_id_by_story_id($story_id);
-    if (!$post_id) {
-      return new WP_REST_Response(array('message' => 'Post not found'), 404);
+    $attachment_attributes = wp_get_attachment_image_src($attachment_id);
+
+    if (!$attachment_attributes) {
+      return new WP_REST_Response(array('message' => 'Attachment not found'), 404);
     }
 
-    return self::get_post_data($post_id, ['publish', 'draft', 'pending']);
+    return [
+      "attachment_id" => $attachment_id,
+      "src" => AKKA_CMS_INTERNAL_BASE . $attachment_attributes[0],
+      "width" => isset($attachment_attributes[1]) ? $attachment_attributes[1] : NULL,
+      "height" => isset($attachment_attributes[2]) ? $attachment_attributes[2] : NULL,
+    ];
   }
 
-  private static function get_post_id_by_story_id($story_id)
-  {
-      global $wpdb;
-      $row = $wpdb->get_row("SELECT min(post_id) AS post_id FROM wp_postmeta WHERE meta_key = 'story_id' and meta_value = '$story_id'");
-      if ($row->post_id) {
-          $post_id = $row->post_id;
-          return $post_id;
-      }
-      return null;
-  }
-  private static function get_post_data($post_id, $post_status = 'publish') {
+  public static function get_post_data($post_id, $post_status = ['publish']) {
     global $post;
     $posts = get_posts([
       'post__in' => [$post_id],
@@ -174,24 +197,32 @@ class Akka_headless_wp_content {
     }
     $post = $posts[0];
 
+    if ($post->post_password && !in_array('private', $post_status)) {
+      return [
+        "post_id" => $post->ID,
+        "post_type" => $post->post_type,
+        "redirect" => '/protected?p=' . $post->ID
+      ];
+    }
+
     $post_thumbnail_id = get_post_thumbnail_id($post_id);
     $featured_image_attributes = $post_thumbnail_id ? Akka_headless_wp_utils::internal_img_attributes($post_thumbnail_id, [
       'priority' => true,
     ]) : NULL;
 
-    $post_content = str_replace('<!-- wp:fof/external-ad', '<!-- wp:fof/disabled-external-ad', $post->post_content);
-    $post_content = apply_filters('the_content', $post_content);
+    $post_content = apply_filters('the_content', $post->post_content);
 
     $data = [
       'post_id' => $post_id,
-      'post_date' => get_the_date("Y-m-d", $post_id),
+      'post_date' => get_the_date(get_option("date_format"), $post_id),
       'post_title' => $post->post_title,
       'post_type' => $post->post_type,
+      'post_password' => $post->post_password,
       'post_parent_id' => $post->post_parent,
       'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
       'post_content' => $post_content,
       'featured_image' => $featured_image_attributes,
-      'thumbnail_caption' => get_the_post_thumbnail_caption($post_id),
+      'thumbnail_caption' => apply_filters("ahw_image_caption", get_the_post_thumbnail_caption($post_id), $post_thumbnail_id),
       'permalink' => str_replace(WP_HOME, '', get_permalink($post_id)),
       'taxonomy_terms' => self::get_post_terms($post),
       'fields' => get_fields($post_id),
@@ -332,6 +363,21 @@ class Akka_headless_wp_content {
     }, []);
   }
 
+  public static function get_terms($taxonomy_slug) {
+    $taxonomy_terms = get_terms(["taxonomy" => $taxonomy_slug]);
+    return array_map(function($term) {
+      return [
+        'term_id' => $term->term_id,
+        'name' => $term->name,
+        'slug' => $term->slug,
+        'url' => \Akka_headless_wp_utils::parseUrl(get_term_link($term->term_id)),
+      ];
+    }, $taxonomy_terms ? $taxonomy_terms : []);
+  }
+
+  /***
+   * Typically not used since taxonomy term archives are accessed by permalink
+   */
   public static function get_term($data) {
     $taxonomy_slug = str_replace('-', '_', Akka_headless_wp_utils::getRouteParam($data, 'taxonomy_slug'));
     $term_slug = Akka_headless_wp_utils::getRouteParam($data, 'term_slug');
@@ -370,6 +416,9 @@ class Akka_headless_wp_content {
     ];
   }
 
+  /***
+   * Typically not used since author archives are accessed by permalink
+   */
   public static function get_author($data) {
 
     $author_slug = isset($data['author_slug']) ? $data['author_slug'] : false;
@@ -510,7 +559,7 @@ class Akka_headless_wp_content {
 
     $post_in_archive = [
       "post_id" => $post->ID,
-      "post_date" => get_the_date("Y-m-d", $post->ID),
+      "post_date" => get_the_date(get_option("date_format"), $post->ID),
       "url" => Akka_headless_wp_utils::parseUrl(get_permalink($post->ID)),
       "image_id" => $thumbnail_id,
       "image_src" => !empty($thumbnail_attributes)
@@ -640,11 +689,19 @@ class Akka_headless_wp_content {
     if (!isset($seo_meta['twitter_description']) || !$seo_meta['twitter_description']) {
       $seo_meta['twitter_description'] = $seo_meta['seo_description'];
     }
-    $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
+    if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
+      $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
+    }
+    if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
+      $seo_meta['canonical_url'] = rtrim(str_replace(WP_HOME, AKKA_FRONTEND_BASE, $seo_meta['canonical_url']), '/');
+    }
     $seo_meta['published_date'] = get_the_date('c', $post->ID);
     $seo_meta['modified_date'] = get_the_modified_date('c', $post->ID);
     if (isset($seo_meta['seo_image_url']) && strpos($seo_meta['seo_image_url'], '/') === 0) {
       $seo_meta['seo_image_url'] = WP_HOME . $seo_meta['seo_image_url'];
+    }
+    foreach(["seo_title", "og_title", "twitter_title"] as $title_key) {
+      $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;'], ['', '-'], $seo_meta[$title_key]);
     }
     return apply_filters("ahw_seo_meta", $seo_meta, $post, $specific_seo_image_is_defined);
   }

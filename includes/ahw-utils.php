@@ -30,13 +30,22 @@ class Akka_headless_wp_utils {
         return $content;
     }
 
+    $content = str_replace('href="' . AKKA_FRONTEND_BASE . '/wp-content/uploads/', 'href="' . WP_HOME . '/app/uploads/', $content);
+    $content = str_replace('href="' . WP_HOME . '/wp-content/uploads/', 'href="' . WP_HOME . '/app/uploads/', $content);
     $content = str_replace('href="' . WP_HOME . '/', 'data-internal-link="true" href="/', $content);
     $content = str_replace('href="' . WP_HOME, 'data-internal-link="true" href="/', $content);
     $content = str_replace('href="#', 'data-internal-link="true" href="#', $content);
-    $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/', $content);
-    $content = str_replace('href="/app/', 'href="' . WP_HOME . '/', $content);
+    $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
+    $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
     return $content;
+  }
+
+  public static function replaceHtmlCharachters($content) {
+    if (!self::isHeadless() || !$content) {
+        return $content;
+    }
+    return str_replace('&amp;shy;', '&shy;', $content);
   }
 
   public static function replaceSrcs($content) {
@@ -46,6 +55,7 @@ class Akka_headless_wp_utils {
 
     $content = str_replace('src="' . WP_HOME . '/', 'src="/', $content);
     $content = str_replace('src="/', 'data-internal-image="true" src="' . AKKA_CMS_INTERNAL_BASE . '/', $content);
+    $content = str_replace('data-internal-image="true" src="' . AKKA_CMS_INTERNAL_BASE . '//', 'src="//', $content);
     if (AKKA_CMS_MEDIA_BUCKET_BASE) {
       $content = str_replace('src="' . AKKA_CMS_MEDIA_BUCKET_BASE, 'data-internal-image="true" src="' . AKKA_CMS_MEDIA_BUCKET_BASE, $content);
     }
@@ -152,10 +162,17 @@ class Akka_headless_wp_utils {
       wp_redirect(WP_SITEURL . '/wp-admin');
     }
     $redirect_uri = $_SERVER['REQUEST_URI'];
-    if (is_user_logged_in() && isset($_GET['p']) && $_GET['p'] && !str_starts_with($redirect_uri, '/draft/')) {
-      $redirect_uri = '/draft' . $redirect_uri;
-      if (!isset($_GET['preview'])) {
-        $redirect_uri .= '&preview=true';
+    if (is_user_logged_in()) {
+      // Drafts
+      if (isset($_GET['p']) && $_GET['p'] && !str_starts_with($redirect_uri, '/draft/')) {
+        $redirect_uri = '/draft' . $redirect_uri;
+        if (!isset($_GET['preview'])) {
+          $redirect_uri .= '&preview=true';
+        }
+      }
+      // Private
+      if (get_post_status() == "private" && !isset($_GET['p'])) {
+        $redirect_uri = '/draft?p=' . get_the_id();
       }
     }
     wp_redirect(AKKA_FRONTEND_BASE . $redirect_uri);

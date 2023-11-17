@@ -20,9 +20,9 @@ add_action( 'rest_api_init', function () {
     'callback' => 'Akka_headless_wp_content::get_post_by_id',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
   ) );
-  register_rest_route( AKKA_API_BASE, '/post_by_story_id/(?P<story_id>[0-9A-Za-z-]+)', array(
+  register_rest_route( AKKA_API_BASE, '/attachment_by_id/(?P<attachment_id>[0-9]+)', array(
     'methods' => 'GET',
-    'callback' => 'Akka_headless_wp_content::post_by_story_id',
+    'callback' => 'Akka_headless_wp_content::get_attachment_by_id',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
   ) );
   register_rest_route( AKKA_API_BASE, '/term/(?P<taxonomy_slug>[a-zA-Z0-9-%+]+)/(?P<term_slug>[a-zA-Z0-9-%+]+)', array(
