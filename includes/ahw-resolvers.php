@@ -32,6 +32,18 @@ class Akka_resolvers {
     return TRUE;
   }
 
+  public static function resolve_link_field($post_data, $field_name) {
+    $field = self::resolve_field($post_data, $field_name);
+    if (!$field) {
+      return NULL;
+    }
+    return [
+      "text" => $field["title"],
+      "url" => $field["url"],
+      "target" => $field["target"],
+    ];
+  }
+
   public static function resolve_array_field($post_data, $field_name) {
     $field = self::resolve_field($post_data, $field_name);
     if (!$field) {

@@ -38,10 +38,85 @@ class Akka_headless_wp_content {
         }, []);
       }
     }
-    $site_meta = [
+    $site_meta = array_merge(self::get_site_meta_global_fields($site_meta), [
       'navigation' => $navigation
-    ];
+    ]);
     return apply_filters('ahw_site_meta', $site_meta);
+  }
+
+
+  private static function get_site_meta_global_fields($site_meta)
+  {
+      $fields = get_fields("global");
+      foreach ($fields as $field => $value) {
+          [$g, $section, $key] = preg_split(
+              "/_/",
+              $field,
+              3,
+              PREG_SPLIT_NO_EMPTY
+          );
+          if (isset($section) && isset($key)) {
+              if ($value instanceof \WP_Post) {
+                  $value = [
+                      "post_id" => $value->ID,
+                      "permalink" => \Akka_headless_wp_utils::parseUrl(
+                          get_permalink($value)
+                      ),
+                      "post_title" => $value->post_title,
+                      "post_name" => $value->post_name,
+                  ];
+              }
+              $site_meta[$section][$key] = $value;
+          }
+      }
+      $site_meta["header"]["posts_url"] = \Akka_headless_wp_utils::parseUrl(
+          get_permalink(get_option("page_for_posts"))
+      );
+      if (
+          isset($site_meta["cookies"]) &&
+          isset($site_meta["cookies"]["details_link"])
+      ) {
+          $site_meta["cookies"][
+              "details_link"
+          ] = \Akka_headless_wp_utils::parseUrl(
+              $site_meta["cookies"]["details_link"]
+          );
+      }
+      if (
+          isset($site_meta["cookies"]) &&
+          isset($site_meta["cookies"]["enabled_cookie_types"])
+      ) {
+          $site_meta["cookies"]["enabled_cookie_types"] = array_reduce(
+              $site_meta["cookies"]["enabled_cookie_types"]
+                  ? $site_meta["cookies"]["enabled_cookie_types"]
+                  : [],
+              function ($enabled_types, $cookie_type) {
+                  return array_merge($enabled_types, [
+                      [
+                          "type" => $cookie_type . "_storage",
+                          "name" => get_field(
+                              "global_cookies_" . $cookie_type . "_name",
+                              "global"
+                          ),
+                          "read_only" => false,
+                          "default_enabled" => false,
+                      ],
+                  ]);
+              },
+              [
+                  [
+                      "type" => "necessary_storage",
+                      "name" => get_field(
+                          "global_cookies_necessary_name",
+                          "global"
+                      ),
+                      "read_only" => true,
+                      "default_enabled" => true,
+                  ],
+              ]
+          );
+      }
+      return $site_meta;
   }
 
   private static function get_post_types_with_archives() {
