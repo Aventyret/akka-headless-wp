@@ -1,4 +1,5 @@
 <?php
+use \Akka_headless_wp_content as Content;
 
 class Akka_resolvers {
   public static function resolve_post_base($post) {
@@ -21,6 +22,49 @@ class Akka_resolvers {
       return NULL;
     }
     return $post_data["fields"][$field_name];
+  }
+
+  public static function resolve_boolean_field($post_data, $field_name) {
+    $field = self::resolve_field($post_data, $field_name);
+    if (!$field) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  public static function resolve_array_field($post_data, $field_name) {
+    $field = self::resolve_field($post_data, $field_name);
+    if (!$field) {
+      return [];
+    }
+    return $field;
+  }
+
+  public static function resolve_post_field($post_data, $field_name) {
+    $field = self::resolve_field($post_data, $field_name);
+    if (!$field) {
+      return NULL;
+    }
+    return Content::get_post_in_archive($field);
+  }
+
+  public static function resolve_posts_field($post_data, $field_name) {
+    $field = self::resolve_field($post_data, $field_name);
+    if (!$field) {
+      return [];
+    }
+    return array_map(
+        function ($post_id) {
+            $p = get_post($post_id);
+            return Content::get_post_in_archive($p);
+        },
+        $field
+    );
+  }
+
+  public static function resolve_image_field($post_data, $field_name) {
+    $field = self::resolve_field($post_data, $field_name);
+    return $field ? Content::resolve_image($field) : NULL;
   }
 
   public static function resolve_wysiwyg_field($post_data, $field_name) {

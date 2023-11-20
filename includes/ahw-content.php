@@ -561,17 +561,9 @@ class Akka_headless_wp_content {
       "post_id" => $post->ID,
       "post_date" => get_the_date(get_option("date_format"), $post->ID),
       "url" => Akka_headless_wp_utils::parseUrl(get_permalink($post->ID)),
-      "image_id" => $thumbnail_id,
-      "image_src" => !empty($thumbnail_attributes)
-          ? $thumbnail_attributes["src"]
+      "featured_image" => !empty($thumbnail_attributes)
+          ? $thumbnail_attributes
           : null,
-      "image_width" => !empty($thumbnail_attributes)
-          ? $thumbnail_attributes["width"]
-          : null,
-      "image_height" => !empty($thumbnail_attributes)
-          ? $thumbnail_attributes["height"]
-          : null,
-      "image_alt" => "",
       "title" => $post->post_title,
       "post_type" => $post->post_type,
       "description" => get_the_excerpt($post->ID),
