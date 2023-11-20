@@ -535,7 +535,7 @@ class Akka_headless_wp_content {
     $categories = !empty($category_terms)
       ? array_map(function ($category) {
           return [
-              "id" => $category->term_id,
+              "term_id" => $category->term_id,
               "name" => $category->name,
               "slug" => $category->slug,
               "url" => \Akka_headless_wp_utils::parseUrl(get_term_link($category->term_id)),
@@ -549,7 +549,7 @@ class Akka_headless_wp_content {
     $tags = !empty($tag_terms)
       ? array_map(function ($tag) {
           return [
-              "id" => $tag->term_id,
+              "term_id" => $tag->term_id,
               "name" => $tag->name,
               "slug" => $tag->slug,
               "url" => \Akka_headless_wp_utils::parseUrl(get_term_link($tag->term_id)),
@@ -564,7 +564,7 @@ class Akka_headless_wp_content {
       "featured_image" => !empty($thumbnail_attributes)
           ? $thumbnail_attributes
           : null,
-      "title" => $post->post_title,
+      "post_title" => $post->post_title,
       "post_type" => $post->post_type,
       "description" => get_the_excerpt($post->ID),
       "categories" => $categories,

@@ -7,8 +7,8 @@ class Akka_resolvers {
       "url" => \Akka_headless_wp_utils::parseUrl(
           get_permalink($post->ID)
       ),
-      "id" => $post->ID,
-      "title" => $post->post_title,
+      "post_id" => $post->ID,
+      "post_title" => $post->post_title,
     ];
   }
 
