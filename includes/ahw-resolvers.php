@@ -17,23 +17,30 @@ class Akka_resolvers {
     return self::resolve_post_base($post);
   }
 
-  public static function resolve_field($post_data, $field_name) {
-    if (!isset($post_data["fields"][$field_name]) || empty($post_data["fields"][$field_name])) {
+  // post_data_or_fields is either an array with "fields" as key or it is the fields array
+  public static function resolve_field($post_data_or_fields, $field_name) {
+    $fields = NULL;
+    if (isset($post_data_or_fields["fields"])) {
+      $fields = $post_data_or_fields["fields"];
+    } else if (is_array($post_data_or_fields)) {
+      $fields = $post_data_or_fields;
+    }
+    if (!isset($fields[$field_name]) || empty($fields[$field_name])) {
       return NULL;
     }
-    return $post_data["fields"][$field_name];
+    return $fields[$field_name];
   }
 
-  public static function resolve_boolean_field($post_data, $field_name) {
-    $field = self::resolve_field($post_data, $field_name);
+  public static function resolve_boolean_field($post_data_or_fields, $field_name) {
+    $field = self::resolve_field($post_data_or_fields, $field_name);
     if (!$field) {
       return FALSE;
     }
     return TRUE;
   }
 
-  public static function resolve_link_field($post_data, $field_name) {
-    $field = self::resolve_field($post_data, $field_name);
+  public static function resolve_link_field($post_data_or_fields, $field_name) {
+    $field = self::resolve_field($post_data_or_fields, $field_name);
     if (!$field) {
       return NULL;
     }
@@ -44,24 +51,24 @@ class Akka_resolvers {
     ];
   }
 
-  public static function resolve_array_field($post_data, $field_name) {
-    $field = self::resolve_field($post_data, $field_name);
+  public static function resolve_array_field($post_data_or_fields, $field_name) {
+    $field = self::resolve_field($post_data_or_fields, $field_name);
     if (!$field) {
       return [];
     }
     return $field;
   }
 
-  public static function resolve_post_field($post_data, $field_name) {
-    $field = self::resolve_field($post_data, $field_name);
+  public static function resolve_post_field($post_data_or_fields, $field_name) {
+    $field = self::resolve_field($post_data_or_fields, $field_name);
     if (!$field) {
       return NULL;
     }
     return Content::get_post_in_archive($field);
   }
 
-  public static function resolve_posts_field($post_data, $field_name) {
-    $field = self::resolve_field($post_data, $field_name);
+  public static function resolve_posts_field($post_data_or_fields, $field_name) {
+    $field = self::resolve_field($post_data_or_fields, $field_name);
     if (!$field) {
       return [];
     }
@@ -74,13 +81,20 @@ class Akka_resolvers {
     );
   }
 
-  public static function resolve_image_field($post_data, $field_name) {
-    $field = self::resolve_field($post_data, $field_name);
-    return $field ? Content::resolve_image($field) : NULL;
+  public static function resolve_global_field($field_name) {
+    return get_field(
+        "global_" . $field_name,
+        "global"
+    );
   }
 
-  public static function resolve_wysiwyg_field($post_data, $field_name) {
-    return \Akka_headless_wp_utils::parseWysiwyg(self::resolve_field($post_data, $field_name));
+  public static function resolve_image_field($post_data_or_fields, $field_name) {
+    $field = self::resolve_field($post_data_or_fields, $field_name);
+    return $field ? self::resolve_image($field) : NULL;
+  }
+
+  public static function resolve_wysiwyg_field($post_data_or_fields, $field_name) {
+    return \Akka_headless_wp_utils::parseWysiwyg(self::resolve_field($post_data_or_fields, $field_name));
   }
 
   public static function resolve_image($image_id, $size = "full") {
