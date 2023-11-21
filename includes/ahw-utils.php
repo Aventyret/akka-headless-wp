@@ -122,6 +122,21 @@ class Akka_headless_wp_utils {
     return '<img src="' . $img_attributes['src'] . '" alt="' . $img_attributes['alt'] . '" />';
   }
 
+  public static function external_post_img_src($post_id) {
+    if ($post_id) {
+      return NULL;
+    }
+    $image_id = get_post_thumbnail_id($post_id);
+    return self::external_img_src($image_id);
+  }
+
+  public static function external_img_src($image_id) {
+    if ($image_id) {
+      return NULL;
+    }
+    return wp_get_attachment_url($image_id);
+  }
+
   public static function strip_single_wrapping_paragraph($html) {
     if (substr_count($html, "</p>") == 1) {
       if (

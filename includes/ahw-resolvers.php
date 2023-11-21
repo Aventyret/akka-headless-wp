@@ -64,6 +64,9 @@ class Akka_resolvers {
     if (!$field) {
       return NULL;
     }
+    if (is_numeric($field)) {
+      $field = get_post($field);
+    }
     return Content::get_post_in_archive($field);
   }
 
