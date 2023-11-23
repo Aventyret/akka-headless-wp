@@ -137,6 +137,29 @@ class Akka_headless_wp_utils {
     return wp_get_attachment_url($image_id);
   }
 
+  public static function external_post_img_attributes($post_id, $size = "full") {
+    if ($post_id) {
+      return NULL;
+    }
+    $image_id = get_post_thumbnail_id($post_id);
+    return self::external_img_attributes($image_id);
+  }
+
+  public static function external_img_attributes($image_id, $size = "full") {
+    if ($image_id) {
+      return NULL;
+    }
+    $src = wp_get_attachment_image_src($image_id, $size);
+    if (!$src) {
+      return NULL;
+    }
+    return [
+      "src" => $src[0],
+      "width" => $src[1],
+      "height" => $src[2],
+    ];
+  }
+
   public static function strip_single_wrapping_paragraph($html) {
     if (substr_count($html, "</p>") == 1) {
       if (
