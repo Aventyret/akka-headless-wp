@@ -38,15 +38,16 @@ class Akka_headless_wp_content {
         }, []);
       }
     }
-    $site_meta = array_merge(self::get_site_meta_global_fields($site_meta), [
+    $site_meta = array_merge(self::get_site_meta_global_fields(), [
       'navigation' => $navigation
     ]);
     return apply_filters('ahw_site_meta', $site_meta);
   }
 
 
-  private static function get_site_meta_global_fields($site_meta)
+  private static function get_site_meta_global_fields()
   {
+      $site_meta = [];
       $fields = get_fields("global");
       foreach ($fields as $field => $value) {
           [$g, $section, $key] = preg_split(
