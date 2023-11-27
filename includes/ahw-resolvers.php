@@ -1,7 +1,7 @@
 <?php
 use \Akka_headless_wp_content as Content;
 
-class Akka_resolvers {
+class Akka_headless_wp_resolvers {
   public static function resolve_post_base($post) {
     return [
       "url" => \Akka_headless_wp_utils::parseUrl(
