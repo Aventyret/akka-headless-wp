@@ -9,6 +9,7 @@ class Akka_resolvers {
       ),
       "post_id" => $post->ID,
       "post_title" => $post->post_title,
+      "post_type" => $post->post_type,
     ];
   }
 
