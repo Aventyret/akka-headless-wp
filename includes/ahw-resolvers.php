@@ -10,6 +10,7 @@ class Akka_headless_wp_resolvers {
       "post_id" => $post->ID,
       "post_title" => $post->post_title,
       "post_type" => $post->post_type,
+      "slug" => $post->post_name,
     ];
   }
 

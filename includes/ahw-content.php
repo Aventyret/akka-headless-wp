@@ -642,6 +642,7 @@ class Akka_headless_wp_content {
           : null,
       "post_title" => $post->post_title,
       "post_type" => $post->post_type,
+      "slug" => $post->post_name,
       "description" => get_the_excerpt($post->ID),
       "categories" => $categories,
       "primary_category" => self::get_primary_term('category', $categories),
