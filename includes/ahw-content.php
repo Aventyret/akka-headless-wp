@@ -215,6 +215,8 @@ class Akka_headless_wp_content {
         ];
     }
 
+    $query_args = apply_filters("ahw_get_posts_args", $query_args);
+
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
     $query = self::get_posts_query($query_args, [
       'page' => $page,
@@ -295,6 +297,7 @@ class Akka_headless_wp_content {
       'post_type' => $post->post_type,
       'post_password' => $post->post_password,
       'post_parent_id' => $post->post_parent,
+      'slug' => $post->post_name,
       'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
       'post_content' => $post_content,
       'featured_image' => $featured_image_attributes,
