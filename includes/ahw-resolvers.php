@@ -22,7 +22,7 @@ class Akka_headless_wp_resolvers {
   // post_data_or_fields is either an array with "fields" as key or it is the fields array
   public static function resolve_field($post_data_or_fields, $field_name) {
     $fields = NULL;
-    if (isset($post_data_or_fields["fields"])) {
+    if (!isset($post_data_or_fields[$field_name]) && isset($post_data_or_fields["fields"])) {
       $fields = $post_data_or_fields["fields"];
     } else if (is_array($post_data_or_fields)) {
       $fields = $post_data_or_fields;
