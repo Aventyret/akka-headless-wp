@@ -740,7 +740,7 @@ class Akka_headless_wp_content {
     if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
       $specific_seo_image_is_defined = TRUE;
     }
-    if ((!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) && $post_thumbnail_id) {
+    if ((!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) && (!isset($seo_meta['seo_image_url']) || !$seo_meta['seo_image_url']) && $post_thumbnail_id) {
       $seo_meta['seo_image_id'] = $post_thumbnail_id;
     }
     if (isset($seo_meta['seo_image_id'])) {
