@@ -151,6 +151,14 @@ class Akka_headless_wp_content {
       }
     }
 
+    // Check that this is the correct permalink
+    if ($post_id && strpos(get_permalink($post_id), $permalink) === FALSE) {
+      return [
+        "post_type" => "redirect",
+        "redirect" => get_permalink($post_id),
+      ];
+    }
+
     // Is this a post type archive?
     if (!$post_id) {
       $post_type_archive_data = self::get_post_type_archive_data($permalink);
