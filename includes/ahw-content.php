@@ -675,6 +675,15 @@ class Akka_headless_wp_content {
   public static function search($data) {
     $query = urldecode(Akka_headless_wp_utils::getRouteParam($data, 'query'));
     $post_type = Akka_headless_wp_utils::getRouteParam($data, 'post_type');
+    $category_slugs = Akka_headless_wp_utils::getRouteParam($data, 'category_slugs');
+    if ($category_slugs) {
+      $category_slugs = explode(',', $category_slugs);
+    }
+    $term_slugs = Akka_headless_wp_utils::getRouteParam($data, 'term_slugs');
+    if ($term_slugs) {
+      $term_slugs = explode(',', $term_slugs);
+    }
+    $taxonomy = Akka_headless_wp_utils::getRouteParam($data, 'taxonomy', 'post_tag');
 
     if (empty($query) || strlen($query) < 2) {
       return [
@@ -689,6 +698,23 @@ class Akka_headless_wp_content {
     ];
     if ($post_type) {
       $query_args["post_type"] = $post_type;
+    }
+    if (!empty($category_slugs) || !empty($term_slugs)) {
+      $query_args["tax_query"] = [];
+    }
+    if (!empty($category_slugs)) {
+      $query_args["tax_query"][] = [
+        "taxonomy" => "category",
+        "terms" => $category_slugs,
+        "field" => "slug",
+      ];
+    }
+    if (!empty($term_slugs)) {
+      $query_args["tax_query"][] = [
+        "taxonomy" => $taxonomy,
+        "terms" => $term_slugs,
+        "field" => "slug",
+      ];
     }
 
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
