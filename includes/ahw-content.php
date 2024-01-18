@@ -49,7 +49,7 @@ class Akka_headless_wp_content {
   {
       $site_meta = [];
       $fields = get_fields("global");
-      foreach ($fields as $field => $value) {
+      foreach ($fields ? $fields : [] as $field => $value) {
           [$g, $section, $key] = preg_split(
               "/_/",
               $field,
@@ -319,7 +319,7 @@ class Akka_headless_wp_content {
       'post_content' => $post_content,
       'featured_image' => $featured_image_attributes,
       'thumbnail_caption' => apply_filters("ahw_image_caption", get_the_post_thumbnail_caption($post_id), $post_thumbnail_id),
-      'permalink' => str_replace(WP_HOME, '', get_permalink($post_id)),
+      'permalink' => \Akka_headless_wp_utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post_id))),
       'taxonomy_terms' => self::get_post_terms($post),
       'fields' => get_fields($post_id),
       'seo_meta' => self::get_post_seo_meta($post, $post_thumbnail_id),
@@ -674,6 +674,7 @@ class Akka_headless_wp_content {
 
   public static function search($data) {
     $query = urldecode(Akka_headless_wp_utils::getRouteParam($data, 'query'));
+    $post_type = Akka_headless_wp_utils::getRouteParam($data, 'post_type');
 
     if (empty($query) || strlen($query) < 2) {
       return [
@@ -686,6 +687,9 @@ class Akka_headless_wp_content {
     $query_args = [
       's' => $query,
     ];
+    if ($post_type) {
+      $query_args["post_type"] = $post_type;
+    }
 
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
     $query = self::get_posts_query($query_args, [
