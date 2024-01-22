@@ -553,7 +553,7 @@ class Akka_headless_wp_content {
   }
 
   private static function get_posts_query($query_args, $options = []) {
-    if (isset($options['page']) && $options['page'] > 1) {
+    if (isset($options['page']) && $options['page'] > 0) {
       $query_args = self::set_offset_and_per_page($query_args, $options['page']);
     }
 
