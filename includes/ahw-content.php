@@ -249,6 +249,38 @@ class Akka_headless_wp_content {
     ];
   }
 
+  public static function get_posts_feed() {
+    $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post'));
+    $per_page = 50;
+
+    $query_args = [
+      'post_type' => $post_types,
+      'posts_per_page' => $per_page,
+      'ignore_sticky_posts' => 1,
+      'date_query' => [
+        [
+            'column' => 'post_date',
+            'after' => '12 month ago',
+        ],
+      ],
+    ];
+
+    $query_args = apply_filters("ahw_get_posts_args", $query_args);
+
+    $page = Akka_headless_wp_utils::getQueryParam('page', 1);
+    $query = self::get_posts_query($query_args, [
+      'page' => $page,
+    ]);
+
+    $posts = self::parse_posts($query->posts);
+
+    return [
+      'count' => $query->found_posts,
+      'pages' => $query->max_num_pages,
+      'posts' => $posts
+    ];
+  }
+
   public static function get_post_by_id($data) {
     $post_id = Akka_headless_wp_utils::getRouteParam($data, 'post_id');
 
@@ -655,6 +687,7 @@ class Akka_headless_wp_content {
 
     $post_in_archive = [
       "post_id" => $post->ID,
+      "post_guid" => $post->guid,
       "post_date" => get_the_date(get_option("date_format"), $post->ID),
       "url" => Akka_headless_wp_utils::parseUrl(get_permalink($post->ID)),
       "featured_image" => !empty($thumbnail_attributes)
