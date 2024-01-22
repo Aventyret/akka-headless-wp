@@ -187,6 +187,9 @@ class Akka_headless_wp_utils {
     if (is_admin()) {
       return;
     }
+    if (is_feed()) {
+      return;
+    }
     if (strpos($_SERVER['REQUEST_URI'], '/wp-') === 0) {
       return;
     }
