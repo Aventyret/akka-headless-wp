@@ -394,6 +394,8 @@ class Akka_headless_wp_content {
     $post_type_data = [
       'post_type' => 'post_type',
       'slug' => $archive_post_type,
+      'url' => '/' . $permalink,
+      'post_title' => $post_type_object->label,
       'name' => $post_type_object->label,
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
@@ -453,6 +455,8 @@ class Akka_headless_wp_content {
       'taxonomy_label' => $archive_taxonomy->labels->singular_name,
       'term_id' => $archive_taxonomy_term->term_id,
       'slug' => $archive_taxonomy_term->slug,
+      'url' => '/' . $permalink,
+      'post_title' => $archive_taxonomy_term->name,
       'name' => $archive_taxonomy_term->name,
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
