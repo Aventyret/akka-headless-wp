@@ -146,7 +146,7 @@ class Akka_headless_wp_content {
     if (!$post_id && strpos($permalink, '/') !== FALSE) {
       $permalink_parts = explode('/', $permalink);
       $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, "post");
-      if ($post_object) {
+      if ($post_object && $post_object->post_type !== 'attachment') {
         $post_id = $post_object->ID;
       }
     }
@@ -418,7 +418,8 @@ class Akka_headless_wp_content {
     if (!$archive_taxonomy) {
       return NULL;
     }
-    $archive_taxonomy_term = get_term_by('slug', substr($permalink, strpos($permalink, '/') + 1), $archive_taxonomy->name);
+    $permalink_parts = explode('/', $permalink);
+    $archive_taxonomy_term = get_term_by('slug', $permalink_parts[count($permalink_parts) - 1], $archive_taxonomy->name);
     if (!$archive_taxonomy_term) {
       return NULL;
     }
@@ -718,7 +719,7 @@ class Akka_headless_wp_content {
     }
     $taxonomy = Akka_headless_wp_utils::getRouteParam($data, 'taxonomy', 'post_tag');
 
-    if (empty($query) || strlen($query) < 2) {
+    if ((empty($query) || strlen($query) < 2) && empty($category_slugs) && empty($term_slugs)) {
       return [
         'count' => 0,
         'pages' => 0,
@@ -726,9 +727,11 @@ class Akka_headless_wp_content {
       ];
     }
 
-    $query_args = [
-      's' => $query,
-    ];
+    if ($query) {
+      $query_args = [
+        's' => $query,
+      ];
+    }
     if ($post_type) {
       $query_args["post_type"] = $post_type;
     }
@@ -747,6 +750,7 @@ class Akka_headless_wp_content {
         "taxonomy" => $taxonomy,
         "terms" => $term_slugs,
         "field" => "slug",
+        "operator" => "AND",
       ];
     }
 
