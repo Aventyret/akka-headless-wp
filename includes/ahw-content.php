@@ -458,6 +458,7 @@ class Akka_headless_wp_content {
       'url' => '/' . $permalink,
       'post_title' => $archive_taxonomy_term->name,
       'name' => $archive_taxonomy_term->name,
+      'fields' => get_fields($archive_taxonomy_term),
       'count' => $query->found_posts,
       'pages' => $query->max_num_pages,
       'posts' => $posts,
@@ -465,7 +466,7 @@ class Akka_headless_wp_content {
       'next_page' => $query->max_num_pages > $page + 1 ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1) : NULL,
     ];
 
-    return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data);
+    return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data, $archive_taxonomy_term);
   }
 
   private static function get_post_terms($post) {
