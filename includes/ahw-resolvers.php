@@ -102,19 +102,23 @@ class Akka_headless_wp_resolvers {
     return \Akka_headless_wp_utils::parseWysiwyg(self::resolve_field($post_data_or_fields, $field_name));
   }
 
-  public static function resolve_image($image_id, $size = "full") {
+  public static function resolve_image($image_id, $size = "full", $include_caption = false) {
     if (!$image_id) {
       return NULL;
     }
     $post_image_attributes = \Akka_headless_wp_utils::internal_img_attributes($image_id,
       [
           "size" => $size,
-      ]
+      ], $include_caption
     );
     if (empty($post_image_attributes)) {
         return NULL;
     }
     return $post_image_attributes;
+  }
+
+  public static function resolve_image_with_caption($image_id, $size = "full") {
+    return self::resolve_image($image_id, $size = "full", true);
   }
 
   public static function resolve_post_image($post_id, $size = "full") {

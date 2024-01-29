@@ -79,7 +79,7 @@ class Akka_headless_wp_utils {
     return self::isHeadless() ? self::internal_img_tag_in_frontend($img_attributes) : self::internal_img_tag_in_cms($img_attributes);
   }
 
-  public static function internal_img_attributes($img_id, $img_attributes = []) {
+  public static function internal_img_attributes($img_id, $img_attributes = [], $include_caption = false) {
     if (empty($img_id)) {
       return [];
     }
@@ -104,7 +104,14 @@ class Akka_headless_wp_utils {
         $img_attributes['alt'] = '';
       }
     }
+    if ($include_caption) {
+      $img_attributes['caption'] = wp_get_attachment_caption($img_id);
+    }
     return $img_attributes;
+  }
+
+  public static function internal_img_with_caption_attributes($img_id, $img_attributes = []) {
+    return self::internal_img_with_caption_attributes($img_id, $img_attributes, true);
   }
 
   private static function internal_img_tag_in_frontend($img_attributes) {
