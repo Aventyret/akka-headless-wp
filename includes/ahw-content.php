@@ -1,4 +1,5 @@
 <?php
+use \Akka_headless_wp_resolvers as Resolvers;
 
 class Akka_headless_wp_content {
   public static function can_get_content() {
@@ -312,7 +313,7 @@ class Akka_headless_wp_content {
     ];
   }
 
-  public static function get_post_data($post_id, $post_status = ['publish']) {
+  private static function get_post_data($post_id, $post_status = ['publish']) {
     global $post;
     $posts = get_posts([
       'post__in' => [$post_id],
@@ -332,39 +333,50 @@ class Akka_headless_wp_content {
       ];
     }
 
-    $post_thumbnail_id = get_post_thumbnail_id($post_id);
-    $featured_image_attributes = $post_thumbnail_id ? Akka_headless_wp_utils::internal_img_attributes($post_thumbnail_id, [
-      'priority' => true,
-    ]) : NULL;
+    $akka_post = self::get_akka_post();
+    $akka_post["post_content"] = apply_filters('the_content', $post->post_content);
+    $akka_post["seo_meta"] = self::get_post_seo_meta($post, Resolvers::resolve_field($akka_post["featured_image"], "id"));
 
-    $post_content = apply_filters('the_content', $post->post_content);
-
-    $data = [
-      'post_id' => $post_id,
-      'post_date' => get_the_date(get_option("date_format"), $post_id),
-      'post_title' => $post->post_title,
-      'post_type' => $post->post_type,
-      'post_password' => $post->post_password,
-      'post_parent_id' => $post->post_parent,
-      'slug' => $post->post_name,
-      'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
-      'post_content' => $post_content,
-      'featured_image' => $featured_image_attributes,
-      'thumbnail_caption' => apply_filters("ahw_image_caption", get_the_post_thumbnail_caption($post_id), $post_thumbnail_id),
-      'permalink' => \Akka_headless_wp_utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post_id))),
-      'taxonomy_terms' => self::get_post_terms($post),
-      'fields' => get_fields($post_id),
-      'seo_meta' => self::get_post_seo_meta($post, $post_thumbnail_id),
-    ];
-    foreach(['category', 'post_tag'] as $taxonomy_slug) {
-      if (isset($data['taxonomy_terms'][$taxonomy_slug])) {
-        $data['primary_' . str_replace('post_tag', 'tag', $taxonomy_slug)] = $data['taxonomy_terms'][$taxonomy_slug]['primary_term'];
-      }
-    }
-
-    $data = apply_filters('ahw_post_data', $data);
+    $data = apply_filters('ahw_post_data', $akka_post);
     unset($data['fields']);
     return $data;
+  }
+
+  private static $_akka_post_memory = [];
+  public static function get_akka_post() {
+    global $post;
+    if (!$post) {
+      return NULL;
+    }
+    if (!isset(self::$_akka_post_memory[$post->ID])) {
+      $post_thumbnail_id = get_post_thumbnail_id($post->ID);
+      $featured_image_attributes = $post_thumbnail_id ? Akka_headless_wp_utils::internal_img_attributes($post_thumbnail_id, [
+        'priority' => true,
+      ]) : NULL;
+
+      $akka_post = [
+        'post_id' => $post->ID,
+        'post_date' => get_the_date(get_option("date_format"), $post->ID),
+        'post_title' => $post->post_title,
+        'post_type' => $post->post_type,
+        'post_password' => $post->post_password,
+        'post_parent_id' => $post->post_parent,
+        'slug' => $post->post_name,
+        'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
+        'featured_image' => $featured_image_attributes,
+        'thumbnail_caption' => apply_filters("ahw_image_caption", get_the_post_thumbnail_caption($post->ID), $post_thumbnail_id),
+        'permalink' => \Akka_headless_wp_utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post->ID))),
+        'taxonomy_terms' => self::get_post_terms($post),
+        'fields' => get_fields($post->ID),
+      ];
+      foreach(['category', 'post_tag'] as $taxonomy_slug) {
+        if (isset($data['taxonomy_terms'][$taxonomy_slug])) {
+          $akka_post['primary_' . str_replace('post_tag', 'tag', $taxonomy_slug)] = $akka_post['taxonomy_terms'][$taxonomy_slug]['primary_term'];
+        }
+      }
+      self::$_akka_post_memory[$post->ID] = $akka_post;
+    }
+    return self::$_akka_post_memory[$post->ID];
   }
 
   private static function get_post_type_archive_data($permalink) {

@@ -58,6 +58,7 @@ class Akka_headless_wp_utils {
     $content = str_replace('data-internal-image="true" src="' . AKKA_CMS_INTERNAL_BASE . '//', 'src="//', $content);
     if (AKKA_CMS_MEDIA_BUCKET_BASE) {
       $content = str_replace('src="' . AKKA_CMS_MEDIA_BUCKET_BASE, 'data-internal-image="true" src="' . AKKA_CMS_MEDIA_BUCKET_BASE, $content);
+      $content = str_replace('src="/', 'src="' . AKKA_CMS_MEDIA_BUCKET_BASE . '/', $content);
     }
 
     return $content;
@@ -95,6 +96,18 @@ class Akka_headless_wp_utils {
     $img_attributes['src'] = $img_src_data[0];
     if (strpos($img_attributes['src'], '/') === 0) {
       $img_attributes['src'] = AKKA_CMS_INTERNAL_BASE . $img_attributes['src'];
+    }
+    if (AKKA_CMS_MEDIA_BUCKET_BASE) {
+        $img_attributes["src"] = str_replace(
+            AKKA_CMS_INTERNAL_BASE,
+            AKKA_CMS_MEDIA_BUCKET_BASE,
+            $img_attributes["src"]
+        );
+        $img_attributes["src"] = str_replace(
+            WP_HOME,
+            AKKA_CMS_MEDIA_BUCKET_BASE,
+            $img_attributes["src"]
+        );
     }
     $img_attributes['width'] = $img_src_data[1];
     $img_attributes['height'] = $img_src_data[2];
