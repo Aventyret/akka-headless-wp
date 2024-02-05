@@ -361,6 +361,7 @@ class Akka_headless_wp_content {
         'post_type' => $post->post_type,
         'post_password' => $post->post_password,
         'post_parent_id' => $post->post_parent,
+        'post_status' => $post->post_status,
         'slug' => $post->post_name,
         'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
         'featured_image' => $featured_image_attributes,
