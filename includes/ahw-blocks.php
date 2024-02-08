@@ -58,7 +58,7 @@ class Akka_headless_wp_blocks {
         // 'gravityforms/form',
       ];
       $allowed_blocks = array_merge($allowed_blocks, self::splx_block_ids());
-      return apply_filters('ahw_allowed_blocks', $allowed_blocks);
+      return array_values(apply_filters('ahw_allowed_blocks', $allowed_blocks));
     }
     return $block_editor_context;
   }

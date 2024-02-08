@@ -666,6 +666,9 @@ class Akka_headless_wp_content {
   }
 
   public static function get_post_in_archive($post) {
+    if (is_array($post)) {
+      return $post;
+    }
     $thumbnail_id = get_post_thumbnail_id(
         $post->ID
     );
