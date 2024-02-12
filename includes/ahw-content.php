@@ -362,6 +362,11 @@ class Akka_headless_wp_content {
         'post_password' => $post->post_password,
         'post_parent_id' => $post->post_parent,
         'post_status' => $post->post_status,
+        'author' => [
+          'id' => $post->author,
+          'name' => get_the_author_meta("display_name", $post->post_author),
+          'url' => AKKA_FRONTEND_BASE . Akka_headless_wp_utils::parseUrl(get_author_posts_url($post->post_author)),
+        ],
         'slug' => $post->post_name,
         'page_template' => Akka_headless_wp_utils::get_page_template_slug($post),
         'featured_image' => $featured_image_attributes,
