@@ -510,7 +510,7 @@ class Akka_headless_wp_content {
           ];
         }, $taxonomy_terms ? $taxonomy_terms : []),
       ];
-      $terms[$taxonomy_slug]['primary_term'] = self::get_primary_term($taxonomy_slug, $terms[$taxonomy_slug]['terms']);
+      $terms[$taxonomy_slug]['primary_term'] = self::get_primary_term($taxonomy_slug, $terms[$taxonomy_slug]['terms'], $post);
       return $terms;
     }, []);
   }
@@ -619,9 +619,9 @@ class Akka_headless_wp_content {
 
     $query = new WP_Query($query_args);
 
-    // Recalculate max_num_pages if there is an offset
-    if (isset($query_args["offset"]) && $query_args["offset"] > 0) {
-      $query->max_num_pages = ceil(max( 0, $query->found_posts - $query_args["offset"] ) / $query_args["posts_per_page"]);
+    // For relevanssi: recalculate max_num_pages if there is an offset
+    if (isset($query_args["offset"]) && $query_args["offset"] > 0 && function_exists('relevanssi_do_query')) {
+      $query->max_num_pages += $query_args["offset"] / $query_args["posts_per_page"];
     }
 
     return $query;
@@ -725,9 +725,9 @@ class Akka_headless_wp_content {
       "slug" => $post->post_name,
       "description" => get_the_excerpt($post->ID),
       "categories" => $categories,
-      "primary_category" => self::get_primary_term('category', $categories),
+      "primary_category" => self::get_primary_term('category', $categories, $post),
       "tags" => $tags,
-      "primary_tag" => self::get_primary_term('post_tag', $tags),
+      "primary_tag" => self::get_primary_term('post_tag', $tags, $post),
     ];
     return apply_filters('awh_post_in_archive', $post_in_archive, $post);
   }
@@ -935,12 +935,12 @@ class Akka_headless_wp_content {
     return $seo_meta;
   }
 
-  private static function get_primary_term($taxonomy, $terms) {
+  private static function get_primary_term($taxonomy, $terms, $post) {
     if (empty($terms)) {
       return NULL;
     }
     if (count($terms) > 1 && function_exists('yoast_get_primary_term_id')) {
-      $term_id = yoast_get_primary_term_id($taxonomy);
+      $term_id = yoast_get_primary_term_id($taxonomy, $post);
       $term_index = array_search($term_id, array_column($terms, 'id'));
       if ($term_index !== FALSE) {
         return $terms[$term_index];
