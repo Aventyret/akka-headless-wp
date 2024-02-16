@@ -251,8 +251,8 @@ class Akka_headless_wp_content {
   }
 
   public static function get_posts_feed() {
-    $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post'));
-    $per_page = 50;
+    $post_types = explode(',', Akka_headless_wp_utils::getQueryParam('post_type', 'post,podcast,note'));
+    $per_page = Akka_headless_wp_utils::getQueryParam('per_page', 50);
 
     $query_args = [
       'post_type' => $post_types,
