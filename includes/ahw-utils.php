@@ -109,8 +109,12 @@ class Akka_headless_wp_utils {
             $img_attributes["src"]
         );
     }
-    $img_attributes['width'] = $img_src_data[1];
-    $img_attributes['height'] = $img_src_data[2];
+    if (!isset($img_attributes['width'])) {
+      $img_attributes['width'] = $img_src_data[1];
+    }
+    if (!isset($img_attributes['height'])) {
+      $img_attributes['height'] = $img_src_data[2];
+    }
     if (!isset($img_attributes['alt'])) {
       $img_attributes['alt'] = get_post_meta($img_id, '_wp_attachment_image_alt', TRUE);
       if (!$img_attributes['alt']) {
@@ -120,7 +124,7 @@ class Akka_headless_wp_utils {
     if ($include_caption) {
       $img_attributes['caption'] = wp_get_attachment_caption($img_id);
     }
-    return $img_attributes;
+    return apply_filters("ahw_img_attributes", $img_attributes);
   }
 
   public static function internal_img_with_caption_attributes($img_id, $img_attributes = []) {
