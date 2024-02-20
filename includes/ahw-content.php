@@ -735,6 +735,9 @@ class Akka_headless_wp_content {
   public static function search($data) {
     $query = urldecode(Akka_headless_wp_utils::getRouteParam($data, 'query'));
     $post_type = Akka_headless_wp_utils::getRouteParam($data, 'post_type');
+    if ($post_type) {
+      $post_type = explode(',', $post_type);
+    }
     $category_slugs = Akka_headless_wp_utils::getRouteParam($data, 'category_slugs');
     if ($category_slugs) {
       $category_slugs = explode(',', $category_slugs);
