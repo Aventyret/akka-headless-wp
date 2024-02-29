@@ -143,7 +143,7 @@ class Akka_headless_wp_utils {
   }
 
   private static function internal_img_tag_in_cms($img_attributes) {
-    return '<img src="' . $img_attributes['src'] . '" alt="' . $img_attributes['alt'] . '" />';
+    return '<img src="' . $img_attributes['src'] . '" alt="' . $img_attributes['alt'] . '"' . (isset($img_attributes['class']) ? ' class="' . $img_attributes['class'] . '"' : '') . ' />';
   }
 
   public static function external_post_img_src($post_id) {
