@@ -5,7 +5,7 @@ add_action( 'rest_api_init', function () {
     'callback' => 'Akka_headless_wp_content::get_site_meta',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
   ) );
-  register_rest_route( AKKA_API_BASE, '/post/(?P<permalink>[a-zA-Z0-9-%+_]+)', array(
+  register_rest_route( AKKA_API_BASE, '/post/(?P<permalink>[a-zA-Z0-9-%+_.]+)', array(
     'methods' => 'GET',
     'callback' => 'Akka_headless_wp_content::get_post',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
