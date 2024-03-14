@@ -156,7 +156,7 @@ class Akka_headless_wp_content {
     if ($post_id && strpos(get_permalink($post_id), $permalink) === FALSE) {
       return [
         "post_type" => "redirect",
-        "redirect" => get_permalink($post_id),
+        "redirect" => Akka_headless_wp_utils::parseUrl(get_permalink($post_id)),
       ];
     }
 
