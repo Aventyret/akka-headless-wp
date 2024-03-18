@@ -785,6 +785,8 @@ class Akka_headless_wp_content {
       ];
     }
 
+    $query_args = apply_filters("ahw_search_query_args", $query_args);
+
     $page = Akka_headless_wp_utils::getQueryParam('page', 1);
     $query = self::get_posts_query($query_args, [
       'page' => $page,
