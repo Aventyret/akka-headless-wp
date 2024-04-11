@@ -147,7 +147,7 @@ class Akka_headless_wp_utils {
   }
 
   public static function external_post_img_src($post_id) {
-    if ($post_id) {
+    if (!$post_id) {
       return NULL;
     }
     $image_id = get_post_thumbnail_id($post_id);
@@ -155,14 +155,18 @@ class Akka_headless_wp_utils {
   }
 
   public static function external_img_src($image_id) {
-    if ($image_id) {
+    if (!$image_id) {
       return NULL;
     }
-    return wp_get_attachment_url($image_id);
+    $src = wp_get_attachment_url($image_id);
+    if (str_starts_with($src, "/")) {
+      $src = WP_HOME . $src;
+    }
+    return $src;
   }
 
   public static function external_post_img_attributes($post_id, $size = "full") {
-    if ($post_id) {
+    if (!$post_id) {
       return NULL;
     }
     $image_id = get_post_thumbnail_id($post_id);
@@ -170,12 +174,15 @@ class Akka_headless_wp_utils {
   }
 
   public static function external_img_attributes($image_id, $size = "full") {
-    if ($image_id) {
+    if (!$image_id) {
       return NULL;
     }
     $src = wp_get_attachment_image_src($image_id, $size);
     if (!$src) {
       return NULL;
+    }
+    if (str_starts_with($src, "/")) {
+      $src = WP_HOME . $src;
     }
     return [
       "src" => $src[0],
