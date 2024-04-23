@@ -12,10 +12,18 @@ class Akka_headless_wp_content {
     $navigation = [];
 
     foreach($menu_ids ? : [] as $menu_slug => $menu_id) {
+      $slug = $menu_slug;
       $menu_items = wp_get_nav_menu_items($menu_id);
       $menu = get_term( $menu_id );
+      // Polylang fix for menus
+      if (function_exists("pll_current_language") && pll_current_language() != pll_default_language()) {
+        if (str_ends_with($slug, "___" . pll_current_language())) {
+          $slug = str_replace("___" . pll_current_language(), '', $slug);
+        }
+      }
+      $navigation[$slug] = null;
       if ($menu_items) {
-        $navigation[$menu_slug] = array_map(function($item) {
+        $navigation[$slug] = array_map(function($item) {
           return [
             'id' => $item->ID,
             'parent_id' => $item->menu_item_parent ? $item->menu_item_parent : NULL,
@@ -25,7 +33,7 @@ class Akka_headless_wp_content {
           ];
         }, $menu_items);
 
-        $navigation[$menu_slug] = array_reduce($navigation[$menu_slug], function($menu_items, $menu_item) {
+        $navigation[$slug] = array_reduce($navigation[$slug], function($menu_items, $menu_item) {
           if ($menu_item['parent_id']) {
             $ids = array_column($menu_items, 'id');
             $parent_index = array_search($menu_item['parent_id'], $ids);

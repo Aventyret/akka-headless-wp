@@ -21,6 +21,7 @@ define('AKKA_HEADLESS_WP',  __FILE__ );
 define('AKKA_HEADLESS_WP_DIR', plugin_dir_path( __FILE__ ));
 define('AKKA_HEADLESS_WP_VER', "0.3.9");
 define('AKKA_API_BASE', "headless/v1");
+define('AKKA_LANG', getenv('AKKA_LANG') ? getenv('AKKA_LANG') : "en");
 define('AKKA_CMS_COOKIE_PATH', getenv('AKKA_CMS_COOKIE_PATH') ? getenv('AKKA_CMS_COOKIE_PATH') : NULL);
 define('AKKA_CMS_COOKIE_NAME', getenv('AKKA_CMS_COOKIE_NAME') ? getenv('AKKA_CMS_COOKIE_NAME') : "cms_signed_in");
 define('AKKA_FRONTEND_BASE', getenv('AKKA_FRONTEND_URL') ? getenv('AKKA_FRONTEND_URL') : 'https://example.com');
