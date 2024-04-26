@@ -59,24 +59,26 @@ class Akka_headless_wp_content {
       $site_meta = [];
       $fields = get_fields("global");
       foreach ($fields ? $fields : [] as $field => $value) {
-          [$g, $section, $key] = preg_split(
-              "/_/",
-              $field,
-              3,
-              PREG_SPLIT_NO_EMPTY
-          );
-          if (isset($section) && isset($key)) {
-              if ($value instanceof \WP_Post) {
-                  $value = [
-                      "post_id" => $value->ID,
-                      "permalink" => \Akka_headless_wp_utils::parseUrl(
-                          get_permalink($value)
-                      ),
-                      "post_title" => $value->post_title,
-                      "post_name" => $value->post_name,
-                  ];
+          if (count(explode('_', $field)) > 2) {
+              [$g, $section, $key] = preg_split(
+                  "/_/",
+                  $field,
+                  3,
+                  PREG_SPLIT_NO_EMPTY
+              );
+              if (isset($section) && isset($key)) {
+                  if ($value instanceof \WP_Post) {
+                      $value = [
+                          "post_id" => $value->ID,
+                          "permalink" => \Akka_headless_wp_utils::parseUrl(
+                              get_permalink($value)
+                          ),
+                          "post_title" => $value->post_title,
+                          "post_name" => $value->post_name,
+                      ];
+                  }
+                  $site_meta[$section][$key] = $value;
               }
-              $site_meta[$section][$key] = $value;
           }
       }
       $site_meta["header"]["posts_url"] = \Akka_headless_wp_utils::parseUrl(
@@ -206,6 +208,9 @@ class Akka_headless_wp_content {
         if ($page) {
           $post_id = $page->ID;
         }
+      }
+      if (!$post_id && str_starts_with($permalink, pll_current_language() . '/')) {
+        $post_id = url_to_postid(substr($permalink, 3));
       }
     }
 
