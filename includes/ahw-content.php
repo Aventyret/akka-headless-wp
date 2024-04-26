@@ -194,10 +194,18 @@ class Akka_headless_wp_content {
     }
 
     // Try polylang page
-    if (!$post_id && function_exists('pll_current_language') && str_starts_with($permalink, pll_current_language() . '/')) {
-      $page = get_page_by_path(substr($permalink, 3));
-      if ($page) {
-        $post_id = $page->ID;
+    if (!$post_id && function_exists('pll_current_language')) {
+      if (!$post_id && pll_current_language() == pll_default_language()) {
+        $page = get_page_by_path($permalink);
+        if ($page) {
+          $post_id = $page->ID;
+        }
+      }
+      if (!$post_id && str_starts_with($permalink, pll_current_language() . '/')) {
+        $page = get_page_by_path(substr($permalink, 3));
+        if ($page) {
+          $post_id = $page->ID;
+        }
       }
     }
 
