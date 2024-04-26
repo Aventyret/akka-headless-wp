@@ -22,7 +22,7 @@ class Akka_headless_wp_utils {
     if ($url !== '/') {
       $url = rtrim($url, '/');
     }
-    return $url;
+    return apply_filters("ahw_post_parse_url", $url);
   }
 
   public static function replaceHrefs($content) {
@@ -38,7 +38,7 @@ class Akka_headless_wp_utils {
     $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
     $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
-    return $content;
+    return apply_filters("ahw_post_replace_hrefs", $content);
   }
 
   public static function replaceHtmlCharachters($content) {
