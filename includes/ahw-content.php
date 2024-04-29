@@ -221,6 +221,10 @@ class Akka_headless_wp_content {
       }
     }
 
+    if ($post_id && function_exists("pll_get_post_language") && pll_get_post_language($post_id) != pll_current_language()) {
+      $post_id = null;
+    }
+
     if (!$post_id) {
       return new WP_REST_Response(array('message' => 'Post not found'), 404);
     }
