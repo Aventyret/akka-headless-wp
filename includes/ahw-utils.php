@@ -53,12 +53,12 @@ class Akka_headless_wp_utils {
         return $content;
     }
 
-    $content = str_replace('src="' . WP_HOME . '/', 'src="/', $content);
-    $content = str_replace('src="/', 'data-internal-image="true" src="' . AKKA_CMS_INTERNAL_BASE . '/', $content);
+    $content = str_replace(' src="' . WP_HOME . '/', ' src="/', $content);
+    $content = str_replace(' src="/', ' data-internal-image="true" src="' . AKKA_CMS_INTERNAL_BASE . '/', $content);
     $content = str_replace('data-internal-image="true" src="' . AKKA_CMS_INTERNAL_BASE . '//', 'src="//', $content);
     if (AKKA_CMS_MEDIA_BUCKET_BASE) {
-      $content = str_replace('src="' . AKKA_CMS_MEDIA_BUCKET_BASE, 'data-internal-image="true" src="' . AKKA_CMS_MEDIA_BUCKET_BASE, $content);
-      $content = str_replace('src="/', 'src="' . AKKA_CMS_MEDIA_BUCKET_BASE . '/', $content);
+      $content = str_replace(' src="' . AKKA_CMS_MEDIA_BUCKET_BASE, ' data-internal-image="true" src="' . AKKA_CMS_MEDIA_BUCKET_BASE, $content);
+      $content = str_replace(' src="/', ' src="' . AKKA_CMS_MEDIA_BUCKET_BASE . '/', $content);
     }
 
     return $content;
