@@ -288,6 +288,7 @@ class Akka_headless_wp_utils {
         'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
       )
     ]);
+    do_action("ahw_cache_flushed");
   }
 
   public static function get_page_template_slug($post) {
