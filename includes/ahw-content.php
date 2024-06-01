@@ -12,9 +12,9 @@ class Akka_headless_wp_content {
     $navigation = [];
 
     foreach($menu_ids ? : [] as $menu_slug => $menu_id) {
+      $menu_id = apply_filters("ahw_site_meta_menu_id", $menu_id, $menu_slug);
       $slug = $menu_slug;
       $menu_items = wp_get_nav_menu_items($menu_id);
-      $menu = get_term( $menu_id );
       // Polylang fix for menus
       if (function_exists("pll_current_language") && pll_current_language() != pll_default_language()) {
         if (str_ends_with($slug, "___" . pll_current_language())) {
