@@ -878,7 +878,48 @@ class Akka_headless_wp_content {
         $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
         $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
         $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
-
+      }
+      if (isset($yoast_data['robots'])) {
+        $seo_meta['robots'] = [
+          "index" => isset($yoast_data['robots']['index']) && $yoast_data['robots']['index'] == "noindex" ? false : true,
+          "follow" => isset($yoast_data['robots']['follow']) && $yoast_data['robots']['follow'] == "nofollow" ? false : true,
+        ];
+      }
+    }
+    if (is_plugin_active('all-in-one-seo-pack-pro/all_in_one_seo_pack.php')) {
+      global $wpdb;
+      $aio_seo_meta = $wpdb->get_results(sprintf("SELECT title, description, canonical_url, og_title, og_description, og_image_url, og_image_width, og_image_height, twitter_title, twitter_description, robots_noindex, robots_nofollow FROM " . $wpdb->prefix . "aioseo_posts WHERE post_id = %d", $post->ID));
+      if (!empty($aio_seo_meta)) {
+        if ($aio_seo_meta[0]->title) {
+          $seo_meta['seo_title'] = $aio_seo_meta[0]->title;
+        }
+        if ($aio_seo_meta[0]->description) {
+          $seo_meta['seo_description'] = $aio_seo_meta[0]->description;
+        }
+        if ($aio_seo_meta[0]->canonical_url) {
+          $seo_meta['seo_canonical_url'] = $aio_seo_meta[0]->canonical_url;
+        }
+        if ($aio_seo_meta[0]->og_title) {
+          $seo_meta['og_title'] = $aio_seo_meta[0]->og_title;
+        }
+        if ($aio_seo_meta[0]->og_description) {
+          $seo_meta['og_description'] = $aio_seo_meta[0]->og_description;
+        }
+        if ($aio_seo_meta[0]->twitter_title) {
+          $seo_meta['twitter_title'] = $aio_seo_meta[0]->twitter_title;
+        }
+        if ($aio_seo_meta[0]->twitter_description) {
+          $seo_meta['twitter_description'] = $aio_seo_meta[0]->twitter_description;
+        }
+        if ($aio_seo_meta[0]->og_image_url) {
+          $seo_meta['seo_image_url'] = $aio_seo_meta[0]->og_image_url;
+          $seo_meta['seo_image_width'] = $aio_seo_meta[0]->og_image_width ? $aio_seo_meta[0]->og_image_width : 1200;
+          $seo_meta['seo_image_height'] = $aio_seo_meta[0]->og_image_height ? $aio_seo_meta[0]->og_image_height : 630;
+        }
+        $seo_meta['robots'] = [
+          "index" => $aio_seo_meta[0]->robots_noindex != "1",
+          "follow" => $aio_seo_meta[0]->robots_nofollow != "1",
+        ];
       }
     }
     if (!isset($seo_meta['seo_title']) || !$seo_meta['seo_title']) {
