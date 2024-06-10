@@ -888,14 +888,14 @@ class Akka_headless_wp_content {
     }
     if (is_plugin_active('all-in-one-seo-pack-pro/all_in_one_seo_pack.php')) {
       global $wpdb;
+      $title = new AIOSEO\Plugin\Common\Meta\Title();
+      $description = new AIOSEO\Plugin\Common\Meta\Description();
+      $seo_meta = [
+        'seo_title' => $title->getTitle($post),
+        'seo_description' => $description->getDescription($post),
+      ];
       $aio_seo_meta = $wpdb->get_results(sprintf("SELECT title, description, canonical_url, og_title, og_description, og_image_url, og_image_width, og_image_height, twitter_title, twitter_description, robots_noindex, robots_nofollow FROM " . $wpdb->prefix . "aioseo_posts WHERE post_id = %d", $post->ID));
       if (!empty($aio_seo_meta)) {
-        if ($aio_seo_meta[0]->title) {
-          $seo_meta['seo_title'] = $aio_seo_meta[0]->title;
-        }
-        if ($aio_seo_meta[0]->description) {
-          $seo_meta['seo_description'] = $aio_seo_meta[0]->description;
-        }
         if ($aio_seo_meta[0]->canonical_url) {
           $seo_meta['seo_canonical_url'] = $aio_seo_meta[0]->canonical_url;
         }
