@@ -616,98 +616,6 @@ class Akka_headless_wp_content {
         $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
         $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
         $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
-
-      }
-    }
-    if (!isset($seo_meta['seo_title']) || !$seo_meta['seo_title']) {
-      $seo_meta['seo_title'] = $post->post_title;
-    }
-    if (!isset($seo_meta['seo_description']) || !$seo_meta['seo_description']) {
-      $seo_meta['seo_description'] = get_the_excerpt($post->ID);
-    }
-    if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
-      $specific_seo_image_is_defined = TRUE;
-    }
-    if ((!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) && $post_thumbnail_id) {
-      $seo_meta['seo_image_id'] = $post_thumbnail_id;
-    }
-    if (isset($seo_meta['seo_image_id'])) {
-      $image_src = wp_get_attachment_image_src($seo_meta['seo_image_id'], 'large');
-      $seo_meta['seo_image_url'] = $image_src[0];
-      $seo_meta['seo_image_width'] = $image_src[1];
-      $seo_meta['seo_image_height'] = $image_src[2];
-    }
-    if (!isset($seo_meta['og_title']) || !$seo_meta['og_title']) {
-      $seo_meta['og_title'] = $seo_meta['seo_title'];
-    }
-    if (!isset($seo_meta['og_description']) || !$seo_meta['og_description']) {
-      $seo_meta['og_description'] = $seo_meta['seo_description'];
-    }
-    if (!isset($seo_meta['twitter_title']) || !$seo_meta['twitter_title']) {
-      $seo_meta['twitter_title'] = $seo_meta['seo_title'];
-    }
-    if (!isset($seo_meta['twitter_description']) || !$seo_meta['twitter_description']) {
-      $seo_meta['twitter_description'] = $seo_meta['seo_description'];
-    }
-    if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
-      $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
-    }
-    if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
-      $seo_meta['canonical_url'] = rtrim(str_replace(WP_HOME, AKKA_FRONTEND_BASE, $seo_meta['canonical_url']), '/');
-    }
-    $seo_meta['published_date'] = get_the_date('c', $post->ID);
-    $seo_meta['modified_date'] = get_the_modified_date('c', $post->ID);
-    if (isset($seo_meta['seo_image_url']) && strpos($seo_meta['seo_image_url'], '/') === 0) {
-      $seo_meta['seo_image_url'] = WP_HOME . $seo_meta['seo_image_url'];
-    }
-    foreach(["seo_title", "og_title", "twitter_title"] as $title_key) {
-      $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;'], ['', '-'], $seo_meta[$title_key]);
-    }
-    return apply_filters("ahw_seo_meta", $seo_meta, $post, $specific_seo_image_is_defined);
-  }
-
-  private static function get_post_seo_meta($post, $post_thumbnail_id = NULL) {
-    $seo_meta = [
-    ];
-    $specific_seo_image_is_defined = FALSE;
-    if (function_exists('the_seo_framework')) {
-      $seo_fields = [
-        'seo_title' => '_genesis_title',
-        'seo_description' => '_genesis_description',
-        'seo_image_id' => '_social_image_id',
-        'og_title' => '_open_graph_title',
-        'og_description' => '_open_graph_description',
-        'twitter_title' => '_twitter_title',
-        'twitter_description' => '_twitter_description',
-      ];
-      foreach($seo_fields as $seo_attr => $meta_key) {
-        $meta_value = get_post_meta($post->ID, $meta_key, true);
-        if ($meta_value) {
-          $seo_meta[$seo_attr] = $meta_value;
-        }
-      }
-    }
-    if (is_plugin_active('wordpress-seo/wp-seo.php')) {
-      $yoast_class = YoastSEO()->classes->get(Yoast\WP\SEO\Surfaces\Meta_Surface::class);
-      $yoast_meta = $yoast_class->for_post($post->ID);
-      $yoast_data = $yoast_meta->get_head()->json;
-      $seo_meta = [
-        'seo_title' => $yoast_data['title'],
-        'og_locale' => $yoast_data['og_locale'],
-        'og_type' => $yoast_data['og_type'],
-        'canonical_url' => $yoast_data['og_url'],
-        'og_site_name' => $yoast_data['og_site_name'],
-      ];
-      if (isset($yoast_data['description'])) {
-        $seo_meta['seo_description'] = $yoast_data['description'];
-      }
-      if (isset($yoast_data['og_description'])) {
-        $seo_meta['og_description'] = $yoast_data['og_description'];
-      }
-      if (isset($yoast_data['og_image']) && !empty($yoast_data['og_image'])) {
-        $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
-        $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
-        $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
       }
       if (isset($yoast_data['robots'])) {
         $seo_meta['robots'] = [
@@ -761,6 +669,53 @@ class Akka_headless_wp_content {
       $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;'], ['', '-'], $seo_meta[$title_key]);
     }
     return apply_filters("ahw_seo_meta", $seo_meta, $post, $specific_seo_image_is_defined);
+  }
+
+  private static function get_term_seo_meta($term) {
+    $seo_meta = [
+    ];
+    if (function_exists('the_seo_framework')) {
+      $seo_meta_serialized = get_post_meta($post_id, 'autodescription-term-settings', true);
+      if ($seo_meta_serialized) {
+        $seo_meta_unserialized = unserialize($seo_meta_serialized);
+        $seo_fields = [
+          'seo_title' => 'doctitle',
+          'seo_description' => 'description',
+          'seo_image_url' => 'social_image_url',
+          'og_title' => 'og_title',
+          'og_description' => 'og_description',
+          'twitter_title' => 'tw_title',
+          'twitter_description' => 'tw_description',
+        ];
+        foreach($seo_fields as $seo_attr => $meta_key) {
+          if (isset($seo_meta_unserialized[$meta_key]) && $seo_meta_unserialized[$meta_key]) {
+            $seo_meta[$seo_attr] = $seo_meta_unserialized[$meta_key];
+          }
+        }
+      }
+    }
+    if (!isset($seo_meta['seo_title'])) {
+      $seo_meta['seo_title'] = $term->name;
+    }
+    if (!isset($seo_meta['seo_description'])) {
+      $seo_meta['seo_description'] = $term->description;
+    }
+    if (!isset($seo_meta['og_title'])) {
+      $seo_meta['og_title'] = $seo_meta['seo_title'];
+    }
+    if (!isset($seo_meta['og_description'])) {
+      $seo_meta['og_description'] = $seo_meta['seo_description'];
+    }
+    if (!isset($seo_meta['twitter_title'])) {
+      $seo_meta['twitter_title'] = $seo_meta['seo_title'];
+    }
+    if (!isset($seo_meta['twitter_description'])) {
+      $seo_meta['twitter_description'] = $seo_meta['seo_description'];
+    }
+    if (isset($seo_meta['seo_image_url']) && strpos($seo_meta['seo_image_url'], '/') === 0) {
+      $seo_meta['seo_image_url'] = WP_HOME . $seo_meta['seo_image_url'];
+    }
+    return $seo_meta;
   }
 
   private static function get_primary_term($taxonomy, $terms) {
