@@ -367,6 +367,7 @@ class Akka_headless_wp_content {
     }
 
     $akka_post = self::get_akka_post();
+    do_action("ahw_pre_post_content", $akka_post);
     $akka_post["post_content"] = apply_filters('the_content', $post->post_content);
     $akka_post["seo_meta"] = self::get_post_seo_meta($post, Resolvers::resolve_field($akka_post["featured_image"], "id"));
 
