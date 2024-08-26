@@ -93,9 +93,9 @@ class Akka_headless_wp_resolvers {
     );
   }
 
-  public static function resolve_image_field($post_data_or_fields, $field_name) {
+  public static function resolve_image_field($post_data_or_fields, $field_name, $size = "full") {
     $field = self::resolve_field($post_data_or_fields, $field_name);
-    return $field ? self::resolve_image($field) : NULL;
+    return $field ? self::resolve_image($field, $size) : NULL;
   }
 
   public static function resolve_wysiwyg_field($post_data_or_fields, $field_name) {
