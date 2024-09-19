@@ -162,6 +162,17 @@ class Akka_headless_wp_content {
       }
     }
 
+    // Fix for non public post types
+    if($post_id && $permalink != '/' && strpos($permalink, '/') !== FALSE) {
+      $maybe_post_type_rewrite_slug = substr($permalink, 0, strpos($permalink, '/'));
+      foreach(get_post_types([], 'objects') as $post_type) {
+        $rewite_slug = Resolvers::resolve_field($post_type->rewrite, 'slug');
+        if($maybe_post_type_rewrite_slug == $rewite_slug && !$post_type->public) {
+          $post_id = NULL;
+        }
+      }
+    }
+
     // Check that this is the correct permalink
     if ($post_id && strpos(get_permalink($post_id), $permalink) === FALSE) {
       return [
