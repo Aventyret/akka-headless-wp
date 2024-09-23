@@ -45,4 +45,11 @@ add_action( 'rest_api_init', function () {
     'callback' => 'Akka_headless_wp_content::search',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
   ) );
+  register_rest_route( AKKA_API_BASE, '/editor/block', array(
+    'methods' => 'POST',
+    'callback' => 'Akka_headless_wp_akka_blocks::render_editor_block',
+    'permission_callback' => function () {
+        return current_user_can("edit_posts");
+    },
+  ) );
 } );
