@@ -2,30 +2,34 @@
 use \Akka_headless_wp_resolvers as Resolvers;
 
 class Akka_headless_wp_akka_blocks {
-  private static $block_props_callbacks = [];
+  private static $akka_blocks = [];
 
-  public static function register_block_type($block_id, $akka_component_tag, $block_props_callback = NULL) {
+  public static function register_block_type($block_type, $args = []) {
+    if (!Resolvers::resolve_field($args, "akka_component_name")) {
+        throw new Exception("Missing akka component name for Akka block " . $block_type);
+    }
+
     if (is_admin()) {
         return;
     }
 
-    if (!$block_props_callback) {
-        // If no props callback is provided, props are the same as block attributes with content as children
-        self::register_block_type($block_id, $akka_component_tag, function($block_attributes, $content) {
-            return array_merge($block_attributes, ["children" => $content]);
-        });
+    if (!Resolvers::resolve_field($args, "block_props_callback")) {
+        // If no props callback is provided, props are the same as block attributes
+        self::register_block_type($block_type, array_merge($args, ["block_props_callback" => function($block_attributes) {
+            return $block_attributes;
+        }]));
         return;
     }
 
-    self::$block_props_callbacks[$block_id] = $block_props_callback;
+    self::$akka_blocks[$block_type] = $args;
 
-    add_action("init", function () use($block_id, $akka_component_tag, $block_props_callback) {
-        register_block_type($block_id, [
+    add_action("init", function () use($block_type, $args) {
+        register_block_type($block_type, [
             "api_version" => 2,
             "editor_script" => "editor",
-            "render_callback" => function ($block_attributes, $content) use($block_id, $akka_component_tag, $block_props_callback) {
-                $props = $block_props_callback($block_attributes, $content);
-                return '<div data-akka-component="' . $akka_component_tag . '" data-akka-props="' .
+            "render_callback" => function ($block_attributes, $block_content) use($block_type, $args) {
+                $props = self::get_block_props($block_type, $block_attributes, $block_content);
+                return '<div data-akka-component="' . $args["akka_component_name"] . '" data-akka-props="' .
                     rawurlencode(json_encode($props)) .
                     '"></div>';
             },
@@ -33,29 +37,48 @@ class Akka_headless_wp_akka_blocks {
     });
   }
 
-  public static function get_block_props($block_id, $block_attributes) {
-    if (!isset(self::$block_props_callbacks[$block_id])) {
-      return NULL;
+  private static function get_block_props($block_type, $block_attributes, $block_content = NULL) {
+    if (!isset(self::$akka_blocks[$block_type])) {
+        throw new Exception("Missing registration for Akka block " . $block_type);
     }
-    return self::$block_props_callbacks[$block_id]($block_attributes);
+    $props = $block_attributes;
+    // Get props from callback, if one is registered with the block
+    if (isset(self::$akka_blocks[$block_type]["block_props_callback"])) {
+        $props = self::$akka_blocks[$block_type]["block_props_callback"]($block_attributes);
+    }
+    // Add block content as children prop for the frontent
+    if ($block_content) {
+        $props = array_merge($props, ["children" => $block_content]);
+    }
+    return $props;
+  }
+
+  private static function get_block_component_name($block_type) {
+    if (!isset(self::$akka_blocks[$block_type])) {
+        throw new Exception("Missing registration for Akka block " . $block_type);
+    }
+    return self::$akka_blocks[$block_type]["akka_component_name"];
   }
 
   public static function render_editor_block($request) {
     $data = $request->get_json_params();
-    $blockId = Resolvers::resolve_field(
+    $blockType = Resolvers::resolve_field(
         $data,
-        "blockId"
+        "blockType"
     );
     $attributes = Resolvers::resolve_field(
         $data,
         "attributes"
     );
+    $akka_component_name = self::get_block_component_name(
+        $blockType
+    );
     $props = self::get_block_props(
-        $blockId,
+        $blockType,
         $attributes
     );
     $block_response = wp_remote_post(
-        AKKA_FRONTEND_INTERNAL_BASE . "/api/editor/block",
+        AKKA_FRONTEND_INTERNAL_BASE . "/api/editor/component",
         [
             "method" => "POST",
             "timeout" => 10,
@@ -63,7 +86,7 @@ class Akka_headless_wp_akka_blocks {
                 "Content-Type" => "application/json; charset=utf-8",
             ],
             "body" => json_encode([
-                "blockId" => $blockId,
+                "componentName" => $akka_component_name,
                 "props" => $props,
             ]),
         ]
