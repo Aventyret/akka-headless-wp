@@ -48,7 +48,11 @@ class Akka_headless_wp_akka_blocks {
         return;
     }
 
-    self::$akka_blocks[$block_type] = $args;
+    if (is_admin()) {
+        return;
+    }
+
+    self::$akka_blocks["splx/" . $block_type] = $args;
 
     add_filter("splx_block_args", function ($splx_args, $splx_block_type) use($block_type, $args) {
         if ($splx_block_type != $block_type) {
@@ -65,6 +69,11 @@ class Akka_headless_wp_akka_blocks {
             rawurlencode(json_encode(Resolvers::resolve_array_field($splx_args, "props"), JSON_FORCE_OBJECT)) .
             '"></div>';
     }, 10, 3);
+
+    add_action("splx_editor_script_registered", function() {
+        wp_add_inline_script( "solarplexus-script", "window.akkaSplx = 1;", "before");
+        wp_add_inline_script( "editor", "window.dispatchEvent(new Event('splx_register_blocks'));", "after");
+    });
   }
 
   private static function get_block_props($block_type, $block_attributes, $block_content = NULL) {
@@ -83,14 +92,16 @@ class Akka_headless_wp_akka_blocks {
     return $props;
   }
 
-  private static function get_splx_block_props($block_type, $splx_args) {
+  private static function get_splx_block_props($block_type, $block_attributes) {
     if (!isset(self::$akka_blocks[$block_type])) {
-        throw new Exception("Missing registration for Akka block " . $block_type);
+        throw new Exception("Missing registration for Akka solarplexus block " . $block_type);
     }
-    $props = $splx_args;
+    $props = $block_attributes;
     // Get props from callback, if one is registered with the block
     if (isset(self::$akka_blocks[$block_type]["block_props_callback"])) {
-        $props = self::$akka_blocks[$block_type]["block_props_callback"]($block_config, $splx_args);
+        $block_config = Solarplexus_Helpers::retrieve_block_config(str_replace("splx/", "", $block_type));
+        $splx_args = Solarplexus_Helpers::block_args($block_config, $block_attributes);
+        $props = self::$akka_blocks[$block_type]["block_props_callback"]($splx_args);
     }
     return $props;
   }
@@ -115,10 +126,17 @@ class Akka_headless_wp_akka_blocks {
     $akka_component_name = self::get_block_component_name(
         $blockType
     );
-    $props = self::get_block_props(
-        $blockType,
-        $attributes
-    );
+    if (str_starts_with($blockType, "splx/")) {
+        $props = self::get_splx_block_props(
+            $blockType,
+            $attributes
+        );
+    } else {
+        $props = self::get_block_props(
+            $blockType,
+            $attributes
+        );
+    }
     $block_response = wp_remote_post(
         AKKA_FRONTEND_INTERNAL_BASE . "/api/editor/component",
         [
