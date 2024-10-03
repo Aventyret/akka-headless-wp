@@ -48,6 +48,8 @@ class Akka_headless_wp_akka_blocks {
         return;
     }
 
+    Solarplexus_Helpers::use_custom_editor_ssr_component();
+
     if (is_admin()) {
         return;
     }
@@ -69,11 +71,6 @@ class Akka_headless_wp_akka_blocks {
             rawurlencode(json_encode(Resolvers::resolve_array_field($splx_args, "props"), JSON_FORCE_OBJECT)) .
             '"></div>';
     }, 10, 3);
-
-    add_action("splx_editor_script_registered", function() {
-        wp_add_inline_script( "solarplexus-script", "window.akkaSplx = 1;", "before");
-        wp_add_inline_script( "editor", "window.dispatchEvent(new Event('splx_register_blocks'));", "after");
-    });
   }
 
   private static function get_block_props($block_type, $block_attributes, $block_content = NULL) {
