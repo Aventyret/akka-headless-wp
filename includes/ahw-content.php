@@ -408,7 +408,7 @@ class Akka_headless_wp_content {
         'post_parent_id' => $post->post_parent,
         'post_status' => $post->post_status,
         'author' => [
-          'id' => $post->author,
+          'id' => $post->post_author,
           'name' => get_the_author_meta("display_name", $post->post_author),
           'url' => AKKA_FRONTEND_BASE . Akka_headless_wp_utils::parseUrl(get_author_posts_url($post->post_author)),
         ],
