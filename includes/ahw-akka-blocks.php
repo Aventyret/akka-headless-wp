@@ -68,7 +68,7 @@ class Akka_headless_wp_akka_blocks {
             return $template;
         }
         return '<div data-akka-component="' . $args["akka_component_name"] . '" data-akka-props="' .
-            rawurlencode(json_encode(Resolvers::resolve_array_field($splx_args, "props"), JSON_FORCE_OBJECT)) .
+            rawurlencode(json_encode(Resolvers::resolve_array_field($splx_args, "props"))) .
             '"></div>';
     }, 10, 3);
   }
