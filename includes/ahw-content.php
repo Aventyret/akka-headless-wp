@@ -940,6 +940,7 @@ class Akka_headless_wp_content {
     if (!isset($seo_meta['seo_description']) || !$seo_meta['seo_description']) {
       $seo_meta['seo_description'] = get_the_excerpt($post->ID);
     }
+    $seo_meta['seo_description'] = apply_filters("ahw_seo_description", $seo_meta['seo_description'], $post);
     if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
       $specific_seo_image_is_defined = TRUE;
     }
