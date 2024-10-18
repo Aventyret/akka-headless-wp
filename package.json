@@ -5,10 +5,8 @@
   "scripts": {
     "dev": "node build/dev.mjs",
     "build": "node build/build.mjs",
-    "format": "npm run format:assets --write && npm run format:php --write",
-    "format:check": "npm run format:assets --check && npm run format:php --check",
-    "format:assets": "prettier ./src",
-    "format:php": "prettier ./includes"
+    "format": "prettier ./src --write && prettier ./includes --write",
+    "format:check": "prettier ./src --check && prettier ./includes --check"
   },
   "author": "",
   "license": "ISC",
