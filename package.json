@@ -1,0 +1,20 @@
+{
+  "name": "akka",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "node build/dev.mjs",
+    "build": "node build/build.mjs",
+    "format": "npm run format:assets --write && npm run format:php --write",
+    "format:check": "npm run format:assets --check && npm run format:php --check",
+    "format:assets": "prettier ./src",
+    "format:php": "prettier ./includes"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.22.2",
+    "esbuild": "^0.24.0",
+    "prettier": "^3.3.3"
+  }
+}

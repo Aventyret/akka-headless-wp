@@ -2,3 +2,4 @@
 
 /vendor
 !/vendor/simplehtmldom
+node_modules

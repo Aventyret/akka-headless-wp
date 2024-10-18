@@ -40,6 +40,7 @@ require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-content.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-resolvers.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-acf-fields.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-akka-blocks.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-meta-fields.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-hooks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-api-endpoints.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-healthz.php');
