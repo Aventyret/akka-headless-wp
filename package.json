@@ -14,5 +14,10 @@
     "@prettier/plugin-php": "^0.22.2",
     "esbuild": "^0.24.0",
     "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "@wordpress/components": "^28.10.0",
+    "@wordpress/data": "^10.10.0",
+    "@wordpress/element": "^6.10.0"
   }
 }
