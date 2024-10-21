@@ -111,6 +111,14 @@ class Akka_headless_wp_akka_meta_fields
             'meta_fields' => $meta_fields,
             'options' => $options,
         ];
+
+        add_action('enqueue_block_editor_assets', function () {
+            wp_add_inline_script(
+                'akka',
+                sprintf("window.akka.registerFieldGroup('%s', '%s');", $meta_group['name'], json_encode($meta_field)),
+                'after'
+            );
+        });
     }
 
     private static function meta_field_type($akka_field_type)
@@ -122,5 +130,12 @@ class Akka_headless_wp_akka_meta_fields
             return 'integer';
         }
         return $akka_field_type;
+    }
+
+    public static function get_post_field($field_name, $p)
+    {
+        if (is_array($p)) {
+            return Resolvers::resolve_field($p, $field_name);
+        }
     }
 }

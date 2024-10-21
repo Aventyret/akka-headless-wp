@@ -31,6 +31,23 @@ class Akka_headless_wp_utils
         return apply_filters('ahw_post_parse_url', $url);
     }
 
+    public static function enqueue_editor_assets()
+    {
+        wp_enqueue_script(
+            'akka',
+            AKKA_HEADLESS_WP_URL . '/dist/editor.js',
+            [],
+            filemtime(AKKA_HEADLESS_WP_DIR . '/dist/editor.js')
+        );
+
+        wp_enqueue_style(
+            'akka',
+            AKKA_HEADLESS_WP_URL . '/dist/editor.css',
+            [],
+            filemtime(AKKA_HEADLESS_WP_DIR . '/dist/editor.css')
+        );
+    }
+
     public static function replaceHrefs($content)
     {
         if (!self::isHeadless()) {

@@ -25,6 +25,8 @@ add_action('wp_logout', 'Akka_headless_wp_utils::remove_cms_cookie');
 
 add_action('enqueue_block_editor_assets', 'Akka_headless_wp_utils::enqueue_frontend_styles');
 
+add_action('enqueue_block_editor_assets', 'Akka_headless_wp_utils::enqueue_editor_assets');
+
 add_action('save_post','Akka_headless_wp_utils::flush_frontend_cache');
 
 add_action('acf/save_post','Akka_headless_wp_utils::flush_frontend_cache');

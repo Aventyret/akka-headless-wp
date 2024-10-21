@@ -19,6 +19,7 @@ if (defined('AKKA_HEADLESS_WP'))
 
 define('AKKA_HEADLESS_WP',  __FILE__ );
 define('AKKA_HEADLESS_WP_DIR', plugin_dir_path( __FILE__ ));
+define('AKKA_HEADLESS_WP_URL', plugin_dir_url( __FILE__ ));
 define('AKKA_HEADLESS_WP_VER', "0.3.9");
 define('AKKA_API_BASE', "headless/v1");
 define('AKKA_LANG', getenv('AKKA_LANG') ? getenv('AKKA_LANG') : "en");
@@ -41,6 +42,7 @@ require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-resolvers.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-acf-fields.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-akka-blocks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-meta-fields.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-post-types.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-hooks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-api-endpoints.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-healthz.php');
