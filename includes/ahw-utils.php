@@ -36,7 +36,7 @@ class Akka_headless_wp_utils
         wp_enqueue_script(
             'akka',
             AKKA_HEADLESS_WP_URL . '/dist/editor.js',
-            [],
+            ["editor"],
             filemtime(AKKA_HEADLESS_WP_DIR . '/dist/editor.js')
         );
 

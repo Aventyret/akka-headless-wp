@@ -28,7 +28,7 @@ class Akka_headless_wp_akka_meta_fields
                 [
                     'name' => null,
                     'label' => null,
-                    'type' => 'string',
+                    'type' => 'text',
                     'single' => true,
                     'default' => '',
                     'auth_callback' => function () {
@@ -46,7 +46,6 @@ class Akka_headless_wp_akka_meta_fields
                 throw new Exception('Akka meta field label missing!');
             }
 
-            // TODO: Add image, file, html/rich text and more
             $meta_type = self::meta_field_type($meta_field['type']);
             if (!in_array($meta_type, ['string', 'boolean', 'integer', 'number', 'array', 'object'])) {
                 throw new Exception('Akka meta field bad field type!');
@@ -74,7 +73,7 @@ class Akka_headless_wp_akka_meta_fields
                 add_meta_box(
                     $meta_group['name'],
                     $meta_group['label'],
-                    function () {
+                    function () use($meta_group) {
                         echo '<div id="akka_meta_' . $meta_group['name'] . '"></div>';
                     },
                     $post_type,
@@ -96,7 +95,7 @@ class Akka_headless_wp_akka_meta_fields
                                     ],
                                 ]
                                 : true,
-                        'type' => $meta_field['type'],
+                        'type' => self::meta_field_type($meta_field['type']),
                         'single' => $meta_field['single'],
                         'default' => $meta_field['default'], // Note: Setting this to null does NOT work
                         'auth_callback' => $meta_field['auth_callback'],
@@ -112,10 +111,15 @@ class Akka_headless_wp_akka_meta_fields
             'options' => $options,
         ];
 
-        add_action('enqueue_block_editor_assets', function () {
+        add_action('enqueue_block_editor_assets', function () use($meta_group, $meta_fields) {
+            $client_meta_fields = array_map(function($meta_field) {
+                $client_meta_field = $meta_field;
+                unset($client_meta_field["auth_callback"]);
+                return $client_meta_field;
+            }, $meta_fields);
             wp_add_inline_script(
                 'akka',
-                sprintf("window.akka.registerFieldGroup('%s', '%s');", $meta_group['name'], json_encode($meta_field)),
+                sprintf("window.akka.registerFieldGroup('%s', '%s');", $meta_group['name'], json_encode($client_meta_fields)),
                 'after'
             );
         });

@@ -16,7 +16,7 @@ class Akka_headless_wp_akka_post_types
                 'show_in_nav_menus' => true,
                 'menu_icon' => 'dashicons-admin-post',
                 'hierarchical' => false,
-                'supports' => ['title', 'revisions', 'thumbnail'],
+                'supports' => ['title', 'revisions', 'thumbnail', 'editor', 'custom-fields'],
                 'show_in_rest' => true,
                 'menu_position' => 10,
                 'labels' => [
