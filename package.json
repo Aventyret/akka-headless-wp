@@ -1,0 +1,21 @@
+{
+  "name": "akka",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "node build/dev.mjs",
+    "build": "node build/build.mjs",
+    "format": "prettier ./src --write && prettier ./includes --write",
+    "format:check": "prettier ./src --check && prettier ./includes --check"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.22.2",
+    "esbuild": "^0.24.0",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "@wordpress/components": "^28.10.0"
+  }
+}
