@@ -43,6 +43,7 @@ require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-akka-blocks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-meta-fields.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-acf.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-post-types.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-taxonomies.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-hooks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-api-endpoints.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-healthz.php');
