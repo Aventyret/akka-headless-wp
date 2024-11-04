@@ -73,7 +73,7 @@ class Akka_headless_wp_akka_meta_fields
                 add_meta_box(
                     $meta_group['name'],
                     $meta_group['label'],
-                    function () use($meta_group) {
+                    function () use ($meta_group) {
                         echo '<div id="akka_meta_' . $meta_group['name'] . '"></div>';
                     },
                     $post_type,
@@ -111,15 +111,19 @@ class Akka_headless_wp_akka_meta_fields
             'options' => $options,
         ];
 
-        add_action('enqueue_block_editor_assets', function () use($meta_group, $meta_fields) {
-            $client_meta_fields = array_map(function($meta_field) {
+        add_action('enqueue_block_editor_assets', function () use ($meta_group, $meta_fields) {
+            $client_meta_fields = array_map(function ($meta_field) {
                 $client_meta_field = $meta_field;
-                unset($client_meta_field["auth_callback"]);
+                unset($client_meta_field['auth_callback']);
                 return $client_meta_field;
             }, $meta_fields);
             wp_add_inline_script(
                 'akka',
-                sprintf("window.akka.registerFieldGroup('%s', '%s');", $meta_group['name'], json_encode($client_meta_fields)),
+                sprintf(
+                    "window.akka.registerFieldGroup('%s', '%s');",
+                    $meta_group['name'],
+                    json_encode($client_meta_fields)
+                ),
                 'after'
             );
         });

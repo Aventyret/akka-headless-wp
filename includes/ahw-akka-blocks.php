@@ -11,6 +11,16 @@ class Akka_headless_wp_akka_blocks
             throw new Exception('Missing akka component name for Akka block ' . $block_type);
         }
 
+        if (Resolvers::resolve_field($args, 'post_types')) {
+            // If post types are defined, the block is allowed on these post types
+            add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
+                if (in_array(get_post_type(), $args['post_types'])) {
+                    $blocks[] = $block_type;
+                }
+                return $blocks;
+            });
+        }
+
         if (is_admin()) {
             return;
         }
@@ -56,6 +66,16 @@ class Akka_headless_wp_akka_blocks
             // If no props callback is provided, props are the same as block attributes
             throw new Exception('Missing block props callback for Solarplexus block ' . $block_type);
             return;
+        }
+
+        if (Resolvers::resolve_field($args, 'post_types')) {
+            // If post types are defined, the block is disallowed on all other post types
+            add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
+                if (!in_array(get_post_type(), $args['post_types'])) {
+                    $blocks = self::filter_out_unallowed_blocks($blocks, ['splx/' . $block_type]);
+                }
+                return $blocks;
+            });
         }
 
         Solarplexus_Helpers::use_custom_editor_ssr_component();
@@ -165,5 +185,13 @@ class Akka_headless_wp_akka_blocks
             is_array($block_response) && isset($block_response['body']) ? json_decode($block_response['body']) : false;
 
         return $block_response_body;
+    }
+
+    public static function filter_out_unallowed_blocks($allowed_blocks, $unallowed_blocks)
+    {
+        $allowed_blocks = array_filter($allowed_blocks, function ($block) use ($unallowed_blocks) {
+            return !in_array($block, $unallowed_blocks);
+        });
+        return array_values($allowed_blocks);
     }
 }

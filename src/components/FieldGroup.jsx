@@ -6,7 +6,6 @@ export default function FieldGroup({ metaFields }) {
     return select('core/editor').getEditedPostAttribute('meta') || {};
   }, []);
 
-  console.log(postMeta);
   const { editPost } = useDispatch('core/editor');
   function changeFieldFn(name) {
     return (value) => {
