@@ -1,5 +1,6 @@
 <?php
 use \Akka_headless_wp_resolvers as Resolvers;
+use \Akka_headless_wp_akka_blocks as Blocks;
 
 class Akka_headless_wp_akka_blocks
 {
@@ -15,7 +16,7 @@ class Akka_headless_wp_akka_blocks
             // If post types are defined, the block is allowed on these post types
             add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
                 if (in_array(get_post_type(), $args['post_types'])) {
-                    $blocks[] = $block_type;
+                    $blocks = Blocks::add_allowed_blocks($blocks, [$block_type]);
                 }
                 return $blocks;
             });
@@ -72,7 +73,7 @@ class Akka_headless_wp_akka_blocks
             // If post types are defined, the block is disallowed on all other post types
             add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
                 if (!in_array(get_post_type(), $args['post_types'])) {
-                    $blocks = self::filter_out_unallowed_blocks($blocks, ['splx/' . $block_type]);
+                    $blocks = Blocks::remove_unallowed_blocks($blocks, ['splx/' . $block_type]);
                 }
                 return $blocks;
             });
@@ -185,13 +186,5 @@ class Akka_headless_wp_akka_blocks
             is_array($block_response) && isset($block_response['body']) ? json_decode($block_response['body']) : false;
 
         return $block_response_body;
-    }
-
-    public static function filter_out_unallowed_blocks($allowed_blocks, $unallowed_blocks)
-    {
-        $allowed_blocks = array_filter($allowed_blocks, function ($block) use ($unallowed_blocks) {
-            return !in_array($block, $unallowed_blocks);
-        });
-        return array_values($allowed_blocks);
     }
 }

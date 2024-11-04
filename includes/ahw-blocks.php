@@ -1,10 +1,11 @@
 <?php
+use \Akka_headless_wp_utils as Utils;
 
 class Akka_headless_wp_blocks
 {
     public static function render_block($parsed_block, $block)
     {
-        if (!Akka_headless_wp_utils::isHeadless()) {
+        if (!Utils::isHeadless()) {
             return $parsed_block;
         }
         if ($block['blockName'] == 'core/embed') {
@@ -91,5 +92,19 @@ class Akka_headless_wp_blocks
         }
 
         return $heading_blocks;
+    }
+
+    public static function add_allowed_blocks($blocks, $allowed_blocks)
+    {
+        $blocks = array_merge($blocks, $allowed_blocks);
+        return array_values($allowed_blocks);
+    }
+
+    public static function remove_unallowed_blocks($blocks, $unallowed_blocks)
+    {
+        $blocks = array_filter($blocks, function ($block) use ($unallowed_blocks) {
+            return !in_array($block, $unallowed_blocks);
+        });
+        return array_values($blocks);
     }
 }

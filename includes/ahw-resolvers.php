@@ -1,12 +1,13 @@
 <?php
 use \Akka_headless_wp_content as Content;
+use \Akka_headless_wp_utils as Utils;
 
 class Akka_headless_wp_resolvers
 {
     public static function resolve_post_base($post)
     {
         return [
-            'url' => \Akka_headless_wp_utils::parseUrl(get_permalink($post->ID)),
+            'url' => Utils::parseUrl(get_permalink($post->ID)),
             'post_id' => $post->ID,
             'post_title' => $post->post_title,
             'post_type' => $post->post_type,
@@ -103,7 +104,7 @@ class Akka_headless_wp_resolvers
 
     public static function resolve_wysiwyg_field($post_data_or_fields, $field_name)
     {
-        return \Akka_headless_wp_utils::parseWysiwyg(self::resolve_field($post_data_or_fields, $field_name));
+        return Utils::parseWysiwyg(self::resolve_field($post_data_or_fields, $field_name));
     }
 
     public static function resolve_image($image_id, $size = 'full', $include_caption = false)
@@ -111,7 +112,7 @@ class Akka_headless_wp_resolvers
         if (!$image_id) {
             return null;
         }
-        $post_image_attributes = \Akka_headless_wp_utils::internal_img_attributes(
+        $post_image_attributes = Utils::internal_img_attributes(
             $image_id,
             [
                 'size' => $size,

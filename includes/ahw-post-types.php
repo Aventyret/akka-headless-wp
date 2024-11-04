@@ -1,6 +1,8 @@
 <?php
 use \Akka_headless_wp_resolvers as Resolvers;
 use \Akka_headless_wp_akka_meta_fields as MetaFields;
+use \Akka_headless_wp_blocks as Blocks;
+use \Akka_headless_wp_acf as Acf;
 
 class Akka_headless_wp_akka_post_types
 {
@@ -32,6 +34,7 @@ class Akka_headless_wp_akka_post_types
         $options = array_merge(
             [
                 'meta_groups' => [],
+                'acf_field_groups' => [],
                 'allowed_core_blocks' => [],
                 'unallowed_core_blocks' => [],
             ],
@@ -52,15 +55,32 @@ class Akka_headless_wp_akka_post_types
             MetaFields::register_post_meta_field(
                 Resolvers::resolve_array_field($meta_group, 'group'),
                 Resolvers::resolve_array_field($meta_group, 'fields'),
-                Resolvers::resolve_array_field($meta_group, 'options')
+                array_merge(
+                    [
+                        'post_types' => [$post_type_slug],
+                    ],
+                    Resolvers::resolve_array_field($meta_group, 'options')
+                )
             );
+        }
+        foreach ($options['acf_field_groups'] as $acf_field_group) {
+            $acf_field_group['location'] = Resolvers::resolve_field($acf_field_group, 'location') ?? [
+                [
+                    [
+                        'param' => 'post_type',
+                        'operator' => '==',
+                        'value' => $post_type_slug,
+                    ],
+                ],
+            ];
+            Acf::register_field_group($acf_field_group);
         }
         if (!empty($options['allowed_core_blocks'])) {
             add_filter(
                 'ahw_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
                     if (in_array(get_post_type(), $args['post_types'])) {
-                        $blocks = array_values(array_merge($blocks, $options['allowed_core_blocks']));
+                        $blocks = Blocks::add_allowed_blocks($blocks, $options['allowed_core_blocks']);
                     }
                     return $blocks;
                 },
@@ -72,7 +92,7 @@ class Akka_headless_wp_akka_post_types
                 'ahw_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
                     if (!in_array(get_post_type(), $args['post_types'])) {
-                        $blocks = self::filter_out_unallowed_blocks($blocks, $options['unallowed_core_blocks']);
+                        $blocks = Blocks::remove_unallowed_blocks($blocks, $options['unallowed_core_blocks']);
                     }
                     return $blocks;
                 },
