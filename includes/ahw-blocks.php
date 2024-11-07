@@ -97,7 +97,7 @@ class Akka_headless_wp_blocks
     public static function add_allowed_blocks($blocks, $allowed_blocks)
     {
         $blocks = array_merge($blocks, $allowed_blocks);
-        return array_values($allowed_blocks);
+        return array_values($blocks);
     }
 
     public static function remove_unallowed_blocks($blocks, $unallowed_blocks)
@@ -106,5 +106,33 @@ class Akka_headless_wp_blocks
             return !in_array($block, $unallowed_blocks);
         });
         return array_values($blocks);
+    }
+
+    public static function register_core_block_style($block, $style)
+    {
+        add_action('enqueue_block_editor_assets', function () use ($block, $style) {
+            $data =
+                '
+            window.akka.coreBlockStyles = window.akka.coreBlockStyles || [];
+            window.akka.coreBlockStyles.push(' .
+                sprintf('{block: "%s", style: "%s"}', $block, $style) .
+                ');
+            ';
+            wp_add_inline_script('akka', $data, 'after');
+        });
+    }
+
+    public static function register_core_block_variation($block, $variation)
+    {
+        add_action('enqueue_block_editor_assets', function () use ($block, $variation) {
+            $data =
+                '
+            window.akka.coreBlockVariations = window.akka.coreBlockVariations || [];
+            window.akka.coreBlockVariations.push(' .
+                sprintf('{block: "%s", variation: "%s"}', $block, $variation) .
+                ');
+            ';
+            wp_add_inline_script('akka', $data, 'after');
+        });
     }
 }
