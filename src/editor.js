@@ -1,13 +1,13 @@
 const { createRoot } = wp.element;
 
-import FieldGroup from './components/FieldGroup';
+import setupFieldgroups from './field-groups';
+import setupBlockStyles from './block-styles';
+import setupVariations from './variations';
+import setupAcf from './acf';
 
 window.akka = window.akka || {};
 
-window.akka.registerFieldGroup = (groupName, fields) => {
-  window.setTimeout(() => {
-    // NOTE: 2024-10-22: this triggers a warning but should be okay https://github.com/WordPress/gutenberg/issues/62923#issuecomment-2199438175
-    const root = createRoot(document.getElementById(`akka_meta_${groupName}`));
-    root.render(<FieldGroup metaFields={JSON.parse(fields)} />);
-  }, 200);
-};
+setupFieldgroups();
+setupBlockStyles();
+setupVariations();
+setupAcf();

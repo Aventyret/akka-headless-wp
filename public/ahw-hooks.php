@@ -2,8 +2,6 @@
 
 add_action('template_redirect', 'Akka_headless_wp_utils::redirect_to_frontend');
 
-add_action('acf/init', 'akka_headless_wp_create_acf_fields');
-
 add_action('render_block', 'Akka_headless_wp_blocks::render_block', 10, 2);
 
 // Disable srcset on images

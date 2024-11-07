@@ -8,6 +8,7 @@ class Akka_headless_wp_akka_post_types
 {
     public static function register_post_type($post_type_slug, $args, $options = [])
     {
+        $supports = self::set_supports($args);
         $args = array_merge(
             [
                 'label' => null,
@@ -18,7 +19,6 @@ class Akka_headless_wp_akka_post_types
                 'show_in_nav_menus' => true,
                 'menu_icon' => 'dashicons-admin-post',
                 'hierarchical' => false,
-                'supports' => ['title', 'revisions', 'thumbnail', 'editor', 'custom-fields'],
                 'show_in_rest' => true,
                 'menu_position' => 10,
                 'labels' => [
@@ -28,6 +28,7 @@ class Akka_headless_wp_akka_post_types
             ],
             $args
         );
+        $args['supports'] = $supports;
         if (!$args['label']) {
             throw new Exception('Akka post type label missing!');
         }
@@ -99,5 +100,35 @@ class Akka_headless_wp_akka_post_types
                 11
             );
         }
+    }
+
+    private static function set_supports($args)
+    {
+        $default_suports = ['title', 'revisions', 'thumbnail', 'editor', 'custom-fields'];
+        if (!Resolvers::resolve_field($args, 'supports')) {
+            return $default_suports;
+        }
+        if (!is_array($args['supports'])) {
+            throw new Exception('Akka post type supports should be an array!');
+        }
+        // Return setting in args if array of strings
+        if (!empty($args['supports']) && isset($args['supports'][0])) {
+            return $args['supports'];
+        }
+        // Merge with defaults if deep array
+        $supports = $default_suports;
+        foreach ($args['supports'] as $support => $enable) {
+            if ($enable) {
+                if (!in_array($support, $supports)) {
+                    $supports[] = $support;
+                }
+            } else {
+                if (in_array($support, $supports)) {
+                    $index = array_search($support, $supports);
+                    array_splice($supports, $index);
+                }
+            }
+        }
+        return $supports;
     }
 }
