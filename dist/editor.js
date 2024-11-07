@@ -238,7 +238,9 @@
   ];
   function allowVariation(variation) {
     if (window.akka.coreBlockVariations) {
-      return window.akka.coreBlockVariations.find((v) => v.block === variation.block && v.variation === variation.variation);
+      return window.akka.coreBlockVariations.find(
+        (v) => v.block === variation.block && v.variation === variation.variation
+      );
     }
     return false;
   }

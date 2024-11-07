@@ -35,14 +35,14 @@ class Akka_headless_wp_utils
     {
         wp_enqueue_script(
             'akka',
-            AKKA_HEADLESS_WP_URL . '/dist/editor.js',
-            ['editor'],
+            AKKA_HEADLESS_WP_URL . 'dist/editor.js',
+            ['wp-data', 'wp-element', 'wp-components'],
             filemtime(AKKA_HEADLESS_WP_DIR . '/dist/editor.js')
         );
 
         wp_enqueue_style(
             'akka',
-            AKKA_HEADLESS_WP_URL . '/dist/editor.css',
+            AKKA_HEADLESS_WP_URL . 'dist/editor.css',
             [],
             filemtime(AKKA_HEADLESS_WP_DIR . '/dist/editor.css')
         );
