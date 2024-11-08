@@ -12,15 +12,17 @@ class Akka_headless_wp_akka_blocks
             throw new Exception('Missing akka component name for Akka block ' . $block_type);
         }
 
-        if (Resolvers::resolve_field($args, 'post_types')) {
+        add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
+            $allow_block = true;
             // If post types are defined, the block is allowed on these post types
-            add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
-                if (in_array(get_post_type(), $args['post_types'])) {
-                    $blocks = Blocks::add_allowed_blocks($blocks, [$block_type]);
-                }
-                return $blocks;
-            });
-        }
+            if (Resolvers::resolve_field($args, 'post_types')) {
+                $allow_block = in_array(get_post_type(), $args['post_types']);
+            }
+            if ($allow_block) {
+                $blocks = Blocks::add_allowed_blocks($blocks, [$block_type]);
+            }
+            return $blocks;
+        });
 
         if (is_admin()) {
             return;
