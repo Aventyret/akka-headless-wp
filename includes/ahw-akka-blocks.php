@@ -1,6 +1,6 @@
 <?php
 use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_akka_blocks as Blocks;
+use \Akka_headless_wp_blocks as Blocks;
 
 class Akka_headless_wp_akka_blocks
 {
