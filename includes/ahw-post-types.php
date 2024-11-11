@@ -2,6 +2,7 @@
 use \Akka_headless_wp_resolvers as Resolvers;
 use \Akka_headless_wp_akka_meta_fields as MetaFields;
 use \Akka_headless_wp_blocks as Blocks;
+use \Akka_headless_wp_utils as Utils;
 use \Akka_headless_wp_acf as Acf;
 
 class Akka_headless_wp_akka_post_types
@@ -32,6 +33,12 @@ class Akka_headless_wp_akka_post_types
         if (!$args['label']) {
             throw new Exception('Akka post type label missing!');
         }
+        if ($args["public"]) {
+            $args["rewrite"] = [
+                "slug" => Utils::stringToRoute($args['label']),
+                "with_front" => false,
+            ];
+        }
         $options = array_merge(
             [
                 'meta_groups' => [],
@@ -45,7 +52,7 @@ class Akka_headless_wp_akka_post_types
             register_post_type($post_type_slug, $args);
         });
         if ($args['has_archive']) {
-            add_filter('ahw_post_types_with_archives', function ($post_types) {
+            add_filter('ahw_post_types_with_archives', function ($post_types) use($post_type_slug) {
                 if (!in_array($post_type_slug, $post_types)) {
                     $post_types[] = $post_type_slug;
                 }
