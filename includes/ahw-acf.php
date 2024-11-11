@@ -42,9 +42,9 @@ class Akka_headless_wp_acf
                 error_log(json_encode($field));
                 throw new Exception('Akka acf field: name is missing!');
             }
-            if (!Resolvers::resolve_field($field, 'title')) {
+            if (!Resolvers::resolve_field($field, 'label')) {
                 error_log(json_encode($field));
-                throw new Exception('Akka acf field: title is missing!');
+                throw new Exception('Akka acf field: label is missing!');
             }
             $fields[$index]['key'] =
                 Resolvers::resolve_field($field, 'key') ?? '_' . Resolvers::resolve_field($field, 'name');
