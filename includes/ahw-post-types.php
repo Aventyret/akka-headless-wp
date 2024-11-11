@@ -33,10 +33,10 @@ class Akka_headless_wp_akka_post_types
         if (!$args['label']) {
             throw new Exception('Akka post type label missing!');
         }
-        if ($args["public"]) {
-            $args["rewrite"] = [
-                "slug" => Utils::stringToRoute($args['label']),
-                "with_front" => false,
+        if ($args['public']) {
+            $args['rewrite'] = [
+                'slug' => Utils::stringToRoute($args['label']),
+                'with_front' => false,
             ];
         }
         $options = array_merge(
@@ -52,7 +52,7 @@ class Akka_headless_wp_akka_post_types
             register_post_type($post_type_slug, $args);
         });
         if ($args['has_archive']) {
-            add_filter('ahw_post_types_with_archives', function ($post_types) use($post_type_slug) {
+            add_filter('ahw_post_types_with_archives', function ($post_types) use ($post_type_slug) {
                 if (!in_array($post_type_slug, $post_types)) {
                     $post_types[] = $post_type_slug;
                 }
