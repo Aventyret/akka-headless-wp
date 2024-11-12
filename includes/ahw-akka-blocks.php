@@ -12,7 +12,7 @@ class Akka_headless_wp_akka_blocks
             throw new Exception('Missing akka component name for Akka block ' . $block_type);
         }
 
-        add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
+        add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type, $args) {
             $allow_block = true;
             // If post types are defined, the block is allowed on these post types
             if (Resolvers::resolve_field($args, 'post_types')) {
@@ -73,7 +73,7 @@ class Akka_headless_wp_akka_blocks
 
         if (Resolvers::resolve_field($args, 'post_types')) {
             // If post types are defined, the block is disallowed on all other post types
-            add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type) {
+            add_filter('ahw_allowed_blocks', function ($blocks) use ($block_type, $args) {
                 if (!in_array(get_post_type(), $args['post_types'])) {
                     $blocks = Blocks::remove_unallowed_blocks($blocks, ['splx/' . $block_type]);
                 }
