@@ -169,6 +169,7 @@ class Akka_headless_wp_akka_blocks
         } else {
             $props = self::get_block_props($blockType, $attributes);
         }
+        $props = array_merge($props, ['isEditor' => true]);
         $block_response = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . '/api/editor/component', [
             'method' => 'POST',
             'timeout' => 10,
