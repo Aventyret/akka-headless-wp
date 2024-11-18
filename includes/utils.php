@@ -1,34 +1,34 @@
 <?php
-class Akka_headless_wp_utils
+class Utils
 {
-    public static function isHeadless()
+    public static function is_headless()
     {
         return defined('REST_REQUEST') && !is_user_logged_in();
     }
 
-    public static function getRouteParam($data, $param, $default = null)
+    public static function get_route_param($data, $param, $default = null)
     {
         return isset($data[$param]) ? $data[$param] : $default;
     }
 
-    public static function getQueryParam($param, $default = null)
+    public static function get_query_param($param, $default = null)
     {
         return isset($_GET[$param]) ? $_GET[$param] : $default;
     }
 
-    public static function stringToRoute($string)
+    public static function string_to_route($string)
     {
         return str_replace([' ', 'å', 'ä', 'ö'], ['-', 'a', 'a', 'o'], strtolower($string));
     }
 
-    public static function parseUrl($url)
+    public static function parse_url($url)
     {
         $url = str_replace(WP_HOME . '/', '/', $url);
         $url = str_replace(WP_HOME, '/', $url);
         if ($url !== '/') {
             $url = rtrim($url, '/');
         }
-        return apply_filters('ahw_post_parse_url', $url);
+        return apply_filters('akka_post_parse_url', $url);
     }
 
     public static function enqueue_editor_assets()
@@ -48,9 +48,9 @@ class Akka_headless_wp_utils
         );
     }
 
-    public static function replaceHrefs($content)
+    public static function replace_hrefs($content)
     {
-        if (!self::isHeadless()) {
+        if (!self::is_headless()) {
             return $content;
         }
 
@@ -70,20 +70,20 @@ class Akka_headless_wp_utils
         $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
         $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
-        return apply_filters('ahw_post_replace_hrefs', $content);
+        return apply_filters('akka_post_replace_hrefs', $content);
     }
 
-    public static function replaceHtmlCharachters($content)
+    public static function replace_html_charachters($content)
     {
-        if (!self::isHeadless() || !$content) {
+        if (!self::is_headless() || !$content) {
             return $content;
         }
         return str_replace('&amp;shy;', '&shy;', $content);
     }
 
-    public static function replaceSrcs($content)
+    public static function replace_srcs($content)
     {
-        if (!self::isHeadless()) {
+        if (!self::is_headless()) {
             return $content;
         }
 
@@ -102,13 +102,13 @@ class Akka_headless_wp_utils
         return $content;
     }
 
-    public static function parseWysiwyg($html)
+    public static function parse_wysiwyg($html)
     {
-        if (!self::isHeadless() || !$html) {
+        if (!self::is_headless() || !$html) {
             return $html;
         }
 
-        return self::replaceHrefs($html);
+        return self::replace_hrefs($html);
     }
 
     public static function internal_img_tag($img_id, $img_attributes = [])
@@ -117,7 +117,7 @@ class Akka_headless_wp_utils
         if (empty($img_attributes)) {
             return '';
         }
-        return self::isHeadless()
+        return self::is_headless()
             ? self::internal_img_tag_in_frontend($img_attributes)
             : self::internal_img_tag_in_cms($img_attributes);
     }
@@ -160,7 +160,7 @@ class Akka_headless_wp_utils
         if ($include_caption) {
             $img_attributes['caption'] = wp_get_attachment_caption($img_id);
         }
-        return apply_filters('ahw_img_attributes', $img_attributes);
+        return apply_filters('akka_img_attributes', $img_attributes);
     }
 
     public static function internal_img_with_caption_attributes($img_id, $img_attributes = [])
@@ -302,7 +302,7 @@ class Akka_headless_wp_utils
         if (!AKKA_CMS_COOKIE_PATH) {
             return;
         }
-        if (self::isHeadless()) {
+        if (self::is_headless()) {
             return;
         }
         if (is_user_logged_in() && !isset($_COOKIE[AKKA_CMS_COOKIE_PATH])) {
@@ -334,7 +334,7 @@ class Akka_headless_wp_utils
                 'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
             ],
         ]);
-        do_action('ahw_cache_flushed');
+        do_action('akka_cache_flushed');
     }
 
     public static function get_page_template_slug($post)

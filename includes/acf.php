@@ -1,8 +1,9 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_akka_meta_fields as MetaFields;
+namespace 'Akka';
 
-class Akka_headless_wp_acf
+\PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID::init();
+
+class Acf
 {
     public static function register_field_group($field_group)
     {

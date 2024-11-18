@@ -1,8 +1,7 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_utils as Utils;
+namespace 'Akka';
 
-class Akka_headless_wp_content
+class Content
 {
     public static function can_get_content()
     {
@@ -15,7 +14,7 @@ class Akka_headless_wp_content
         $navigation = [];
 
         foreach ($menu_ids ?: [] as $menu_slug => $menu_id) {
-            $menu_id = apply_filters('ahw_site_meta_menu_id', $menu_id, $menu_slug);
+            $menu_id = apply_filters('akka_site_meta_menu_id', $menu_id, $menu_slug);
             $slug = $menu_slug;
             $menu_items = wp_get_nav_menu_items($menu_id);
             // Polylang fix for menus
@@ -30,7 +29,7 @@ class Akka_headless_wp_content
                     return [
                         'id' => $item->ID,
                         'parent_id' => $item->menu_item_parent ? $item->menu_item_parent : null,
-                        'url' => Utils::parseUrl($item->url),
+                        'url' => Utils::parse_url($item->url),
                         'title' => $item->title,
                         'children' => [],
                     ];
@@ -57,7 +56,7 @@ class Akka_headless_wp_content
         $site_meta = array_merge(self::get_site_meta_global_fields(), [
             'navigation' => $navigation,
         ]);
-        return apply_filters('ahw_site_meta', $site_meta);
+        return apply_filters('akka_site_meta', $site_meta);
     }
 
     private static function get_site_meta_global_fields()
@@ -71,7 +70,7 @@ class Akka_headless_wp_content
                     if ($value instanceof \WP_Post) {
                         $value = [
                             'post_id' => $value->ID,
-                            'permalink' => Utils::parseUrl(get_permalink($value)),
+                            'permalink' => Utils::parse_url(get_permalink($value)),
                             'post_title' => $value->post_title,
                             'post_name' => $value->post_name,
                         ];
@@ -80,9 +79,9 @@ class Akka_headless_wp_content
                 }
             }
         }
-        $site_meta['header']['posts_url'] = Utils::parseUrl(get_permalink(get_option('page_for_posts')));
+        $site_meta['header']['posts_url'] = Utils::parse_url(get_permalink(get_option('page_for_posts')));
         if (isset($site_meta['cookies']) && isset($site_meta['cookies']['details_link'])) {
-            $site_meta['cookies']['details_link'] = Utils::parseUrl($site_meta['cookies']['details_link']);
+            $site_meta['cookies']['details_link'] = Utils::parse_url($site_meta['cookies']['details_link']);
         }
         if (isset($site_meta['cookies']) && isset($site_meta['cookies']['enabled_cookie_types'])) {
             $site_meta['cookies']['enabled_cookie_types'] = array_reduce(
@@ -113,17 +112,17 @@ class Akka_headless_wp_content
     private static function get_post_types_with_archives()
     {
         $post_types = ['post'];
-        return apply_filters('ahw_post_types_with_archives', $post_types);
+        return apply_filters('akka_post_types_with_archives', $post_types);
     }
 
     private static function get_post_type_archive_permalink($post_type)
     {
-        return ltrim(Utils::parseUrl(get_post_type_archive_link($post_type)), '/');
+        return ltrim(Utils::parse_url(get_post_type_archive_link($post_type)), '/');
     }
 
     public static function get_post($data)
     {
-        $permalink = Utils::getRouteParam($data, 'permalink');
+        $permalink = Utils::get_route_param($data, 'permalink');
 
         if (!$permalink) {
             return new WP_REST_Response(['message' => 'Missing permalink'], 400);
@@ -157,7 +156,7 @@ class Akka_headless_wp_content
         if ($post_id && strpos(get_permalink($post_id), $permalink) === false) {
             return [
                 'post_type' => 'redirect',
-                'redirect' => Utils::parseUrl(get_permalink($post_id)),
+                'redirect' => Utils::parse_url(get_permalink($post_id)),
             ];
         }
 
@@ -171,7 +170,7 @@ class Akka_headless_wp_content
 
         // Is this a taxonomy term archive?
         if (!$post_id) {
-            $year = Utils::getQueryParam('year', null);
+            $year = Utils::get_query_param('year', null);
             $taxonomy_term_archive_data = self::get_taxonomy_term_archive_data($permalink, $year);
             if ($taxonomy_term_archive_data) {
                 return $taxonomy_term_archive_data;
@@ -206,7 +205,7 @@ class Akka_headless_wp_content
         }
 
         if (!$post_id) {
-            $post_data = apply_filters('ahw_post_not_found_post_data', $post_id, $permalink);
+            $post_data = apply_filters('akka_post_not_found_post_data', $post_id, $permalink);
             if ($post_data) {
                 return $post_data;
             }
@@ -229,11 +228,11 @@ class Akka_headless_wp_content
 
     public static function get_posts($data)
     {
-        $post_types = explode(',', Utils::getQueryParam('post_type', 'post'));
-        $category = Utils::getQueryParam('category', null);
-        $post_tag = Utils::getQueryParam('post_tag', null);
-        $per_page = Utils::getQueryParam('per_page', -1);
-        $offset = Utils::getQueryParam('offset', 0);
+        $post_types = explode(',', Utils::get_query_param('post_type', 'post'));
+        $category = Utils::get_query_param('category', null);
+        $post_tag = Utils::get_query_param('post_tag', null);
+        $per_page = Utils::get_query_param('per_page', -1);
+        $offset = Utils::get_query_param('offset', 0);
 
         $query_args = [
             'offset' => $offset,
@@ -260,9 +259,9 @@ class Akka_headless_wp_content
             ];
         }
 
-        $query_args = apply_filters('ahw_get_posts_args', $query_args);
+        $query_args = apply_filters('akka_get_posts_args', $query_args);
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -282,8 +281,8 @@ class Akka_headless_wp_content
 
     public static function get_posts_feed()
     {
-        $post_types = explode(',', Utils::getQueryParam('post_type', 'post,podcast,note'));
-        $per_page = Utils::getQueryParam('per_page', 50);
+        $post_types = explode(',', Utils::get_query_param('post_type', 'post,podcast,note'));
+        $per_page = Utils::get_query_param('per_page', 50);
 
         $query_args = [
             'post_type' => $post_types,
@@ -297,9 +296,9 @@ class Akka_headless_wp_content
             ],
         ];
 
-        $query_args = apply_filters('ahw_get_posts_args', $query_args);
+        $query_args = apply_filters('akka_get_posts_args', $query_args);
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -315,7 +314,7 @@ class Akka_headless_wp_content
 
     public static function get_post_by_id($data)
     {
-        $post_id = Utils::getRouteParam($data, 'post_id');
+        $post_id = Utils::get_route_param($data, 'post_id');
 
         if (!$post_id) {
             return new WP_REST_Response(['message' => 'Post not found'], 404);
@@ -326,7 +325,7 @@ class Akka_headless_wp_content
 
     public static function get_attachment_by_id($data)
     {
-        $attachment_id = Utils::getRouteParam($data, 'attachment_id');
+        $attachment_id = Utils::get_route_param($data, 'attachment_id');
 
         if (!$attachment_id) {
             return new WP_REST_Response(['message' => 'Attachment not found'], 404);
@@ -368,14 +367,14 @@ class Akka_headless_wp_content
         }
 
         $akka_post = self::get_akka_post();
-        do_action('ahw_pre_post_content', $akka_post);
+        do_action('akka_pre_post_content', $akka_post);
         $akka_post['post_content'] = apply_filters('the_content', $post->post_content);
         $akka_post['seo_meta'] = self::get_post_seo_meta(
             $post,
             Resolvers::resolve_field($akka_post['featured_image'], 'id')
         );
 
-        $data = apply_filters('ahw_post_data', $akka_post);
+        $data = apply_filters('akka_post_data', $akka_post);
         unset($data['fields']);
         return $data;
     }
@@ -406,17 +405,17 @@ class Akka_headless_wp_content
                 'author' => [
                     'id' => $post->post_author,
                     'name' => get_the_author_meta('display_name', $post->post_author),
-                    'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($post->post_author)),
+                    'url' => AKKA_FRONTEND_BASE . Utils::parse_url(get_author_posts_url($post->post_author)),
                 ],
                 'slug' => $post->post_name,
                 'page_template' => Utils::get_page_template_slug($post),
                 'featured_image' => $featured_image_attributes,
                 'thumbnail_caption' => apply_filters(
-                    'ahw_image_caption',
+                    'akka_image_caption',
                     get_the_post_thumbnail_caption($post->ID),
                     $post_thumbnail_id
                 ),
-                'permalink' => Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post->ID))),
+                'permalink' => Utils::parse_url(str_replace(WP_HOME, '', get_permalink($post->ID))),
                 'taxonomy_terms' => self::get_post_terms($post),
                 'fields' => get_fields($post->ID),
             ];
@@ -447,7 +446,7 @@ class Akka_headless_wp_content
             'post_type' => $archive_post_type,
         ];
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -475,7 +474,7 @@ class Akka_headless_wp_content
             $post_type_data = array_merge(self::get_post_data(get_option('page_for_posts')), $post_type_data);
         }
 
-        return apply_filters('ahw_post_type_data', $post_type_data);
+        return apply_filters('akka_post_type_data', $post_type_data);
     }
 
     private static function get_taxonomy_term_archive_data($permalink, $year = null)
@@ -519,7 +518,7 @@ class Akka_headless_wp_content
             ];
         }
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -548,12 +547,12 @@ class Akka_headless_wp_content
 
         $taxonomy_term_data['seo_meta'] = self::get_term_seo_meta($taxonomy_term_data);
 
-        return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data, $archive_taxonomy_term);
+        return apply_filters('akka_taxonomy_term_data', $taxonomy_term_data, $archive_taxonomy_term);
     }
 
     private static function get_post_terms($post)
     {
-        $post_type_taxonomy_map = apply_filters('ahw_headless_post_type_taxonomy_map', [
+        $post_type_taxonomy_map = apply_filters('akka_post_type_taxonomy_map', [
             'post' => ['category', 'post_tag'],
         ]);
         $taxonomies = isset($post_type_taxonomy_map[$post->post_type]) ? $post_type_taxonomy_map[$post->post_type] : [];
@@ -574,7 +573,7 @@ class Akka_headless_wp_content
                                 'term_id' => $term->term_id,
                                 'name' => $term->name,
                                 'slug' => $term->slug,
-                                'url' => Utils::parseUrl(get_term_link($term->term_id)),
+                                'url' => Utils::parse_url(get_term_link($term->term_id)),
                             ];
                         },
                         $taxonomy_terms ? $taxonomy_terms : []
@@ -600,7 +599,7 @@ class Akka_headless_wp_content
                     'term_id' => $term->term_id,
                     'name' => $term->name,
                     'slug' => $term->slug,
-                    'url' => Utils::parseUrl(get_term_link($term->term_id)),
+                    'url' => Utils::parse_url(get_term_link($term->term_id)),
                 ];
             },
             $taxonomy_terms ? $taxonomy_terms : []
@@ -612,8 +611,8 @@ class Akka_headless_wp_content
      */
     public static function get_term($data)
     {
-        $taxonomy_slug = str_replace('-', '_', Utils::getRouteParam($data, 'taxonomy_slug'));
-        $term_slug = Utils::getRouteParam($data, 'term_slug');
+        $taxonomy_slug = str_replace('-', '_', Utils::get_route_param($data, 'taxonomy_slug'));
+        $term_slug = Utils::get_route_param($data, 'term_slug');
 
         $term = get_term_by('slug', $term_slug, $taxonomy_slug);
 
@@ -631,7 +630,7 @@ class Akka_headless_wp_content
             ],
         ];
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -674,7 +673,7 @@ class Akka_headless_wp_content
         ];
 
         $query = self::get_posts_query($query_args, [
-            'page' => Utils::getQueryParam('page', 1),
+            'page' => Utils::get_query_param('page', 1),
         ]);
 
         $posts_html = self::get_posts_html($query->posts);
@@ -739,10 +738,10 @@ class Akka_headless_wp_content
             'gridcolclassname' => 'grid__col--M--4',
             'attributes' => new Illuminate\View\ComponentAttributeBag([]),
         ])->render();
-        $html = Utils::replaceHrefs($html);
-        $html = Utils::replaceSrcs($html);
+        $html = Utils::replace_hrefs($html);
+        $html = Utils::replace_srcs($html);
 
-        return Utils::replaceHrefs($html);
+        return Utils::replace_hrefs($html);
     }
 
     private static function parse_posts($posts)
@@ -775,7 +774,7 @@ class Akka_headless_wp_content
                     'term_id' => $category->term_id,
                     'name' => $category->name,
                     'slug' => $category->slug,
-                    'url' => Utils::parseUrl(get_term_link($category->term_id)),
+                    'url' => Utils::parse_url(get_term_link($category->term_id)),
                 ];
             }, $category_terms)
             : [];
@@ -789,7 +788,7 @@ class Akka_headless_wp_content
                     'term_id' => $tag->term_id,
                     'name' => $tag->name,
                     'slug' => $tag->slug,
-                    'url' => Utils::parseUrl(get_term_link($tag->term_id)),
+                    'url' => Utils::parse_url(get_term_link($tag->term_id)),
                 ];
             }, $tag_terms)
             : [];
@@ -798,7 +797,7 @@ class Akka_headless_wp_content
             'post_id' => $post->ID,
             'post_guid' => $post->guid,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
-            'url' => Utils::parseUrl(get_permalink($post->ID)),
+            'url' => Utils::parse_url(get_permalink($post->ID)),
             'featured_image' => !empty($thumbnail_attributes) ? $thumbnail_attributes : null,
             'post_title' => $post->post_title,
             'post_type' => $post->post_type,
@@ -814,20 +813,20 @@ class Akka_headless_wp_content
 
     public static function search($data)
     {
-        $query = urldecode(Utils::getRouteParam($data, 'query'));
-        $post_type = Utils::getRouteParam($data, 'post_type');
+        $query = urldecode(Utils::get_route_param($data, 'query'));
+        $post_type = Utils::get_route_param($data, 'post_type');
         if ($post_type) {
             $post_type = explode(',', $post_type);
         }
-        $category_slugs = Utils::getRouteParam($data, 'category_slugs');
+        $category_slugs = Utils::get_route_param($data, 'category_slugs');
         if ($category_slugs) {
             $category_slugs = explode(',', $category_slugs);
         }
-        $term_slugs = Utils::getRouteParam($data, 'term_slugs');
+        $term_slugs = Utils::get_route_param($data, 'term_slugs');
         if ($term_slugs) {
             $term_slugs = explode(',', $term_slugs);
         }
-        $taxonomy = Utils::getRouteParam($data, 'taxonomy', 'post_tag');
+        $taxonomy = Utils::get_route_param($data, 'taxonomy', 'post_tag');
 
         if ((empty($query) || strlen($query) < 2) && empty($category_slugs) && empty($term_slugs)) {
             return [
@@ -864,9 +863,9 @@ class Akka_headless_wp_content
             ];
         }
 
-        $query_args = apply_filters('ahw_search_query_args', $query_args);
+        $query_args = apply_filters('akka_search_query_args', $query_args);
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -879,7 +878,7 @@ class Akka_headless_wp_content
             'posts' => $posts,
         ];
 
-        return apply_filters('ahw_search_result_data', $search_result_data);
+        return apply_filters('akka_search_result_data', $search_result_data);
     }
 
     private static function get_post_seo_meta($post, $post_thumbnail_id = null)
@@ -991,7 +990,7 @@ class Akka_headless_wp_content
         if (!isset($seo_meta['seo_description']) || !$seo_meta['seo_description']) {
             $seo_meta['seo_description'] = get_the_excerpt($post->ID);
         }
-        $seo_meta['seo_description'] = apply_filters('ahw_seo_description', $seo_meta['seo_description'], $post);
+        $seo_meta['seo_description'] = apply_filters('akka_seo_description', $seo_meta['seo_description'], $post);
         if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
             $specific_seo_image_is_defined = true;
         }
@@ -1037,7 +1036,7 @@ class Akka_headless_wp_content
         foreach (['seo_title', 'og_title', 'twitter_title'] as $title_key) {
             $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;'], ['', '-'], $seo_meta[$title_key]);
         }
-        return apply_filters('ahw_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
+        return apply_filters('akka_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
     }
 
     private static function get_term_seo_meta($term_data)
@@ -1113,7 +1112,7 @@ class Akka_headless_wp_content
             $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;'], ['', '-'], $seo_meta[$title_key]);
         }
         return apply_filters(
-            'ahw_term_seo_meta',
+            'akka_term_seo_meta',
             $seo_meta,
             $term_data,
             $specific_seo_image_is_defined,

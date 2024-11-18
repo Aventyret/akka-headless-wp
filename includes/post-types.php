@@ -1,11 +1,7 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_akka_meta_fields as MetaFields;
-use \Akka_headless_wp_blocks as Blocks;
-use \Akka_headless_wp_utils as Utils;
-use \Akka_headless_wp_acf as Acf;
+namespace 'Akka';
 
-class Akka_headless_wp_akka_post_types
+class PostTypes
 {
     public static function register_post_type($post_type_slug, $args, $options = [])
     {
@@ -35,7 +31,7 @@ class Akka_headless_wp_akka_post_types
         }
         if ($args['public']) {
             $args['rewrite'] = [
-                'slug' => Utils::stringToRoute($args['label']),
+                'slug' => Utils::string_to_route($args['label']),
                 'with_front' => false,
             ];
         }
@@ -52,7 +48,7 @@ class Akka_headless_wp_akka_post_types
             register_post_type($post_type_slug, $args);
         });
         if ($args['has_archive']) {
-            add_filter('ahw_post_types_with_archives', function ($post_types) use ($post_type_slug) {
+            add_filter('akka_post_types_with_archives', function ($post_types) use ($post_type_slug) {
                 if (!in_array($post_type_slug, $post_types)) {
                     $post_types[] = $post_type_slug;
                 }
@@ -85,7 +81,7 @@ class Akka_headless_wp_akka_post_types
         }
         if (!empty($options['allowed_core_blocks'])) {
             add_filter(
-                'ahw_allowed_blocks',
+                'akka_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
                     if (in_array(get_post_type(), $args['post_types'])) {
                         $blocks = Blocks::add_allowed_blocks($blocks, $options['allowed_core_blocks']);
@@ -97,7 +93,7 @@ class Akka_headless_wp_akka_post_types
         }
         if (!empty($options['unallowed_core_blocks'])) {
             add_filter(
-                'ahw_allowed_blocks',
+                'akka_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
                     if (!in_array(get_post_type(), $args['post_types'])) {
                         $blocks = Blocks::remove_unallowed_blocks($blocks, $options['unallowed_core_blocks']);

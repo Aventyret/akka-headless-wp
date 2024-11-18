@@ -1,11 +1,11 @@
 <?php
-use \Akka_headless_wp_utils as Utils;
+namespace 'Akka';
 
-class Akka_headless_wp_blocks
+class Blocks
 {
     public static function render_block($parsed_block, $block)
     {
-        if (!Utils::isHeadless()) {
+        if (!Utils::is_headless()) {
             return $parsed_block;
         }
         if ($block['blockName'] == 'core/embed') {
@@ -65,7 +65,7 @@ class Akka_headless_wp_blocks
                 // 'gravityforms/form',
             ];
             $allowed_blocks = array_merge($allowed_blocks, self::splx_block_ids());
-            return array_values(apply_filters('ahw_allowed_blocks', $allowed_blocks));
+            return array_values(apply_filters('akka_allowed_blocks', $allowed_blocks));
         }
         return $block_editor_context;
     }

@@ -1,7 +1,7 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
+namespace 'Akka';
 
-class Akka_headless_wp_akka_meta_fields
+class MetaFields
 {
     private static $akka_meta_field_groups = [];
 
