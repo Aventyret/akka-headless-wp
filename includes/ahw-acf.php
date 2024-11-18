@@ -48,8 +48,8 @@ class Akka_headless_wp_acf
             }
             $fields[$index]['key'] =
                 Resolvers::resolve_field($field, 'key') ?? '_' . Resolvers::resolve_field($field, 'name');
-            if (!empty(Resolvers::resolve_array_field($field, 'fields'))) {
-                $fields[$index]['fields'] = self::set_field_keys($field['fields']);
+            if (!empty(Resolvers::resolve_array_field($field, 'sub_fields'))) {
+                $fields[$index]['sub_fields'] = self::set_field_keys($field['sub_fields']);
             }
         }
         return $fields;
