@@ -33,7 +33,7 @@ class Akka_headless_wp_akka_blocks
             self::register_block_type(
                 $block_type,
                 array_merge($args, [
-                    'block_props_callback' => function ($block_attributes) {
+                    'block_props_callback' => function ($post_id, $block_attributes) {
                         return $block_attributes;
                     },
                 ])
@@ -48,7 +48,7 @@ class Akka_headless_wp_akka_blocks
                 'api_version' => 2,
                 'editor_script' => 'editor',
                 'render_callback' => function ($block_attributes, $block_content) use ($block_type, $args) {
-                    $props = self::get_block_props($block_type, $block_attributes, $block_content);
+                    $props = self::get_block_props(get_the_ID(), $block_type, $block_attributes, $block_content);
                     return '<div data-akka-component="' .
                         $args['akka_component_name'] .
                         '" data-akka-props="' .
@@ -95,7 +95,7 @@ class Akka_headless_wp_akka_blocks
                 if ($splx_block_type != $block_type) {
                     return $splx_args;
                 }
-                return array_merge($splx_args, ['props' => $args['block_props_callback']($splx_args)]);
+                return array_merge($splx_args, ['props' => $args['block_props_callback'](get_the_ID(), $splx_args)]);
             },
             10,
             2
@@ -118,7 +118,7 @@ class Akka_headless_wp_akka_blocks
         );
     }
 
-    private static function get_block_props($block_type, $block_attributes, $block_content = null)
+    private static function get_block_props($post_id, $block_type, $block_attributes, $block_content = null)
     {
         if (!isset(self::$akka_blocks[$block_type])) {
             throw new Exception('Missing registration for Akka block ' . $block_type);
@@ -126,7 +126,7 @@ class Akka_headless_wp_akka_blocks
         $props = $block_attributes;
         // Get props from callback, if one is registered with the block
         if (isset(self::$akka_blocks[$block_type]['block_props_callback'])) {
-            $props = self::$akka_blocks[$block_type]['block_props_callback']($block_attributes);
+            $props = self::$akka_blocks[$block_type]['block_props_callback']($post_id, $block_attributes);
         }
         // Add block content as children prop for the frontent
         if ($block_content) {
@@ -135,7 +135,7 @@ class Akka_headless_wp_akka_blocks
         return $props;
     }
 
-    private static function get_splx_block_props($block_type, $block_attributes)
+    private static function get_splx_block_props($post_id, $block_type, $block_attributes)
     {
         if (!isset(self::$akka_blocks[$block_type])) {
             throw new Exception('Missing registration for Akka solarplexus block ' . $block_type);
@@ -145,7 +145,7 @@ class Akka_headless_wp_akka_blocks
         if (isset(self::$akka_blocks[$block_type]['block_props_callback'])) {
             $block_config = Solarplexus_Helpers::retrieve_block_config(str_replace('splx/', '', $block_type));
             $splx_args = Solarplexus_Helpers::block_args($block_config, $block_attributes);
-            $props = self::$akka_blocks[$block_type]['block_props_callback']($splx_args);
+            $props = self::$akka_blocks[$block_type]['block_props_callback']($post_id, $splx_args);
         }
         return $props;
     }
@@ -161,13 +161,14 @@ class Akka_headless_wp_akka_blocks
     public static function render_editor_block($request)
     {
         $data = $request->get_json_params();
+        $post_id = Resolvers::resolve_field($data, 'postId');
         $blockType = Resolvers::resolve_field($data, 'blockType');
         $attributes = Resolvers::resolve_field($data, 'attributes');
         $akka_component_name = self::get_block_component_name($blockType);
         if (str_starts_with($blockType, 'splx/')) {
-            $props = self::get_splx_block_props($blockType, $attributes);
+            $props = self::get_splx_block_props($post_id, $blockType, $attributes);
         } else {
-            $props = self::get_block_props($blockType, $attributes);
+            $props = self::get_block_props($post_id, $blockType, $attributes);
         }
         $props = array_merge($props, ['isEditor' => true]);
         $block_response = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . '/api/editor/component', [
