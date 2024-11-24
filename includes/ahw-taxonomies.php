@@ -12,6 +12,7 @@ class Akka_headless_wp_akka_taxonomies
         $options = array_merge(
             [
                 'post_types' => ['post'],
+                'in_archive_post_types' => [],
                 'has_archive' => false,
                 'acf_field_groups' => [],
             ],
@@ -47,6 +48,34 @@ class Akka_headless_wp_akka_taxonomies
         add_action('init', function () use ($taxonomy_slug, $options, $args) {
             register_taxonomy($taxonomy_slug, $options['post_types'], $args);
         });
+
+        foreach ($options['post_types'] as $post_type) {
+            add_filter('ahw_headless_post_type_taxonomy_map', function ($taxonomy_map) use (
+                $taxonomy_slug,
+                $post_type
+            ) {
+                if (!isset($taxonomy_map[$post_type])) {
+                    $taxonomy_map[$post_type] = [];
+                }
+                if (!in_array($taxonomy_slug, $taxonomy_map[$post_type])) {
+                    $taxonomy_map[$post_type][] = $taxonomy_slug;
+                }
+            });
+        }
+
+        foreach ($options['in_archive_post_types'] as $post_type) {
+            add_filter('ahw_headless_in_archive_post_type_taxonomy_map', function ($taxonomy_map) use (
+                $taxonomy_slug,
+                $post_type
+            ) {
+                if (!isset($taxonomy_map[$post_type])) {
+                    $taxonomy_map[$post_type] = [];
+                }
+                if (!in_array($taxonomy_slug, $taxonomy_map[$post_type])) {
+                    $taxonomy_map[$post_type][] = $taxonomy_slug;
+                }
+            });
+        }
 
         foreach ($options['acf_field_groups'] as $acf_field_group) {
             $acf_field_group['location'] = Resolvers::resolve_field($acf_field_group, 'location') ?? [
