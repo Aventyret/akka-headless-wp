@@ -561,8 +561,7 @@ class Akka_headless_wp_content
 
     private static function get_post_in_archive_terms($post)
     {
-        $post_type_taxonomy_map = apply_filters('ahw_headless_in_archive_post_type_taxonomy_map', [
-        ]);
+        $post_type_taxonomy_map = apply_filters('ahw_headless_in_archive_post_type_taxonomy_map', []);
         $taxonomies = isset($post_type_taxonomy_map[$post->post_type]) ? $post_type_taxonomy_map[$post->post_type] : [];
     }
 
