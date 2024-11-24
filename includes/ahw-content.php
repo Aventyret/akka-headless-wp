@@ -431,6 +431,11 @@ class Akka_headless_wp_content
         return self::$_akka_post_memory[$post->ID];
     }
 
+    public static function get_akka_posts($query_args)
+    {
+        return self::parse_posts(get_posts($query_args));
+    }
+
     private static function get_post_type_archive_data($permalink)
     {
         $archive_post_type = null;
