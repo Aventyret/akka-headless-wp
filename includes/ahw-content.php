@@ -417,7 +417,7 @@ class Akka_headless_wp_content
                     $post_thumbnail_id
                 ),
                 'permalink' => Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post->ID))),
-                'taxonomy_terms' => self::get_post_terms($post),
+                'taxonomy_terms' => self::get_post_data_terms($post),
                 'fields' => get_fields($post->ID),
             ];
             foreach (['category', 'post_tag'] as $taxonomy_slug) {
@@ -551,12 +551,23 @@ class Akka_headless_wp_content
         return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data, $archive_taxonomy_term);
     }
 
-    private static function get_post_terms($post)
+    private static function get_post_data_terms($post)
     {
         $post_type_taxonomy_map = apply_filters('ahw_headless_post_type_taxonomy_map', [
             'post' => ['category', 'post_tag'],
         ]);
         $taxonomies = isset($post_type_taxonomy_map[$post->post_type]) ? $post_type_taxonomy_map[$post->post_type] : [];
+    }
+
+    private static function get_post_in_archive_terms($post)
+    {
+        $post_type_taxonomy_map = apply_filters('ahw_headless_in_archive_post_type_taxonomy_map', [
+        ]);
+        $taxonomies = isset($post_type_taxonomy_map[$post->post_type]) ? $post_type_taxonomy_map[$post->post_type] : [];
+    }
+
+    private static function get_post_terms($post, $taxonomies)
+    {
         return array_reduce(
             $taxonomies,
             function ($terms, $taxonomy_slug) use ($post) {
@@ -768,32 +779,6 @@ class Akka_headless_wp_content
             ])
             : null;
 
-        $category_terms = get_the_category($post->ID);
-        $categories = !empty($category_terms)
-            ? array_map(function ($category) {
-                return [
-                    'term_id' => $category->term_id,
-                    'name' => $category->name,
-                    'slug' => $category->slug,
-                    'url' => Utils::parseUrl(get_term_link($category->term_id)),
-                ];
-            }, $category_terms)
-            : [];
-        $categories = array_filter($categories, function ($category) {
-            return !in_array($category['slug'], ['uncategorized', 'okategoriserad']);
-        });
-        $tag_terms = get_the_tags($post->ID);
-        $tags = !empty($tag_terms)
-            ? array_map(function ($tag) {
-                return [
-                    'term_id' => $tag->term_id,
-                    'name' => $tag->name,
-                    'slug' => $tag->slug,
-                    'url' => Utils::parseUrl(get_term_link($tag->term_id)),
-                ];
-            }, $tag_terms)
-            : [];
-
         $post_in_archive = [
             'post_id' => $post->ID,
             'post_guid' => $post->guid,
@@ -804,10 +789,7 @@ class Akka_headless_wp_content
             'post_type' => $post->post_type,
             'slug' => $post->post_name,
             'description' => get_the_excerpt($post->ID),
-            'categories' => $categories,
-            'primary_category' => self::get_primary_term('category', $categories, $post),
-            'tags' => $tags,
-            'primary_tag' => self::get_primary_term('post_tag', $tags, $post),
+            'taxonomy_terms' => self::get_post_in_archive_terms($post),
         ];
         return apply_filters('awh_post_in_archive', $post_in_archive, $post);
     }
