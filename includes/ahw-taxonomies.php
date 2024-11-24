@@ -60,6 +60,7 @@ class Akka_headless_wp_akka_taxonomies
                 if (!in_array($taxonomy_slug, $taxonomy_map[$post_type])) {
                     $taxonomy_map[$post_type][] = $taxonomy_slug;
                 }
+                return $taxonomy_map;
             });
         }
 
@@ -74,6 +75,7 @@ class Akka_headless_wp_akka_taxonomies
                 if (!in_array($taxonomy_slug, $taxonomy_map[$post_type])) {
                     $taxonomy_map[$post_type][] = $taxonomy_slug;
                 }
+                return $taxonomy_map;
             });
         }
 
