@@ -47,7 +47,7 @@ class Akka_headless_wp_acf
                 throw new Exception('Akka acf field: label is missing!');
             }
             $fields[$index]['key'] =
-                Resolvers::resolve_field($field, 'key') ?? '_' . Resolvers::resolve_field($field, 'name');
+                Resolvers::resolve_field($field, 'key') ?? 'field_' . Resolvers::resolve_field($field, 'name');
             if (!empty(Resolvers::resolve_array_field($field, 'sub_fields'))) {
                 $fields[$index]['sub_fields'] = self::set_field_keys($field['sub_fields']);
             }
