@@ -53,7 +53,7 @@ class Akka_headless_wp_resolvers
         }
         return [
             'text' => $field['title'],
-            'url' => $field['url'],
+            'url' => Utils::parseUrl($field['url']),
             'target' => $field['target'],
         ];
     }
