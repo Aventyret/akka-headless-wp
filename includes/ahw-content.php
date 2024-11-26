@@ -377,8 +377,6 @@ class Akka_headless_wp_content
 
         $data = apply_filters('ahw_post_data', $akka_post);
         unset($data['fields']);
-        var_dump($data);
-        die();
         return $data;
     }
 
@@ -417,7 +415,7 @@ class Akka_headless_wp_content
                     'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($p->post_author)),
                 ],
                 'slug' => $p->post_name,
-                'page_template' => Utils::get_page_template_slug($post),
+                'page_template' => Utils::get_page_template_slug($p),
                 'featured_image' => $featured_image_attributes,
                 'thumbnail_caption' => apply_filters(
                     'ahw_image_caption',
@@ -425,7 +423,7 @@ class Akka_headless_wp_content
                     $post_thumbnail_id
                 ),
                 'permalink' => Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($p->ID))),
-                'taxonomy_terms' => self::get_post_data_terms($post),
+                'taxonomy_terms' => self::get_post_data_terms($p),
                 'fields' => get_fields($p->ID),
             ];
             foreach (['category', 'post_tag'] as $taxonomy_slug) {
