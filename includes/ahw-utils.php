@@ -166,7 +166,7 @@ class Akka_headless_wp_utils
             }
         }
     
-        return apply_filters('ahw_audio_attributes', $audio_attributes);
+        return $audio_attributes;
     }
     
     public static function internal_img_attributes($img_id, $img_attributes = [], $include_caption = false)
