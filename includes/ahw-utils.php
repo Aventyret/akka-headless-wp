@@ -135,6 +135,7 @@ class Akka_headless_wp_utils
             );
             $src = str_replace(WP_HOME, AKKA_CMS_MEDIA_BUCKET_BASE, $src);
         }
+        return $src;
     }
 
     public static function internal_audio_attributes($audio_id, $audio_attributes = [])
