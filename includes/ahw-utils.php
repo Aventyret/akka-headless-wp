@@ -138,100 +138,67 @@ class Akka_headless_wp_utils
         return $src;
     }
 
-    public static function internal_audio_attributes($audio_id, $audio_attributes = [])
+    public static function internal_audio_and_video_attributes($media_id, $media_attributes = [])
     {
-        if (empty($audio_id)) {
-            return [];
-        }
-    
-        $audio_src = wp_get_attachment_url($audio_id);
-        if (empty($audio_src)) {
-            return [];
-        }
- 
-        $audio_attributes['id'] = $audio_id;
-        $audio_attributes['mime_type'] = get_post_mime_type($audio_id);
-        $audio_attributes['src'] = self::adjust_media_path($audio_src);
-  
-        if (!isset($img_attributes['title'])) {
-            $audio_attributes['title'] = get_the_title($audio_id);
-        }
-
-        $metadata = wp_get_attachment_metadata($audio_id);
-            
-        if (!empty($metadata)) {
-            if (!isset($audio_attributes['duration']) && isset($metadata['length'])) {
-                $audio_attributes['duration'] = $metadata['length'];
-            }
-            
-            if (!isset($audio_attributes['filesize']) && isset($metadata['filesize'])) {
-                $audio_attributes['filesize'] = $metadata['filesize'];
-            }
-        }
-    
-        return $audio_attributes;
-    }
-
-    public static function internal_video_attributes($video_id, $video_attributes = [])
-    {
-        if (empty($video_id)) {
+        if (empty($media_id)) {
             return [];
         }
         
-        $video_src = wp_get_attachment_url($video_id);
-        if (empty($video_src)) {
+        $media_src = wp_get_attachment_url($media_id);
+        if (empty($media_src)) {
             return [];
         }
 
-        $video_attributes['id'] = $video_id;
-        $video_attributes['mime_type'] = get_post_mime_type($video_id);
-        $video_attributes['src'] = self::adjust_media_path($video_src);
+        $media_attributes['id'] = $media_id;
+        $media_attributes['mime_type'] = get_post_mime_type($media_id);
+        $media_attributes['src'] = self::adjust_media_path($media_src);
 
-        if (!isset($video_attributes['title'])) {
-            $video_attributes['title'] = get_the_title($video_id);
+        if (!isset($media_attributes['title'])) {
+            $media_attributes['title'] = get_the_title($media_id);
         }
 
-        $metadata = wp_get_attachment_metadata($video_id);
+        $metadata = wp_get_attachment_metadata($media_id);
             
         if (!empty($metadata)) {
-            if (!isset($video_attributes['width']) && isset($metadata['width'])) {
-                $video_attributes['width'] = $metadata['width'];
+            
+            if (!isset($media_attributes['duration']) && isset($metadata['length'])) {
+                $media_attributes['duration'] = $metadata['length'];
             }
             
-            if (!isset($video_attributes['height']) && isset($metadata['height'])) {
-                $video_attributes['height'] = $metadata['height'];
+            if (!isset($media_attributes['filesize']) && isset($metadata['filesize'])) {
+                $media_attributes['filesize'] = $metadata['filesize'];
             }
             
-            if (!isset($video_attributes['duration']) && isset($metadata['length'])) {
-                $video_attributes['duration'] = $metadata['length'];
+            if (!isset($media_attributes['bitrate']) && isset($metadata['bitrate'])) {
+                $media_attributes['bitrate'] = $metadata['bitrate'];
             }
             
-            if (!isset($video_attributes['filesize']) && isset($metadata['filesize'])) {
-                $video_attributes['filesize'] = $metadata['filesize'];
+            if (!isset($media_attributes['codec']) && isset($metadata['codec'])) {
+                $media_attributes['codec'] = $metadata['codec'];
             }
             
-            if (!isset($video_attributes['bitrate']) && isset($metadata['bitrate'])) {
-                $video_attributes['bitrate'] = $metadata['bitrate'];
+            if (!isset($media_attributes['format']) && isset($metadata['format'])) {
+                $media_attributes['format'] = $metadata['format'];
+            }
+
+            if (!isset($media_attributes['width']) && isset($metadata['width'])) {
+                $media_attributes['width'] = $metadata['width'];
             }
             
-            if (!isset($video_attributes['codec']) && isset($metadata['codec'])) {
-                $video_attributes['codec'] = $metadata['codec'];
+            if (!isset($media_attributes['height']) && isset($metadata['height'])) {
+                $media_attributes['height'] = $metadata['height'];
             }
             
-            if (!isset($video_attributes['format']) && isset($metadata['format'])) {
-                $video_attributes['format'] = $metadata['format'];
-            }
-            
-            if (!isset($video_attributes['thumbnail'])) {
+            if (!isset($media_attributes['thumbnail'])) {
                 if (isset($metadata['image']['url'])) {
-                    $video_attributes['thumbnail'] = self::adjust_media_path($metadata['image']['url']);
+                    $media_attributes['thumbnail'] = self::adjust_media_path($metadata['image']['url']);
                 } elseif (isset($metadata['thumb'])) {
-                    $video_attributes['thumbnail'] = self::adjust_media_path($metadata['thumb']);
+                    $media_attributes['thumbnail'] = self::adjust_media_path($metadata['thumb']);
                 }
             }
         }
     
-        return $video_attributes;
+        return $media_attributes;
     }
     
     public static function internal_img_attributes($img_id, $img_attributes = [], $include_caption = false)
