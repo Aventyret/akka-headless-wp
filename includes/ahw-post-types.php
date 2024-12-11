@@ -35,7 +35,7 @@ class Akka_headless_wp_akka_post_types
         }
         if ($args['public']) {
             $args['rewrite'] = [
-                'slug' => Utils::stringToRoute($args['label']),
+                'slug' => Resolvers::resolve_field($args, 'slug') ?? Utils::stringToRoute($args['label']),
                 'with_front' => false,
             ];
         }
