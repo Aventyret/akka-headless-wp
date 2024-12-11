@@ -119,6 +119,18 @@ class Akka_headless_wp_resolvers
         return $post_audio_attributes;
     }
 
+    public static function resolve_video($media_id)
+    {
+        if (!$media_id) {
+            return null;
+        }
+        $post_video_attributes = Utils::internal_video_attributes($media_id);
+        if (empty($post_video_attributes)) {
+            return null;
+        }
+        return $post_video_attributes;
+    }
+
     public static function resolve_image($image_id, $size = 'full', $include_caption = false)
     {
         if (!$image_id) {

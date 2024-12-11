@@ -168,6 +168,68 @@ class Akka_headless_wp_utils
     
         return $audio_attributes;
     }
+
+    public static function internal_video_attributes($video_id, $video_attributes = [])
+    {
+        if (empty($video_id)) {
+            return [];
+        }
+        
+        $video_src = wp_get_attachment_url($video_id);
+        if (empty($video_src)) {
+            return [];
+        }
+
+        $video_attributes['id'] = $video_id;
+        $video_attributes['mime_type'] = get_post_mime_type($video_id);
+        $video_attributes['src'] = self::adjust_media_path($video_src);
+
+        if (!isset($video_attributes['title'])) {
+            $video_attributes['title'] = get_the_title($video_id);
+        }
+
+        $metadata = wp_get_attachment_metadata($video_id);
+            
+        if (!empty($metadata)) {
+            if (!isset($video_attributes['width']) && isset($metadata['width'])) {
+                $video_attributes['width'] = $metadata['width'];
+            }
+            
+            if (!isset($video_attributes['height']) && isset($metadata['height'])) {
+                $video_attributes['height'] = $metadata['height'];
+            }
+            
+            if (!isset($video_attributes['duration']) && isset($metadata['length'])) {
+                $video_attributes['duration'] = $metadata['length'];
+            }
+            
+            if (!isset($video_attributes['filesize']) && isset($metadata['filesize'])) {
+                $video_attributes['filesize'] = $metadata['filesize'];
+            }
+            
+            if (!isset($video_attributes['bitrate']) && isset($metadata['bitrate'])) {
+                $video_attributes['bitrate'] = $metadata['bitrate'];
+            }
+            
+            if (!isset($video_attributes['codec']) && isset($metadata['codec'])) {
+                $video_attributes['codec'] = $metadata['codec'];
+            }
+            
+            if (!isset($video_attributes['format']) && isset($metadata['format'])) {
+                $video_attributes['format'] = $metadata['format'];
+            }
+            
+            if (!isset($video_attributes['thumbnail'])) {
+                if (isset($metadata['image']['url'])) {
+                    $video_attributes['thumbnail'] = self::adjust_media_path($metadata['image']['url']);
+                } elseif (isset($metadata['thumb'])) {
+                    $video_attributes['thumbnail'] = self::adjust_media_path($metadata['thumb']);
+                }
+            }
+        }
+    
+        return $video_attributes;
+    }
     
     public static function internal_img_attributes($img_id, $img_attributes = [], $include_caption = false)
     {
