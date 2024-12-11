@@ -122,6 +122,85 @@ class Akka_headless_wp_utils
             : self::internal_img_tag_in_cms($img_attributes);
     }
 
+    public static function adjust_media_path($src) 
+    {
+        if (strpos($src, '/') === 0) {
+            $src = AKKA_CMS_INTERNAL_BASE . $src;
+        }
+        if (AKKA_CMS_MEDIA_BUCKET_BASE) {
+            $src = str_replace(
+                AKKA_CMS_INTERNAL_BASE,
+                AKKA_CMS_MEDIA_BUCKET_BASE,
+                $src
+            );
+            $src = str_replace(WP_HOME, AKKA_CMS_MEDIA_BUCKET_BASE, $src);
+        }
+        return $src;
+    }
+
+    public static function internal_audio_and_video_attributes($media_id, $media_attributes = [])
+    {
+        if (empty($media_id)) {
+            return [];
+        }
+        
+        $media_src = wp_get_attachment_url($media_id);
+        if (empty($media_src)) {
+            return [];
+        }
+
+        $media_attributes['id'] = $media_id;
+        $media_attributes['mime_type'] = get_post_mime_type($media_id);
+        $media_attributes['src'] = self::adjust_media_path($media_src);
+
+        if (!isset($media_attributes['title'])) {
+            $media_attributes['title'] = get_the_title($media_id);
+        }
+
+        $metadata = wp_get_attachment_metadata($media_id);
+            
+        if (!empty($metadata)) {
+            
+            if (!isset($media_attributes['duration']) && isset($metadata['length'])) {
+                $media_attributes['duration'] = $metadata['length'];
+            }
+            
+            if (!isset($media_attributes['filesize']) && isset($metadata['filesize'])) {
+                $media_attributes['filesize'] = $metadata['filesize'];
+            }
+            
+            if (!isset($media_attributes['bitrate']) && isset($metadata['bitrate'])) {
+                $media_attributes['bitrate'] = $metadata['bitrate'];
+            }
+            
+            if (!isset($media_attributes['codec']) && isset($metadata['codec'])) {
+                $media_attributes['codec'] = $metadata['codec'];
+            }
+            
+            if (!isset($media_attributes['format']) && isset($metadata['format'])) {
+                $media_attributes['format'] = $metadata['format'];
+            }
+
+            if (!isset($media_attributes['width']) && isset($metadata['width'])) {
+                $media_attributes['width'] = $metadata['width'];
+            }
+            
+            if (!isset($media_attributes['height']) && isset($metadata['height'])) {
+                $media_attributes['height'] = $metadata['height'];
+            }
+            
+            if (!isset($media_attributes['thumbnail'])) {
+                if (isset($metadata['image']['url'])) {
+                    $media_attributes['thumbnail'] = self::adjust_media_path($metadata['image']['url']);
+                } elseif (isset($metadata['thumb'])) {
+                    $media_attributes['thumbnail'] = self::adjust_media_path($metadata['thumb']);
+                }
+            }
+        }
+    
+        return $media_attributes;
+    }
+    
     public static function internal_img_attributes($img_id, $img_attributes = [], $include_caption = false)
     {
         if (empty($img_id)) {
@@ -133,18 +212,8 @@ class Akka_headless_wp_utils
             return [];
         }
         $img_attributes['id'] = $img_id;
-        $img_attributes['src'] = $img_src_data[0];
-        if (strpos($img_attributes['src'], '/') === 0) {
-            $img_attributes['src'] = AKKA_CMS_INTERNAL_BASE . $img_attributes['src'];
-        }
-        if (AKKA_CMS_MEDIA_BUCKET_BASE) {
-            $img_attributes['src'] = str_replace(
-                AKKA_CMS_INTERNAL_BASE,
-                AKKA_CMS_MEDIA_BUCKET_BASE,
-                $img_attributes['src']
-            );
-            $img_attributes['src'] = str_replace(WP_HOME, AKKA_CMS_MEDIA_BUCKET_BASE, $img_attributes['src']);
-        }
+        $img_attributes['src'] = self::adjust_media_path($img_src_data[0]);
+        
         if (!isset($img_attributes['width'])) {
             $img_attributes['width'] = $img_src_data[1];
         }
