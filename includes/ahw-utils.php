@@ -156,13 +156,16 @@ class Akka_headless_wp_utils
         if (!isset($img_attributes['title'])) {
             $audio_attributes['title'] = get_the_title($audio_id);
         }
-        
-        if (!isset($img_attributes['duration'])) {
-            $metadata = wp_get_attachment_metadata($audio_id);
-            if (!empty($metadata) && isset($metadata['length'])) {
-                $audio_attributes['duration'] = $metadata['length']; 
-            } else {
-                $audio_attributes['duration'] = '';
+
+        $metadata = wp_get_attachment_metadata($audio_id);
+            
+        if (!empty($metadata)) {
+            if (!isset($audio_attributes['duration']) && isset($metadata['length'])) {
+                $audio_attributes['duration'] = $metadata['length'];
+            }
+            
+            if (!isset($audio_attributes['filesize']) && isset($metadata['filesize'])) {
+                $audio_attributes['filesize'] = $metadata['filesize'];
             }
         }
     
