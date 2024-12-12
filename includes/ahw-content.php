@@ -653,13 +653,14 @@ class Akka_headless_wp_content
                 ],
             ],
         ];
+        if (Utils::getQueryParam('per_page', null)) {
+            $query_args["posts_per_page"] = Utils::getQueryParam('per_page', null);
+        }
 
         $page = Utils::getQueryParam('page', 1);
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
-
-        $posts_html = self::get_posts_html($query->posts);
 
         return [
             'term_id' => $term->term_id,
@@ -667,7 +668,7 @@ class Akka_headless_wp_content
             'name' => $term->name,
             'count' => $term->count,
             'pages' => $query->max_num_pages,
-            'posts' => $posts_html,
+            'posts' => self::parse_posts($query->posts),
             'next_page' => '/term/' . $taxonomy_slug . '/' . $term->slug . '/' . ($page + 1),
         ];
     }
@@ -678,6 +679,7 @@ class Akka_headless_wp_content
     public static function get_author($data)
     {
         $author_slug = isset($data['author_slug']) ? $data['author_slug'] : false;
+        $offset = Utils::getQueryParam('offset', 0);
 
         if (!$author_slug) {
             return new WP_REST_Response(['message' => 'Missing author slug'], 400);
@@ -695,12 +697,13 @@ class Akka_headless_wp_content
             'author' => $author->data->ID,
             'offset' => $offset,
         ];
+        if (Utils::getQueryParam('per_page', null)) {
+            $query_args["posts_per_page"] = Utils::getQueryParam('per_page', null);
+        }
 
         $query = self::get_posts_query($query_args, [
             'page' => Utils::getQueryParam('page', 1),
         ]);
-
-        $posts_html = self::get_posts_html($query->posts);
 
         return [
             'author_id' => $author->data->ID,
@@ -708,7 +711,7 @@ class Akka_headless_wp_content
             'name' => $author->data->user_nicename,
             'count' => $query->found_posts,
             'pages' => $query->max_num_pages,
-            'posts' => $posts_html,
+            'posts' => self::parse_posts($query->posts),
         ];
     }
 
@@ -752,20 +755,6 @@ class Akka_headless_wp_content
         }
         $query_args['offset'] += ((int) $page - 1) * $query_args['posts_per_page'];
         return $query_args;
-    }
-
-    private static function get_posts_html($posts)
-    {
-        $html = \Roots\view('components.blurbs', [
-            'posts' => $posts,
-            'size' => 'S',
-            'gridcolclassname' => 'grid__col--M--4',
-            'attributes' => new Illuminate\View\ComponentAttributeBag([]),
-        ])->render();
-        $html = Utils::replaceHrefs($html);
-        $html = Utils::replaceSrcs($html);
-
-        return Utils::replaceHrefs($html);
     }
 
     private static function parse_posts($posts)
