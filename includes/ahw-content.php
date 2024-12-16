@@ -134,9 +134,9 @@ class Akka_headless_wp_content
         $post_id = $permalink == '/' ? get_option('page_on_front') : url_to_postid($permalink);
 
         // Check custom post structure
-        if (!$post_id && strpos($permalink, '/') !== false) {
+        if (!$post_id && $permalink != '/') {
             $permalink_parts = explode('/', $permalink);
-            $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, 'post');
+            $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, ['post', 'page']);
             if ($post_object && $post_object->post_type !== 'attachment') {
                 $post_id = $post_object->ID;
             }
@@ -654,7 +654,7 @@ class Akka_headless_wp_content
             ],
         ];
         if (Utils::getQueryParam('per_page', null)) {
-            $query_args["posts_per_page"] = Utils::getQueryParam('per_page', null);
+            $query_args['posts_per_page'] = Utils::getQueryParam('per_page', null);
         }
 
         $page = Utils::getQueryParam('page', 1);
@@ -698,7 +698,7 @@ class Akka_headless_wp_content
             'offset' => $offset,
         ];
         if (Utils::getQueryParam('per_page', null)) {
-            $query_args["posts_per_page"] = Utils::getQueryParam('per_page', null);
+            $query_args['posts_per_page'] = Utils::getQueryParam('per_page', null);
         }
 
         $query = self::get_posts_query($query_args, [
