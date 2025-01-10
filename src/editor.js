@@ -1,5 +1,3 @@
-const { createRoot } = wp.element;
-
 // import setupFieldgroups from './field-groups';
 import setupBlockStyles from './block-styles';
 import setupVariations from './variations';
