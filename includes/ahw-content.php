@@ -131,12 +131,20 @@ class Akka_headless_wp_content
 
         $permalink = urldecode($permalink);
 
+        // Check if multisite front page
+        if (is_multisite() && strlen($permalink) == 2) {
+            $blog_id = get_id_from_blogname($permalink);
+            if ($blog_id && $blog_id != 1) {
+                $permalink = '/';
+            }
+        }
+
         $post_id = $permalink == '/' ? get_option('page_on_front') : url_to_postid($permalink);
 
         // Check custom post structure
         if (!$post_id && $permalink != '/') {
             $permalink_parts = explode('/', $permalink);
-            $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, ['post', 'page']);
+            $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page']));
             if ($post_object && $post_object->post_type !== 'attachment') {
                 $post_id = $post_object->ID;
             }
