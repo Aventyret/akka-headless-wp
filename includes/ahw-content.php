@@ -57,6 +57,27 @@ class Akka_headless_wp_content
         $site_meta = array_merge(self::get_site_meta_global_fields(), [
             'navigation' => $navigation,
         ]);
+        if (class_exists('WPSEO_Redirect_Manager')) {
+            $redirect_manager = new WPSEO_Redirect_Manager();
+            $redirects = $redirect_manager->get_all_redirects();
+            $site_meta['redirects'] = array_reduce(
+                $redirects,
+                function ($redirects, $r) {
+                    $redirect = [
+                        'origin' => trim($r->get_origin(), '/'),
+                        'target' => rtrim($r->get_target(), '/'),
+                    ];
+                    if (!str_starts_with($redirect['target'], '/')) {
+                        $redirect['target'] = '/' . $redirect['target'];
+                    }
+                    if (in_array($r->get_format(), ['regex', 'plain'])) {
+                        $redirects[$r->get_format()][] = $redirect;
+                    }
+                    return $redirects;
+                },
+                ['plain' => [], 'regex' => []]
+            );
+        }
         return apply_filters('ahw_site_meta', $site_meta);
     }
 
@@ -144,7 +165,11 @@ class Akka_headless_wp_content
         // Check custom post structure
         if (!$post_id && $permalink != '/') {
             $permalink_parts = explode('/', $permalink);
-            $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page']));
+            $post_object = get_page_by_path(
+                $permalink_parts[count($permalink_parts) - 1],
+                OBJECT,
+                apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page'])
+            );
             if ($post_object && $post_object->post_type !== 'attachment') {
                 $post_id = $post_object->ID;
             }
