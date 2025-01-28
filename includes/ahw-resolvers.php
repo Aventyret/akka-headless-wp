@@ -99,6 +99,9 @@ class Akka_headless_wp_resolvers
     public static function resolve_image_field($post_data_or_fields, $field_name, $size = 'full')
     {
         $field = self::resolve_field($post_data_or_fields, $field_name);
+        if ($field && is_array($field) && isset($field['ID'])) {
+            $field = $field['ID'];
+        }
         return $field ? self::resolve_image($field, $size) : null;
     }
 
