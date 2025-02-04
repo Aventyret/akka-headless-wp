@@ -401,6 +401,9 @@ class Akka_headless_wp_utils
 
     public static function flush_frontend_cache()
     {
+        if (get_post_type() && get_post_status() != 'publish') {
+            return;
+        }
         $ok = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT, [
             'headers' => [
                 'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
