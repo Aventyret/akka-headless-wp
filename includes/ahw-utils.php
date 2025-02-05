@@ -341,7 +341,15 @@ class Akka_headless_wp_utils
         $redirect_uri = $_SERVER['REQUEST_URI'];
         if (is_user_logged_in()) {
             // Drafts
-            if (isset($_GET['p']) && $_GET['p'] && !str_starts_with($redirect_uri, '/draft/')) {
+            $post_id = null;
+            if (isset($_GET['p']) && $_GET['p']) {
+                $post_id = $_GET['p'];
+            }
+            if (isset($_GET['page_id']) && $_GET['page_id']) {
+                $post_id = $_GET['page_id'];
+                $redirect_uri .= '&p=' . $post_id;
+            }
+            if ($post_id && !str_starts_with($redirect_uri, '/draft/')) {
                 $redirect_uri = '/draft' . $redirect_uri;
                 if (!isset($_GET['preview'])) {
                     $redirect_uri .= '&preview=true';
@@ -393,6 +401,10 @@ class Akka_headless_wp_utils
 
     public static function flush_frontend_cache()
     {
+        // Do not trigger flush cache when editing drafts
+        if (get_post_type() && get_post_status() != 'publish') {
+            return;
+        }
         $ok = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT, [
             'headers' => [
                 'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
