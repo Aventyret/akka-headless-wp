@@ -401,6 +401,7 @@ class Akka_headless_wp_utils
 
     public static function flush_frontend_cache()
     {
+        // Do not trigger flush cache when editing drafts
         if (get_post_type() && get_post_status() != 'publish') {
             return;
         }
