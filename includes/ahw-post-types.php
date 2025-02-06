@@ -45,6 +45,7 @@ class Akka_headless_wp_akka_post_types
                 'acf_field_groups' => [],
                 'allowed_core_blocks' => [],
                 'unallowed_core_blocks' => [],
+                'blocks_template' => [],
             ],
             $options
         );
@@ -106,6 +107,14 @@ class Akka_headless_wp_akka_post_types
                 },
                 11
             );
+        }
+        if (!empty($options['blocks_template'])) {
+            add_action('init', function () use ($post_type_slug, $options) {
+                $post_type_object = get_post_type_object($post_type_slug);
+                if ($post_type_object) {
+                    $post_type_object->template = $options['blocks_template'];
+                }
+            });
         }
     }
 
