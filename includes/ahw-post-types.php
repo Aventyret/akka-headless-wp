@@ -113,16 +113,14 @@ class Akka_headless_wp_akka_post_types
         }
     }
 
-    public static function set_post_type_blocks_template($post_type_slug, $blocks_template) {
-        add_action(
-            'init',
-            function () use ($post_type_slug, $blocks_template) {
-                $post_type_object = get_post_type_object($post_type_slug);
-                if ($post_type_object) {
-                    $post_type_object->template = $blocks_template;
-                }
+    public static function set_post_type_blocks_template($post_type_slug, $blocks_template)
+    {
+        add_action('init', function () use ($post_type_slug, $blocks_template) {
+            $post_type_object = get_post_type_object($post_type_slug);
+            if ($post_type_object) {
+                $post_type_object->template = $blocks_template;
             }
-        );
+        });
     }
 
     private static function set_supports($args)
