@@ -792,7 +792,7 @@ class Akka_headless_wp_content
         return $query_args;
     }
 
-    private static function parse_posts($posts)
+    public static function parse_posts($posts)
     {
         $post_datas = array_map(function ($post) {
             if (is_array($post)) {
