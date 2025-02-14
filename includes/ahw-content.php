@@ -188,10 +188,13 @@ class Akka_headless_wp_content
 
         // Check that this is the correct permalink
         if ($post_id && strpos(get_permalink($post_id), $permalink) === false) {
-            return [
-                'post_type' => 'redirect',
-                'redirect' => Utils::parseUrl(get_permalink($post_id)),
-            ];
+            $correct_permalink = get_permalink($post_id);
+            if (strpos($correct_permalink, '?page_id=') === false && strpos($correct_permalink, '?p=') === false) {
+                return [
+                    'post_type' => 'redirect',
+                    'redirect' => Utils::parseUrl($correct_permalink),
+                ];
+            }
         }
 
         // Is this a post type archive?
@@ -239,7 +242,7 @@ class Akka_headless_wp_content
         }
 
         // Check that post is published
-        if ($post_id && get_post_status($post_id) != "publish") {
+        if ($post_id && get_post_status($post_id) != 'publish') {
             $post_id = null;
         }
 
