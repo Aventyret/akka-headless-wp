@@ -238,6 +238,11 @@ class Akka_headless_wp_content
             }
         }
 
+        // Check that post is published
+        if ($post_id && get_post_status($post_id) != "publish") {
+            $post_id = null;
+        }
+
         if (!$post_id) {
             $post_data = apply_filters('ahw_post_not_found_post_data', $post_id, $permalink);
             if ($post_data) {
