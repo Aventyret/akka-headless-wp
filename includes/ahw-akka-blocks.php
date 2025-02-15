@@ -175,6 +175,7 @@ class Akka_headless_wp_akka_blocks
             'method' => 'POST',
             'timeout' => 10,
             'headers' => [
+                'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
                 'Content-Type' => 'application/json; charset=utf-8',
             ],
             'body' => json_encode([
