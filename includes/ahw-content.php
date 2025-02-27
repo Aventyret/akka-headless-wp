@@ -175,6 +175,11 @@ class Akka_headless_wp_content
             }
         }
 
+        // Check hierarchical page
+        if (!$post_id) {
+            $post_id = self::get_hierarchical_page_id($permalink);
+        }
+
         // Fix for non public post types
         if ($post_id && $permalink != '/' && strpos($permalink, '/') !== false) {
             $maybe_post_type_rewrite_slug = substr($permalink, 0, strpos($permalink, '/'));
@@ -352,6 +357,31 @@ class Akka_headless_wp_content
             'pages' => $query->max_num_pages,
             'posts' => $posts,
         ];
+    }
+
+    private static function get_hierarchical_page_id($permalink) {
+        global $wpdb;
+        $permalink_parts = explode('/', $permalink);
+        if (count($permalink_parts) < 2) {
+            return null;
+        }
+        $page_result = $wpdb->get_results(
+          sprintf("SELECT ID, post_name, post_parent FROM " .
+            $wpdb->prefix .
+            "posts WHERE post_name = '%s' and post_parent > 0 and post_type = 'page'", $permalink_parts[count($permalink_parts) - 1])
+        );
+        if (empty($page_result)) {
+            return null;
+        }
+        $parent_result = $wpdb->get_results(
+          sprintf("SELECT ID, post_name, post_parent FROM " .
+            $wpdb->prefix .
+            "posts WHERE post_name = '%s' and post_type = 'page'", $permalink_parts[count($permalink_parts) - 2])
+        );
+        if (empty($page_result)) {
+            return null;
+        }
+        return $page_result[0]->ID;
     }
 
     public static function get_post_by_id($data)
