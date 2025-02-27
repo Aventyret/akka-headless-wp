@@ -196,13 +196,33 @@ class Akka_headless_wp_utils
         return $media_attributes;
     }
 
+    // Gets image from main blog if Network_Media_Library is active
+    public static function get_attachment_image_src($img_id, $img_size)
+    {
+        $switch_blog = false;
+        $use_network_library = function_exists('\Network_Media_Library\get_site_id');
+        if ($use_network_library) {
+            $current_blog_id = get_current_blog_id();
+            $network_blog_id = apply_filters('network-media-library/site_id', 1);
+            if ($current_blog_id != $network_blog_id) {
+                $switch_blog = true;
+                switch_to_blog($network_blog_id);
+            }
+        }
+        $img_src_data = wp_get_attachment_image_src($img_id, $img_size);
+        if ($switch_blog) {
+            switch_to_blog($current_blog_id);
+        }
+        return $img_src_data;
+    }
+
     public static function internal_img_attributes($img_id, $img_attributes = [], $include_caption = false)
     {
         if (empty($img_id)) {
             return [];
         }
         $img_size = isset($img_attributes['size']) ? $img_attributes['size'] : 'full';
-        $img_src_data = wp_get_attachment_image_src($img_id, $img_size);
+        $img_src_data = self::get_attachment_image_src($img_id, $img_size);
         if (empty($img_src_data)) {
             return [];
         }
@@ -290,7 +310,7 @@ class Akka_headless_wp_utils
         if (!$image_id) {
             return null;
         }
-        $src = wp_get_attachment_image_src($image_id, $size);
+        $src = self::get_attachment_image_src($image_id, $size);
         if (!$src) {
             return null;
         }

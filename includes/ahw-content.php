@@ -373,7 +373,7 @@ class Akka_headless_wp_content
             return new WP_REST_Response(['message' => 'Attachment not found'], 404);
         }
 
-        $attachment_attributes = wp_get_attachment_image_src($attachment_id);
+        $attachment_attributes = Utils::get_attachment_image_src($attachment_id);
 
         if (!$attachment_attributes) {
             return new WP_REST_Response(['message' => 'Attachment not found'], 404);
@@ -1029,7 +1029,7 @@ class Akka_headless_wp_content
             $seo_meta['seo_image_id'] = $post_thumbnail_id;
         }
         if (isset($seo_meta['seo_image_id'])) {
-            $image_src = wp_get_attachment_image_src($seo_meta['seo_image_id'], 'large');
+            $image_src = Utils::get_attachment_image_src($seo_meta['seo_image_id'], 'large');
             $seo_meta['seo_image_url'] = $image_src[0];
             $seo_meta['seo_image_width'] = $image_src[1];
             $seo_meta['seo_image_height'] = $image_src[2];
@@ -1106,7 +1106,7 @@ class Akka_headless_wp_content
             $specific_seo_description_is_defined = true;
         }
         if (isset($seo_meta['seo_image_id'])) {
-            $image_src = wp_get_attachment_image_src($seo_meta['seo_image_id'], 'large');
+            $image_src = Utils::get_attachment_image_src($seo_meta['seo_image_id'], 'large');
             $seo_meta['seo_image_url'] = $image_src[0];
             $seo_meta['seo_image_width'] = $image_src[1];
             $seo_meta['seo_image_height'] = $image_src[2];
