@@ -142,7 +142,7 @@ class Akka_headless_wp_akka_taxonomies
                 global $typenow;
                 if (in_array($typenow, $options['admin_filter_post_types'])) {
                     wp_dropdown_categories([
-                        'show_option_all' => __("Show All {$args['label']}"),
+                        'show_option_all' => $args['label'],
                         'taxonomy' => $taxonomy_slug,
                         'name' => 'term_' . $taxonomy_slug,
                         'orderby' => 'name',
