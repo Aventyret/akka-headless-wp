@@ -38,7 +38,7 @@ class Akka_headless_wp_acf
     private static function set_field_keys($fields)
     {
         foreach ($fields as $index => $field) {
-            if (!Resolvers::resolve_field($field, 'name')) {
+            if (!Resolvers::resolve_field($field, 'name') && !Resolvers::resolve_field($field, 'key')) {
                 error_log(json_encode($field));
                 throw new Exception('Akka acf field: name is missing!');
             }
