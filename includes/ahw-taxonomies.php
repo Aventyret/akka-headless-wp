@@ -14,6 +14,7 @@ class Akka_headless_wp_akka_taxonomies
                 'post_types' => ['post'],
                 'in_archive_post_types' => [],
                 'admin_column_post_types' => [],
+                'admin_filter_post_types' => [],
                 'has_archive' => false,
                 'acf_field_groups' => [],
             ],
@@ -49,6 +50,10 @@ class Akka_headless_wp_akka_taxonomies
         add_action('init', function () use ($taxonomy_slug, $options, $args) {
             register_taxonomy($taxonomy_slug, $options['post_types'], $args);
         });
+
+        if (!is_admin()) {
+            return;
+        }
 
         foreach ($options['post_types'] as $post_type) {
             add_filter('ahw_headless_post_type_taxonomy_map', function ($taxonomy_map) use (
@@ -130,6 +135,56 @@ class Akka_headless_wp_akka_taxonomies
                 10,
                 2
             );
+        }
+
+        if (count($options['admin_filter_post_types'])) {
+            add_action('restrict_manage_posts', function () use ($options, $taxonomy_slug, $args) {
+                global $typenow;
+                if (in_array($typenow, $options['admin_filter_post_types'])) {
+                    wp_dropdown_categories([
+                        'show_option_all' => __("Show All {$args['label']}"),
+                        'taxonomy' => $taxonomy_slug,
+                        'name' => 'term_' . $taxonomy_slug,
+                        'orderby' => 'name',
+                        'value_field' => 'slug',
+                        'selected' => Resolvers::resolve_field($_GET, 'term_' . $taxonomy_slug),
+                        'hierarchical' => false,
+                        'depth' => 3,
+                        'show_count' => false,
+                        'hide_empty' => true,
+                    ]);
+                }
+            });
+
+            add_filter('query_vars', function ($vars) use ($taxonomy_slug) {
+                $vars[] .= 'term_' . $taxonomy_slug;
+
+                return $vars;
+            });
+
+            // Add params to query
+            add_action('pre_get_posts', function ($query) use ($taxonomy_slug) {
+                if (!is_admin() || !$query->is_main_query()) {
+                    return;
+                }
+
+                $tax_query = null;
+                if (Resolvers::resolve_field($query->query_vars, 'term_' . $taxonomy_slug)) {
+                    $tax_query = [
+                        [
+                            'taxonomy' => $taxonomy_slug,
+                            'field' => 'slug',
+                            'terms' => [$query->query_vars['term_' . $taxonomy_slug]],
+                        ],
+                    ];
+                }
+
+                if ($tax_query) {
+                    $query->set('tax_query', $tax_query);
+                }
+
+                return $query;
+            });
         }
     }
 }
