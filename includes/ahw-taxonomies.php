@@ -94,36 +94,36 @@ class Akka_headless_wp_akka_taxonomies
         }
 
         foreach ($options['admin_column_post_types'] as $post_type) {
-            add_filter("manage_" . $post_type . "_posts_columns", function ($defaults) use($taxonomy_slug, $args) {
-                $has_date_col = isset($defaults["date"]);
+            add_filter('manage_' . $post_type . '_posts_columns', function ($defaults) use ($taxonomy_slug, $args) {
+                $has_date_col = isset($defaults['date']);
                 if ($has_date_col) {
-                    $date_col = $defaults["date"];
-                    unset($defaults["date"]);
+                    $date_col = $defaults['date'];
+                    unset($defaults['date']);
                 }
 
-                $defaults["tax_" . $taxonomy_slug] = $args["label"];
+                $defaults['tax_' . $taxonomy_slug] = $args['label'];
 
                 if ($has_date_col) {
-                    $defaults["date"] = $date_col;
+                    $defaults['date'] = $date_col;
                 }
 
                 return $defaults;
             });
 
             add_action(
-                "manage_" . $post_type . "_posts_custom_column",
-                function ($column_name, $post_id) use($taxonomy_slug) {
-                    if ($column_name == "tax_" . $taxonomy_slug) {
+                'manage_' . $post_type . '_posts_custom_column',
+                function ($column_name, $post_id) use ($taxonomy_slug) {
+                    if ($column_name == 'tax_' . $taxonomy_slug) {
                         $terms = wp_get_post_terms($post_id, $taxonomy_slug);
                         if (!empty($terms)) {
                             echo implode(
-                                ", ",
+                                ', ',
                                 array_map(function ($term) {
                                     return $term->name;
                                 }, $terms)
                             );
                         } else {
-                            echo "&nbsp;";
+                            echo '&nbsp;';
                         }
                     }
                 },

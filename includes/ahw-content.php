@@ -359,24 +359,31 @@ class Akka_headless_wp_content
         ];
     }
 
-    private static function get_hierarchical_page_id($permalink) {
+    private static function get_hierarchical_page_id($permalink)
+    {
         global $wpdb;
         $permalink_parts = explode('/', $permalink);
         if (count($permalink_parts) < 2) {
             return null;
         }
         $page_result = $wpdb->get_results(
-          sprintf("SELECT ID, post_name, post_parent FROM " .
-            $wpdb->prefix .
-            "posts WHERE post_name = '%s' and post_parent > 0 and post_type = 'page'", $permalink_parts[count($permalink_parts) - 1])
+            sprintf(
+                'SELECT ID, post_name, post_parent FROM ' .
+                    $wpdb->prefix .
+                    "posts WHERE post_name = '%s' and post_parent > 0 and post_type = 'page'",
+                $permalink_parts[count($permalink_parts) - 1]
+            )
         );
         if (empty($page_result)) {
             return null;
         }
         $parent_result = $wpdb->get_results(
-          sprintf("SELECT ID, post_name, post_parent FROM " .
-            $wpdb->prefix .
-            "posts WHERE post_name = '%s' and post_type = 'page'", $permalink_parts[count($permalink_parts) - 2])
+            sprintf(
+                'SELECT ID, post_name, post_parent FROM ' .
+                    $wpdb->prefix .
+                    "posts WHERE post_name = '%s' and post_type = 'page'",
+                $permalink_parts[count($permalink_parts) - 2]
+            )
         );
         if (empty($page_result)) {
             return null;
