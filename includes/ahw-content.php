@@ -394,9 +394,14 @@ class Akka_headless_wp_content
     public static function get_post_by_id($data)
     {
         $post_id = Utils::getRouteParam($data, 'post_id');
+        $blog_id = Utils::getRouteParam($data, 'blog_id');
 
         if (!$post_id) {
             return new WP_REST_Response(['message' => 'Post not found'], 404);
+        }
+
+        if ($blog_id) {
+            switch_to_blog($blog_id);
         }
 
         return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending']);

@@ -379,6 +379,11 @@ class Akka_headless_wp_utils
             if (get_post_status() == 'private' && !isset($_GET['p'])) {
                 $redirect_uri = '/draft?p=' . get_the_id();
             }
+            // Multisite
+            if (str_starts_with($redirect_uri, '/draft/') && defined('MULTISITE') && MULTISITE) {
+                $redirect_uri .= '&blog_id=' . get_current_blog_id();
+                $redirect_uri = '/draft/' . substr($redirect_uri, strpos($redirect_uri, '?'));
+            }
         }
         wp_redirect(AKKA_FRONTEND_BASE . $redirect_uri);
     }
