@@ -51,10 +51,6 @@ class Akka_headless_wp_akka_taxonomies
             register_taxonomy($taxonomy_slug, $options['post_types'], $args);
         });
 
-        if (!is_admin()) {
-            return;
-        }
-
         foreach ($options['post_types'] as $post_type) {
             add_filter('ahw_headless_post_type_taxonomy_map', function ($taxonomy_map) use (
                 $taxonomy_slug,
@@ -96,6 +92,10 @@ class Akka_headless_wp_akka_taxonomies
                 ],
             ];
             Acf::register_field_group($acf_field_group);
+        }
+
+        if (!is_admin()) {
+            return;
         }
 
         foreach ($options['admin_column_post_types'] as $post_type) {
