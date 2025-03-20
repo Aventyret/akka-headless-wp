@@ -498,6 +498,7 @@ class Akka_headless_wp_content
                     'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($p->post_author)),
                 ],
                 'slug' => $p->post_name,
+                'excerpt' => post_type_supports($p->post_type, 'excerpt') ? get_the_excerpt($p->ID) : null,
                 'page_template' => Utils::get_page_template_slug($p),
                 'featured_image' => $featured_image_attributes,
                 'thumbnail_caption' => apply_filters(
