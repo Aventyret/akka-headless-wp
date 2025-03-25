@@ -628,6 +628,7 @@ class Akka_headless_wp_content
             'taxonomy' => $archive_taxonomy->name,
             'taxonomy_label' => $archive_taxonomy->labels->singular_name,
             'term_id' => $archive_taxonomy_term->term_id,
+            'parent_id' => $archive_taxonomy_term->parent,
             'slug' => $archive_taxonomy_term->slug,
             'url' => '/' . $permalink,
             'post_title' => $archive_taxonomy_term->name,
@@ -681,6 +682,7 @@ class Akka_headless_wp_content
                         function ($term) {
                             return [
                                 'term_id' => $term->term_id,
+                                'parent_id' => $term->parent,
                                 'name' => $term->name,
                                 'slug' => $term->slug,
                                 'url' => Utils::parseUrl(get_term_link($term->term_id)),
