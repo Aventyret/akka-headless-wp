@@ -516,6 +516,19 @@ class Akka_headless_wp_content
                         $akka_post['taxonomy_terms'][$taxonomy_slug]['primary_term'];
                 }
             }
+            if ($akka_post["post_type"] == "page" && self::get_post_type_archive_permalink('post') == $akka_post["slug"]) {
+                $page = Utils::getQueryParam('page', 1);
+                $archive_query = self::archive_query('post', $page);
+                $akka_post["archive"] = [
+                    'count' => $archive_query->found_posts,
+                    'pages' => $archive_query->max_num_pages,
+                    'posts' => self::parse_posts($archive_query->posts),
+                    'next_page' =>
+                        $archive_query->max_num_pages > $page + 1
+                            ? '/' . self::get_post_type_archive_permalink('post') . '?page=' . ($page + 1)
+                            : null,
+                ];
+            }
             self::$_akka_post_memory[$p->ID] = $akka_post;
         }
         return self::$_akka_post_memory[$p->ID];
@@ -538,14 +551,8 @@ class Akka_headless_wp_content
             return null;
         }
 
-        $query_args = [
-            'post_type' => $archive_post_type,
-        ];
-
         $page = Utils::getQueryParam('page', 1);
-        $query = self::get_posts_query($query_args, [
-            'page' => $page,
-        ]);
+        $query = self::archive_query($archive_post_type, $page);
 
         $posts = self::parse_posts($query->posts);
 
@@ -573,6 +580,18 @@ class Akka_headless_wp_content
         $post_type_data = array_merge(self::get_post_data($post_page), $post_type_data);
 
         return apply_filters('ahw_post_type_data', $post_type_data);
+    }
+
+    private static function archive_query($post_type, $page = 1) {
+        $query_args = [
+            'post_type' => $archive_post_type,
+        ];
+
+        $query = self::get_posts_query($query_args, [
+            'page' => $page,
+        ]);
+
+        return $query;
     }
 
     private static function get_taxonomy_term_archive_data($permalink, $year = null)
