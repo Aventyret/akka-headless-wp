@@ -581,11 +581,12 @@ class Akka_headless_wp_content
                     : null,
         ];
 
-        $post_page = get_option('page_for_posts');
-        if (!$post_page) {
-            return null;
+        if ($archive_post_type == 'post') {
+            $post_page = get_option('page_for_posts');
+            if ($post_page) {
+                $post_type_data = array_merge(self::get_post_data($post_page), $post_type_data);
+            }
         }
-        $post_type_data = array_merge(self::get_post_data($post_page), $post_type_data);
 
         return apply_filters('ahw_post_type_data', $post_type_data);
     }
