@@ -521,10 +521,13 @@ class Akka_headless_wp_content
                         $akka_post['taxonomy_terms'][$taxonomy_slug]['primary_term'];
                 }
             }
-            if ($akka_post["post_type"] == "page" && self::get_post_type_archive_permalink('post') == $akka_post["slug"]) {
+            if (
+                $akka_post['post_type'] == 'page' &&
+                self::get_post_type_archive_permalink('post') == $akka_post['slug']
+            ) {
                 $page = Utils::getQueryParam('page', 1);
                 $archive_query = self::archive_query('post', $page);
-                $akka_post["archive"] = [
+                $akka_post['archive'] = [
                     'count' => $archive_query->found_posts,
                     'pages' => $archive_query->max_num_pages,
                     'posts' => self::parse_posts($archive_query->posts),
@@ -587,7 +590,8 @@ class Akka_headless_wp_content
         return apply_filters('ahw_post_type_data', $post_type_data);
     }
 
-    private static function archive_query($post_type, $page = 1) {
+    private static function archive_query($post_type, $page = 1)
+    {
         $query_args = [
             'post_type' => $post_type,
         ];
