@@ -192,10 +192,12 @@ class Akka_headless_wp_content
         }
 
         // Check that this is the correct permalink
+        $redirect_response = null;
         if ($post_id && strpos(get_permalink($post_id), $permalink) === false) {
             $correct_permalink = get_permalink($post_id);
             if (strpos($correct_permalink, '?page_id=') === false && strpos($correct_permalink, '?p=') === false) {
-                return [
+                $post_id = null;
+                $redirect_response = [
                     'post_type' => 'redirect',
                     'redirect' => Utils::parseUrl($correct_permalink),
                 ];
@@ -252,6 +254,9 @@ class Akka_headless_wp_content
         }
 
         if (!$post_id) {
+            if ($redirect_response) {
+                return $redirect_response;
+            }
             $post_data = apply_filters('ahw_post_not_found_post_data', $post_id, $permalink);
             if ($post_data) {
                 return $post_data;
@@ -584,8 +589,9 @@ class Akka_headless_wp_content
 
     private static function archive_query($post_type, $page = 1) {
         $query_args = [
-            'post_type' => $archive_post_type,
+            'post_type' => $post_type,
         ];
+        $query_args = apply_filters('ahw_' . $post_type . '_archive_query_args', $query_args);
 
         $query = self::get_posts_query($query_args, [
             'page' => $page,
