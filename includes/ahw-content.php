@@ -66,6 +66,7 @@ class Akka_headless_wp_content
                     $redirect = [
                         'origin' => trim($r->get_origin(), '/'),
                         'target' => rtrim($r->get_target(), '/'),
+                        'status_code' => $r->get_type() || 301,
                     ];
                     if (!str_starts_with($redirect['target'], '/')) {
                         $redirect['target'] = '/' . $redirect['target'];
