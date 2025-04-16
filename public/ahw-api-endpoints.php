@@ -10,6 +10,18 @@ add_action( 'rest_api_init', function () {
     'callback' => 'Akka_headless_wp_content::get_post',
     'permission_callback' => 'Akka_headless_wp_content::can_get_content',
   ) );
+  register_rest_route( AKKA_API_BASE, '/post/', array(
+    'methods' => 'GET',
+    'callback' => 'Akka_headless_wp_content::get_post',
+    'permission_callback' => 'Akka_headless_wp_content::can_get_content',
+    'args' => array(
+      'permalink' => array(
+        'required' => true,
+        'type' => 'string',
+        'default' => '/',
+      ),
+    ),
+  ) );
   register_rest_route( AKKA_API_BASE, '/posts', array(
     'methods' => 'GET',
     'callback' => 'Akka_headless_wp_content::get_posts',
