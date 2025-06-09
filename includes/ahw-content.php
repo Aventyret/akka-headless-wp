@@ -574,7 +574,7 @@ class Akka_headless_wp_content
             'post_title' => $post_type_object->label,
             'name' => $post_type_object->label,
             'count' => $query->found_posts,
-            'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
+            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => $posts,
             'next_page' =>
                 $query->max_num_pages > $page + 1
@@ -666,7 +666,7 @@ class Akka_headless_wp_content
             'name' => $archive_taxonomy_term->name,
             'fields' => get_fields($archive_taxonomy_term),
             'count' => $query->found_posts,
-            'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
+            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => $posts,
             'pages' => $query->max_num_pages,
             'next_page' =>
@@ -786,7 +786,7 @@ class Akka_headless_wp_content
             'slug' => $term->slug,
             'name' => $term->name,
             'count' => $term->count,
-            'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
+            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => self::parse_posts($query->posts),
             'next_page' => '/term/' . $taxonomy_slug . '/' . $term->slug . '/' . ($page + 1),
         ];
