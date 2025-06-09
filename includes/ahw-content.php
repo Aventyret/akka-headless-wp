@@ -668,7 +668,6 @@ class Akka_headless_wp_content
             'count' => $query->found_posts,
             'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => $posts,
-            'pages' => $query->max_num_pages,
             'next_page' =>
                 $query->max_num_pages > $page + 1
                     ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
