@@ -530,7 +530,7 @@ class Akka_headless_wp_content
                 $archive_query = self::archive_query('post', $page);
                 $akka_post['archive'] = [
                     'count' => $archive_query->found_posts,
-                    'pages' => $archive_query->max_num_pages,
+                    'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
                     'posts' => self::parse_posts($archive_query->posts),
                     'next_page' =>
                         $archive_query->max_num_pages > $page + 1
