@@ -401,6 +401,7 @@ class Akka_headless_wp_content
     {
         $post_id = Utils::getRouteParam($data, 'post_id');
         $blog_id = Utils::getRouteParam($data, 'blog_id');
+        $get_autosaved = !!Utils::getQueryParam('autosaved');
 
         if (!$post_id) {
             return new WP_REST_Response(['message' => 'Post not found'], 404);
@@ -410,7 +411,7 @@ class Akka_headless_wp_content
             switch_to_blog($blog_id);
         }
 
-        return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending']);
+        return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
     }
 
     public static function get_attachment_by_id($data)
@@ -435,7 +436,7 @@ class Akka_headless_wp_content
         ];
     }
 
-    public static function get_post_data($post_id, $post_status = ['publish'])
+    public static function get_post_data($post_id, $post_status = ['publish'], $get_autosaved = false)
     {
         global $post;
         $posts = get_posts([
@@ -445,6 +446,12 @@ class Akka_headless_wp_content
         ]);
         if (empty($posts)) {
             return new WP_REST_Response(['message' => 'Post not found'], 404);
+        }
+        if ($get_autosaved) {
+            $autosaved_post = wp_get_post_autosave($post_id);
+            if ($autosaved_post) {
+                $posts[0]->post_content = $autosaved_post->post_content;
+            }
         }
         $post = $posts[0];
 
