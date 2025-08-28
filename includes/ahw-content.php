@@ -32,6 +32,7 @@ class Akka_headless_wp_content
                         'parent_id' => $item->menu_item_parent ? $item->menu_item_parent : null,
                         'url' => Utils::parseUrl($item->url),
                         'title' => $item->title,
+                        'description' => $item->description,
                         'children' => [],
                     ];
                 }, $menu_items);
