@@ -163,7 +163,7 @@ class Akka_headless_wp_akka_blocks
         $data = $request->get_json_params();
         $post_id = Resolvers::resolve_field($data, 'postId');
         $blockType = Resolvers::resolve_field($data, 'blockType');
-        $attributes = Resolvers::resolve_field($data, 'attributes');
+        $attributes = Resolvers::resolve_array_field($data, 'attributes');
         $akka_component_name = self::get_block_component_name($blockType);
         if (str_starts_with($blockType, 'splx/')) {
             $props = self::get_splx_block_props($post_id, $blockType, $attributes);

@@ -369,6 +369,10 @@ class Akka_headless_wp_utils
                 $post_id = $_GET['page_id'];
                 $redirect_uri .= '&p=' . $post_id;
             }
+            if (isset($_GET['preview_id']) && $_GET['preview_id']) {
+                $post_id = $_GET['preview_id'];
+                $redirect_uri .= '&p=' . $post_id . '&autosaved=true';
+            }
             if ($post_id && !str_starts_with($redirect_uri, '/draft/')) {
                 $redirect_uri = '/draft' . $redirect_uri;
                 if (!isset($_GET['preview'])) {

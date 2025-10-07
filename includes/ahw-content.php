@@ -32,6 +32,7 @@ class Akka_headless_wp_content
                         'parent_id' => $item->menu_item_parent ? $item->menu_item_parent : null,
                         'url' => Utils::parseUrl($item->url),
                         'title' => $item->title,
+                        'description' => $item->description,
                         'children' => [],
                     ];
                 }, $menu_items);
@@ -401,6 +402,7 @@ class Akka_headless_wp_content
     {
         $post_id = Utils::getRouteParam($data, 'post_id');
         $blog_id = Utils::getRouteParam($data, 'blog_id');
+        $get_autosaved = !!Utils::getQueryParam('autosaved');
 
         if (!$post_id) {
             return new WP_REST_Response(['message' => 'Post not found'], 404);
@@ -410,7 +412,7 @@ class Akka_headless_wp_content
             switch_to_blog($blog_id);
         }
 
-        return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending']);
+        return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
     }
 
     public static function get_attachment_by_id($data)
@@ -435,7 +437,7 @@ class Akka_headless_wp_content
         ];
     }
 
-    public static function get_post_data($post_id, $post_status = ['publish'])
+    public static function get_post_data($post_id, $post_status = ['publish'], $get_autosaved = false)
     {
         global $post;
         $posts = get_posts([
@@ -445,6 +447,12 @@ class Akka_headless_wp_content
         ]);
         if (empty($posts)) {
             return new WP_REST_Response(['message' => 'Post not found'], 404);
+        }
+        if ($get_autosaved) {
+            $autosaved_post = wp_get_post_autosave($post_id);
+            if ($autosaved_post) {
+                $posts[0]->post_content = $autosaved_post->post_content;
+            }
         }
         $post = $posts[0];
 
@@ -504,7 +512,7 @@ class Akka_headless_wp_content
                     'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($p->post_author)),
                 ],
                 'slug' => $p->post_name,
-                'excerpt' => post_type_supports($p->post_type, 'excerpt') ? get_the_excerpt($p->ID) : null,
+                'excerpt' => post_type_supports($p->post_type, 'excerpt') ? $p->post_excerpt : null,
                 'page_template' => Utils::get_page_template_slug($p),
                 'featured_image' => $featured_image_attributes,
                 'thumbnail_caption' => apply_filters(
@@ -530,7 +538,7 @@ class Akka_headless_wp_content
                 $archive_query = self::archive_query('post', $page);
                 $akka_post['archive'] = [
                     'count' => $archive_query->found_posts,
-                    'pages' => $archive_query->max_num_pages,
+                    'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
                     'posts' => self::parse_posts($archive_query->posts),
                     'next_page' =>
                         $archive_query->max_num_pages > $page + 1
@@ -574,7 +582,7 @@ class Akka_headless_wp_content
             'post_title' => $post_type_object->label,
             'name' => $post_type_object->label,
             'count' => $query->found_posts,
-            'pages' => $query->max_num_pages,
+            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => $posts,
             'next_page' =>
                 $query->max_num_pages > $page + 1
@@ -666,9 +674,8 @@ class Akka_headless_wp_content
             'name' => $archive_taxonomy_term->name,
             'fields' => get_fields($archive_taxonomy_term),
             'count' => $query->found_posts,
-            'pages' => $query->max_num_pages,
+            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => $posts,
-            'pages' => $query->max_num_pages,
             'next_page' =>
                 $query->max_num_pages > $page + 1
                     ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
@@ -786,7 +793,7 @@ class Akka_headless_wp_content
             'slug' => $term->slug,
             'name' => $term->name,
             'count' => $term->count,
-            'pages' => $query->max_num_pages,
+            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
             'posts' => self::parse_posts($query->posts),
             'next_page' => '/term/' . $taxonomy_slug . '/' . $term->slug . '/' . ($page + 1),
         ];
