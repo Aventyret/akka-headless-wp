@@ -671,6 +671,7 @@ class Akka_headless_wp_content
             'slug' => $archive_taxonomy_term->slug,
             'url' => '/' . $permalink,
             'post_title' => $archive_taxonomy_term->name,
+            'description' => term_description($archive_taxonomy_term->term_id),
             'name' => $archive_taxonomy_term->name,
             'fields' => get_fields($archive_taxonomy_term),
             'count' => $query->found_posts,
@@ -718,12 +719,13 @@ class Akka_headless_wp_content
                     ],
                     'terms' => array_map(
                         function ($term) {
+                            $term_url = Utils::parseUrl(get_term_link($term->term_id));
                             return [
                                 'term_id' => $term->term_id,
                                 'parent_id' => $term->parent,
                                 'name' => $term->name,
                                 'slug' => $term->slug,
-                                'url' => Utils::parseUrl(get_term_link($term->term_id)),
+                                'url' => apply_filters('ahw_term_url', $term_url, $term, $taxonomy),
                             ];
                         },
                         $taxonomy_terms ? $taxonomy_terms : []
@@ -745,11 +747,12 @@ class Akka_headless_wp_content
         $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => false]);
         return array_map(
             function ($term) {
+                $term_url = Utils::parseUrl(get_term_link($term->term_id));
                 return [
                     'term_id' => $term->term_id,
                     'name' => $term->name,
                     'slug' => $term->slug,
-                    'url' => Utils::parseUrl(get_term_link($term->term_id)),
+                    'url' => apply_filters('ahw_term_url', $term_url, $term, $taxonomy),
                 ];
             },
             $taxonomy_terms ? $taxonomy_terms : []

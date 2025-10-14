@@ -434,6 +434,18 @@ class Akka_headless_wp_utils
         if (get_post_type() && get_post_status() != 'publish') {
             return;
         }
+        // Do not trigger flush cache when autosaving
+        if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) {
+            return;
+        }
+        $post_id = get_the_ID();
+        if (wp_is_post_autosave($post_id)) {
+            return;
+        }
+        // Do not trigger flush cache when editing revisions
+        if (wp_is_post_revision($post_id)) {
+            return;
+        }
         $ok = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT, [
             'headers' => [
                 'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
