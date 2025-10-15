@@ -7,7 +7,6 @@
  */
 
 if (defined('WP_CLI') && WP_CLI) {
-
     class Akka_WPCLI_With_Lock
     {
         /**
@@ -34,9 +33,9 @@ if (defined('WP_CLI') && WP_CLI) {
         {
             global $wpdb;
 
-            $key   = $assoc_args['key'] ?? 'akka_lock';
-            $cmd   = $assoc_args['cmd'] ?? '--help';
-            $wait  = isset($assoc_args['acquire-timeout']) ? (int)$assoc_args['acquire-timeout'] : 2;
+            $key = $assoc_args['key'] ?? 'akka_lock';
+            $cmd = $assoc_args['cmd'] ?? '--help';
+            $wait = isset($assoc_args['acquire-timeout']) ? (int) $assoc_args['acquire-timeout'] : 2;
 
             if ($cmd === '') {
                 WP_CLI::error('Saknar underkommando. Använd --cmd="…" eller pass-through efter --.');
@@ -47,7 +46,7 @@ if (defined('WP_CLI') && WP_CLI) {
             if ($got === null) {
                 WP_CLI::error('GET_LOCK returnerade NULL (kontrollera DB-anslutning/rättigheter).');
             }
-            if ((int)$got !== 1) {
+            if ((int) $got !== 1) {
                 WP_CLI::log("Lås upptaget: {$key} — avbryter körning.");
                 return;
             }
@@ -55,8 +54,8 @@ if (defined('WP_CLI') && WP_CLI) {
             try {
                 WP_CLI::log("Lås erhållet: {$key}");
                 $result = WP_CLI::runcommand($cmd, [
-                    'return'     => 'all',
-                    'launch'     => true,
+                    'return' => 'all',
+                    'launch' => true,
                     'exit_error' => false,
                 ]);
                 if ($result->return_code !== 0) {

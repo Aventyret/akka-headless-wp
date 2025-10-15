@@ -435,7 +435,7 @@ class Akka_headless_wp_utils
             return;
         }
         // Do not trigger flush cache when autosaving
-        if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) {
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
         $post_id = get_the_ID();
