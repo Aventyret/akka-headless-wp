@@ -92,9 +92,11 @@ class Akka_headless_wp_content
                 [$g, $section, $key] = preg_split('/_/', $field, 3, PREG_SPLIT_NO_EMPTY);
                 if (isset($section) && isset($key)) {
                     if ($value instanceof \WP_Post) {
+                        $permalink = Utils::parseUrl(get_permalink($value));
                         $value = [
                             'post_id' => $value->ID,
-                            'permalink' => Utils::parseUrl(get_permalink($value)),
+                            'permalink' => $permalink,
+                            'url' => $permalink,
                             'post_title' => $value->post_title,
                             'post_name' => $value->post_name,
                         ];
@@ -498,6 +500,8 @@ class Akka_headless_wp_content
                 ])
                 : null;
 
+            $permalink = Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($p->ID)));
+
             $akka_post = [
                 'post_id' => $p->ID,
                 'post_date' => get_the_date(get_option('date_format'), $p->ID),
@@ -520,7 +524,8 @@ class Akka_headless_wp_content
                     get_the_post_thumbnail_caption($p->ID),
                     $post_thumbnail_id
                 ),
-                'permalink' => Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($p->ID))),
+                'permalink' => $permalink,
+                'url' => $permalink,
                 'taxonomy_terms' => self::get_post_data_terms($p),
                 'fields' => get_fields($p->ID),
             ];
