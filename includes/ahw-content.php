@@ -723,7 +723,7 @@ class Akka_headless_wp_content
                         'slug' => $taxonomy_slug,
                     ],
                     'terms' => array_map(
-                        function ($term) {
+                        function ($term) use($taxonomy) {
                             $term_url = Utils::parseUrl(get_term_link($term->term_id));
                             return [
                                 'term_id' => $term->term_id,
