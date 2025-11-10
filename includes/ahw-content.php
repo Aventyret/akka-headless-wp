@@ -208,6 +208,13 @@ class Akka_headless_wp_content
             }
         }
 
+        if (!$post_id) {
+            $post_id = apply_filters('ahw_post_pre_redirect_post_id', $post_id, $permalink);
+            if ($post_id) {
+                $redirect_response = null;
+            }
+        }
+
         // Is this a post type archive?
         if (!$post_id) {
             $post_type_archive_data = self::get_post_type_archive_data($permalink);
