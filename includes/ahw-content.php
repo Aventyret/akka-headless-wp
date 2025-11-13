@@ -13,6 +13,7 @@ class Akka_headless_wp_content
     {
         $menu_ids = get_nav_menu_locations();
         $navigation = [];
+        $navigation_meta = [];
 
         foreach ($menu_ids ?: [] as $menu_slug => $menu_id) {
             $menu_id = apply_filters('ahw_site_meta_menu_id', $menu_id, $menu_slug);
@@ -25,6 +26,7 @@ class Akka_headless_wp_content
                 }
             }
             $navigation[$slug] = null;
+            $navigation_meta[$slug] = null;
             if ($menu_items) {
                 $navigation[$slug] = array_map(function ($item) {
                     return [
@@ -53,10 +55,14 @@ class Akka_headless_wp_content
                     },
                     []
                 );
+                $navigation_meta[$slug] = [
+                    'name' => wp_get_nav_menu_name($slug),
+                ];
             }
         }
         $site_meta = array_merge(self::get_site_meta_global_fields(), [
             'navigation' => $navigation,
+            'navigation_meta' => $navigation_meta,
         ]);
         if (class_exists('WPSEO_Redirect_Manager')) {
             $redirect_manager = new WPSEO_Redirect_Manager();
@@ -730,7 +736,7 @@ class Akka_headless_wp_content
                         'slug' => $taxonomy_slug,
                     ],
                     'terms' => array_map(
-                        function ($term) use($taxonomy) {
+                        function ($term) use ($taxonomy) {
                             $term_url = Utils::parseUrl(get_term_link($term->term_id));
                             return [
                                 'term_id' => $term->term_id,
@@ -1160,7 +1166,11 @@ class Akka_headless_wp_content
         }
         foreach (['seo_title', 'og_title', 'twitter_title'] as $title_key) {
             if (isset($seo_meta[$title_key])) {
-                $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;', '&amp;'], ['', '-', '&'], $seo_meta[$title_key]);
+                $seo_meta[$title_key] = str_replace(
+                    ['&shy;', '&ndash;', '&amp;'],
+                    ['', '-', '&'],
+                    $seo_meta[$title_key]
+                );
             }
         }
         return apply_filters('ahw_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
@@ -1237,7 +1247,11 @@ class Akka_headless_wp_content
         }
         foreach (['seo_title', 'og_title', 'twitter_title'] as $title_key) {
             if (isset($seo_meta[$title_key])) {
-                $seo_meta[$title_key] = str_replace(['&shy;', '&ndash;', '&amp;'], ['', '-', '&'], $seo_meta[$title_key]);
+                $seo_meta[$title_key] = str_replace(
+                    ['&shy;', '&ndash;', '&amp;'],
+                    ['', '-', '&'],
+                    $seo_meta[$title_key]
+                );
             }
         }
         return apply_filters(
