@@ -446,7 +446,7 @@ class Akka_headless_wp_utils
         if (wp_is_post_revision($post_id)) {
             return;
         }
-        $ok = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT, [
+        $ok = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT, [
             'headers' => [
                 'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
             ],
