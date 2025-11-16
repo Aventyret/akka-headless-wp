@@ -364,8 +364,7 @@ class Akka_headless_wp_utils
             $post_id = null;
             if (isset($_GET['p']) && $_GET['p']) {
                 $post_id = $_GET['p'];
-            }
-            if (isset($_GET['page_id']) && $_GET['page_id']) {
+            } elseif (isset($_GET['page_id']) && $_GET['page_id']) {
                 $post_id = $_GET['page_id'];
                 $redirect_uri .= '&p=' . $post_id;
             }

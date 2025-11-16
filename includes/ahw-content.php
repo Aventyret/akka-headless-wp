@@ -924,7 +924,10 @@ class Akka_headless_wp_content
         $thumbnail_attributes = $thumbnail_id
             ? Utils::internal_img_attributes($thumbnail_id, [
                 // NOTE: Handle both ahw_ and awh_ prefix for legacy reasons
-                'size' => apply_filters('ahw_post_in_archive_image_size', apply_filters('awh_post_in_archive_image_size', 'full')),
+                'size' => apply_filters(
+                    'ahw_post_in_archive_image_size',
+                    apply_filters('awh_post_in_archive_image_size', 'full')
+                ),
             ])
             : null;
 
@@ -943,8 +946,6 @@ class Akka_headless_wp_content
         // NOTE: Handle both ahw_ and awh_ prefix for legacy reasons
         return apply_filters('ahw_post_in_archive', apply_filters('awh_post_in_archive', $post_in_archive, $post));
     }
-
-    private
 
     public static function search($data)
     {
