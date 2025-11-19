@@ -30,6 +30,10 @@ class Akka_headless_wp_resolvers
         } elseif (is_array($post_data_or_fields)) {
             $fields = $post_data_or_fields;
         }
+        // If this is a post object and fields is not set – try to get field from database
+        if (!isset($fields[$field_name]) && isset($post_data_or_fields['post_type']) && isset($post_data_or_fields['post_id']) && !isset($post_data_or_fields['fields'])) {
+            return get_field($field_name, $post_data_or_fields['post_id']);
+        }
         if (!isset($fields[$field_name]) || empty($fields[$field_name])) {
             return null;
         }
