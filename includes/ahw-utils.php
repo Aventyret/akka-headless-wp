@@ -18,7 +18,7 @@ class Akka_headless_wp_utils
 
     public static function stringToRoute($string)
     {
-        return str_replace([' ', 'å', 'ä', 'ö'], ['-', 'a', 'a', 'o'], strtolower($string));
+        return str_replace([' ', 'å', 'ä', 'ö'], ['-', 'a', 'a', 'o'], mb_strtolower($string));
     }
 
     public static function parseUrl($url)
