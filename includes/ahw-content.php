@@ -488,6 +488,12 @@ class Akka_headless_wp_content
         );
 
         $data = apply_filters('ahw_post_data', $akka_post);
+        $data['seo_meta']['schema'] = apply_filters(
+            'ahw_post_schema_data',
+            Resolvers::resolve_array_field($data['seo_meta'], 'schema'),
+            $data
+        );
+
         unset($data['fields']);
         return $data;
     }
@@ -1071,6 +1077,67 @@ class Akka_headless_wp_content
                             ? false
                             : true,
                 ];
+            }
+            if (Resolvers::resolve_field($yoast_data, 'schema')) {
+                $seo_meta['schema'] = [];
+                foreach (Resolvers::resolve_array_field($yoast_data['schema'], '@graph') as $graph_data) {
+                    if (in_array($graph_data['@type'], ['WebSite', 'Organization'])) {
+                        $schema_item = [
+                            '@context' => $yoast_data['schema']['@context'],
+                            '@type' => $graph_data['@type'],
+                            '@id' => AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['@id']),
+                            'name' => $graph_data['name'],
+                            'url' => AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['url']),
+                        ];
+                        if ($graph_data['@type'] == 'WebSite') {
+                            $schema_item['description'] = Resolvers::resolve_field($graph_data, 'description');
+                            $schema_item['inLanguage'] = Resolvers::resolve_field($graph_data, 'inLanguage');
+                            if ($search_page_url = apply_filters('ahw_schema_search_page_url', null)) {
+                                $schema_item['potentialAction'] = [
+                                    '@type' => 'SearchAction',
+                                    'target' => [
+                                        '@type' => 'EntryPoint',
+                                        'urlTemplate' => $search_page_url . '{search_term_string}',
+                                    ],
+                                    'query-input' => 'required name=search_term_string',
+                                ];
+                            }
+                        }
+                        if ($graph_data['@type'] == 'Organization') {
+                            $schema_item['@type'] = apply_filters(
+                                'ahw_schema_organization_schema_type',
+                                'Organization'
+                            );
+                            if ($search_page_url = apply_filters('ahw_schema_search_page_url', null)) {
+                                $schema_item['potentialAction'] = [
+                                    '@type' => 'SearchAction',
+                                    'target' => [
+                                        '@type' => 'EntryPoint',
+                                        'urlTemplate' => $search_page_url . '{search_term_string}',
+                                    ],
+                                    'query-input' => 'required name=search_term_string',
+                                ];
+                            }
+                            if (Resolvers::resolve_field($graph_data, 'logo')) {
+                                $schema_item['logo'] = $graph_data['logo'];
+                                $schema_item['logo']['@id'] =
+                                    AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['logo']['@id']);
+                                $schema_item['logo']['url'] = apply_filters(
+                                    'ahw_schema_organization_schema_logo_url',
+                                    str_replace('wp-content/', 'app/', $graph_data['logo']['url'])
+                                );
+                                $schema_item['logo']['contentUrl'] = $schema_item['logo']['url'];
+                            }
+                            if (!empty(Resolvers::resolve_array_field($graph_data, 'sameAs'))) {
+                                $schema_item['sameAs'] = $graph_data['sameAs'][0];
+                            }
+                            if ($contact_pont = apply_filters('ahw_schema_organization_contact_point', null)) {
+                                $schema_item['contactPoint'] = $contact_pont;
+                            }
+                        }
+                        $seo_meta['schema'][] = $schema_item;
+                    }
+                }
             }
         }
         if (is_plugin_active('all-in-one-seo-pack-pro/all_in_one_seo_pack.php')) {
