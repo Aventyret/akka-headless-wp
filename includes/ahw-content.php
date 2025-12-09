@@ -524,6 +524,7 @@ class Akka_headless_wp_content
             $akka_post = [
                 'post_id' => $p->ID,
                 'post_date' => get_the_date(get_option('date_format'), $p->ID),
+                'post_date_iso' => get_the_date('c', $p->ID),
                 'post_title' => $p->post_title,
                 'post_type' => $p->post_type,
                 'post_password' => $p->post_password,
@@ -941,6 +942,7 @@ class Akka_headless_wp_content
             'post_id' => $post->ID,
             'post_guid' => $post->guid,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
+            'post_date_iso' => get_the_date('c', $post->ID),
             'url' => Utils::parseUrl(get_permalink($post->ID)),
             'featured_image' => !empty($thumbnail_attributes) ? $thumbnail_attributes : null,
             'post_title' => $post->post_title,
