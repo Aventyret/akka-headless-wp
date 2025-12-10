@@ -455,11 +455,9 @@ class Akka_headless_wp_utils
 
     public static function get_page_template_slug($post)
     {
-        if ($post->post_type === 'page') {
-            $page_template = get_page_template_slug($post->ID);
-            if ($page_template) {
-                return str_replace(['template-', '.blade', '.php'], ['', '', ''], $page_template);
-            }
+        $page_template = get_page_template_slug($post);
+        if ($page_template) {
+            return str_replace(['template-', '.blade', '.php'], ['', '', ''], $page_template);
         }
         return null;
     }
