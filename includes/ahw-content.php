@@ -162,11 +162,16 @@ class Akka_headless_wp_content
 
         $permalink = urldecode($permalink);
 
-        // Check if multisite front page
-        if (is_multisite() && strlen($permalink) == 2) {
-            $blog_id = get_id_from_blogname($permalink);
+        // Check if multisite and remove sub site prefix from permalink
+        if (is_multisite() && (strlen($permalink) == 2 || strpos($permalink, '/') == 2)) {
+            $lang_in_permalink = substr($permalink, 0, 2);
+            $blog_id = get_id_from_blogname($lang_in_permalink);
             if ($blog_id && $blog_id != 1) {
-                $permalink = '/';
+                $permalink = substr($permalink, 3);
+                if (!$permalink) {
+                    // Front page permalink is '/' and not empty string in Akka
+                    $permalink = '/';
+                }
             }
         }
 
