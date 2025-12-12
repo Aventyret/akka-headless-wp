@@ -1348,8 +1348,9 @@ class Akka_headless_wp_content
             return null;
         }
         if (count($terms) > 1 && function_exists('yoast_get_primary_term_id')) {
+            $term_id_column_key = apply_filters('ahw_primary_term_id_column_key', 'id');
             $term_id = yoast_get_primary_term_id($taxonomy, $post);
-            $term_index = array_search($term_id, array_column($terms, 'id'));
+            $term_index = array_search($term_id, array_column($terms, $term_id_column_key));
             if ($term_index !== false) {
                 return $terms[$term_index];
             }
