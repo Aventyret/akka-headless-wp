@@ -88,7 +88,7 @@ class Akka_headless_wp_akka_post_types
             add_filter(
                 'ahw_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
-                    if (in_array(get_post_type(), $args['post_types'])) {
+                    if (get_post_type() === $post_type_slug) {
                         $blocks = Blocks::add_allowed_blocks($blocks, $options['allowed_core_blocks']);
                     }
                     return $blocks;
@@ -100,7 +100,7 @@ class Akka_headless_wp_akka_post_types
             add_filter(
                 'ahw_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
-                    if (!in_array(get_post_type(), $args['post_types'])) {
+                    if (get_post_type() === $post_type_slug) {
                         $blocks = Blocks::remove_unallowed_blocks($blocks, $options['unallowed_core_blocks']);
                     }
                     return $blocks;
