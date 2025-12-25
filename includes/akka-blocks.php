@@ -1,7 +1,7 @@
 <?php
-use \Akka_headless_wp_utils as Utils;
+namespace Akka;
 
-class Akka_headless_wp_blocks
+class Blocks
 {
     public static function render_block($parsed_block, $block)
     {

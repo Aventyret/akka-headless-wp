@@ -1,8 +1,7 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_utils as Utils;
+namespace Akka;
 
-class Akka_headless_wp_content
+class Content
 {
     public static function can_get_content()
     {

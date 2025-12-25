@@ -1,8 +1,7 @@
 <?php
-use \Akka_headless_wp_content as Content;
-use \Akka_headless_wp_utils as Utils;
+namespace Akka;
 
-class Akka_headless_wp_resolvers
+class Resolvers
 {
     public static function resolve_post_base($post)
     {

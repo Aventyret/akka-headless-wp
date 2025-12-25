@@ -1,8 +1,7 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_blocks as Blocks;
+namespace Akka;
 
-class Akka_headless_wp_akka_blocks
+class AkkaBlocks
 {
     private static $akka_blocks = [];
 

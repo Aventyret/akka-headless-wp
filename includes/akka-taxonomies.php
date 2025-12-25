@@ -1,11 +1,7 @@
 <?php
-use \Akka_headless_wp_utils as Utils;
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_akka_meta_fields as MetaFields;
-use \Akka_headless_wp_blocks as Blocks;
-use \Akka_headless_wp_acf as Acf;
+namespace Akka;
 
-class Akka_headless_wp_akka_taxonomies
+class Taxonomies
 {
     public static function register_taxonomy($taxonomy_slug, $args, $options = [])
     {

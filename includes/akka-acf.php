@@ -1,8 +1,7 @@
 <?php
-use \Akka_headless_wp_resolvers as Resolvers;
-use \Akka_headless_wp_akka_meta_fields as MetaFields;
+namespace Akka;
 
-class Akka_headless_wp_acf
+class Acf
 {
     public static function register_field_group($field_group)
     {

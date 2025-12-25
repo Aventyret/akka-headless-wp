@@ -5,7 +5,7 @@ Plugin URI: https://github.com/aventyret/akka-wp/blob/main/plugins/akka-headless
 Description: Use Wordpress as a headless CMS, with Gutenberg as the content provider
 Author: Mediakooperativet, Äventyret
 Author URI: https://aventyret.com
-Version: 0.3.9
+Version: 2.0.0
 */
 
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)){
@@ -20,8 +20,8 @@ if (defined('AKKA_HEADLESS_WP'))
 define('AKKA_HEADLESS_WP',  __FILE__ );
 define('AKKA_HEADLESS_WP_DIR', plugin_dir_path( __FILE__ ));
 define('AKKA_HEADLESS_WP_URL', plugin_dir_url( __FILE__ ));
-define('AKKA_HEADLESS_WP_VER', "0.3.9");
-define('AKKA_API_BASE', "headless/v1");
+define('AKKA_HEADLESS_WP_VER', "2.0.0");
+define('AKKA_API_BASE', "akka/v2");
 define('AKKA_LANG', getenv('AKKA_LANG') ? getenv('AKKA_LANG') : "en");
 define('AKKA_CMS_COOKIE_PATH', getenv('AKKA_CMS_COOKIE_PATH') ? getenv('AKKA_CMS_COOKIE_PATH') : NULL);
 define('AKKA_CMS_COOKIE_NAME', getenv('AKKA_CMS_COOKIE_NAME') ? getenv('AKKA_CMS_COOKIE_NAME') : "cms_signed_in");
@@ -29,23 +29,22 @@ define('AKKA_FRONTEND_BASE', getenv('AKKA_FRONTEND_URL') ? getenv('AKKA_FRONTEND
 define('AKKA_FRONTEND_INTERNAL_BASE', getenv('AKKA_FRONTEND_URL_INTERNAL') ? getenv('AKKA_FRONTEND_URL_INTERNAL') : AKKA_FRONTEND_BASE);
 define('AKKA_CMS_INTERNAL_BASE', getenv('AKKA_CMS_URL_INTERNAL') ? getenv('AKKA_CMS_URL_INTERNAL') : WP_HOME);
 define('AKKA_CMS_MEDIA_BUCKET_BASE', getenv('AKKA_CMS_MEDIA_BUCKET_HOSTNAME') ? getenv('AKKA_CMS_MEDIA_BUCKET_PROTOCOL') . '://' . getenv('AKKA_CMS_MEDIA_BUCKET_HOSTNAME') . getenv('AKKA_CMS_MEDIA_BUCKET_PORT') : NULL);
-// NOTE: Handle both correct spelling of CACHE and misspelling CAHCE for legacy reasons
-define('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT', getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') : (getenv('AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT') ? getenv('AKKA_FRONTEND_FLUSH_CAHCE_ENDPOINT') : '/api/cache'));
+define('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT', getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') :  '/api/cache');
 define('AKKA_FRONTEND_FLUSH_CACHE_KEY', getenv('AKKA_FRONTEND_FLUSH_CACHE_KEY') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_KEY') : "");
 
 if (!function_exists('str_get_html')) {
     require_once(AKKA_HEADLESS_WP_DIR . 'vendor/simplehtmldom/simple_html_dom.php');
 }
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-utils.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-blocks.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-content.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-resolvers.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-akka-blocks.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-meta-fields.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-acf.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-post-types.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-taxonomies.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/ahw-wpcli-with-lock.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-hooks.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-api-endpoints.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'public/ahw-healthz.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-utils.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-blocks.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-content.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-resolvers.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-akka-blocks.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-meta-fields.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-acf.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-post-types.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-taxonomies.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-wpcli-with-lock.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'public/akka-hooks.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'public/akka-api-endpoints.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'public/akka-healthz.php');

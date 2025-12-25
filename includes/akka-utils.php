@@ -1,5 +1,7 @@
 <?php
-class Akka_headless_wp_utils
+namespace Akka;
+
+class Utils
 {
     public static function isHeadless()
     {
