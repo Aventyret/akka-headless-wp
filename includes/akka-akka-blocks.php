@@ -60,6 +60,10 @@ class AkkaBlocks
 
     public static function register_splx_block_type($block_type, $args = [])
     {
+        if (!class_exists('Solarplexus_Helpers')) {
+            throw new Exception('Solarplexus plugin is missing. Could not register block type ' . $block_type);
+        }
+
         if (!Resolvers::resolve_field($args, 'akka_component_name')) {
             throw new Exception('Missing akka component name for Solarplexus block ' . $block_type);
         }
@@ -80,7 +84,7 @@ class AkkaBlocks
             });
         }
 
-        Solarplexus_Helpers::use_custom_editor_ssr_component();
+        \Solarplexus_Helpers::use_custom_editor_ssr_component();
 
         if (is_admin()) {
             return;
@@ -142,8 +146,8 @@ class AkkaBlocks
         $props = $block_attributes;
         // Get props from callback, if one is registered with the block
         if (isset(self::$akka_blocks[$block_type]['block_props_callback'])) {
-            $block_config = Solarplexus_Helpers::retrieve_block_config(str_replace('splx/', '', $block_type));
-            $splx_args = Solarplexus_Helpers::block_args($block_config, $block_attributes);
+            $block_config = \Solarplexus_Helpers::retrieve_block_config(str_replace('splx/', '', $block_type));
+            $splx_args = \Solarplexus_Helpers::block_args($block_config, $block_attributes);
             $props = self::$akka_blocks[$block_type]['block_props_callback']($post_id, $splx_args);
         }
         return $props;

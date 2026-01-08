@@ -883,7 +883,7 @@ class Content
             return self::get_relevanssi_query($query_args);
         }
 
-        $query = new WP_Query($query_args);
+        $query = new \WP_Query($query_args);
 
         // For relevanssi: recalculate max_num_pages if there is an offset
         if (isset($query_args['offset']) && $query_args['offset'] > 0 && function_exists('relevanssi_do_query')) {
@@ -895,7 +895,7 @@ class Content
 
     private static function get_relevanssi_query($query_args)
     {
-        $query = new WP_Query();
+        $query = new \WP_Query();
         $query->parse_query($query_args);
         relevanssi_do_query($query);
 

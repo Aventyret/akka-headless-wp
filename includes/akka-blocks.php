@@ -77,7 +77,7 @@ class Blocks
         }
         return array_map(function ($block_config) {
             return 'splx/' . $block_config['id'];
-        }, Solarplexus_Helpers::retrieve_block_configs());
+        }, \Solarplexus_Helpers::retrieve_block_configs());
     }
 
     public static function get_h2_blocks($content, $level = null)
