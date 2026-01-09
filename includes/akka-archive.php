@@ -16,6 +16,10 @@ class Archive
 
         $post_type_object = get_post_type_object($archive_post_type);
 
+        if (!$post_type_object) {
+            return null;
+        }
+
         $post_type_archive = [
             'post_type' => 'post_type',
             'slug' => $archive_post_type,

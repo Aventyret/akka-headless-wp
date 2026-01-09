@@ -13,7 +13,7 @@ class Router
         $permalink = Utils::getRouteParam($data, 'permalink');
 
         if (!$permalink) {
-            return new WP_REST_Response(['message' => 'Missing permalink'], 400);
+            return new \WP_REST_Response(['message' => 'Missing permalink'], 400);
         }
 
         $permalink = urldecode($permalink);
@@ -199,13 +199,13 @@ class Router
         }
 
         if (!$post_id) {
-            return new WP_REST_Response(['message' => 'Post not found'], 404);
+            return new \WP_REST_Response(['message' => 'Post not found'], 404);
         }
 
         $p = Post::get_post($post_id);
 
         if (!$p) {
-            return new WP_REST_Response(['message' => 'Post not found'], 404);
+            return new \WP_REST_Response(['message' => 'Post not found'], 404);
         }
 
         return $p;
@@ -231,7 +231,7 @@ class Router
 
         $page = Utils::getQueryParam('page', 1);
 
-        return Archive::get_post_type_archive($permalink, $permalink, $page);
+        return Archive::get_post_type_archive($archive_post_type, $page);
     }
 
     private static function get_taxonomy_term_archive_from_permalink($permalink)
@@ -262,7 +262,7 @@ class Router
         $page = Utils::getQueryParam('page', 1);
         $year = Utils::getQueryParam('year', null);
 
-        return Archive::get_taxonomy_term_archive($permalink, $permalink, $page);
+        return Archive::get_taxonomy_term_archive($archive_taxonomy, $archive_taxonomy_term, $page);
     }
 
     private static function get_hierarchical_page_id($permalink)
@@ -304,7 +304,7 @@ class Router
         $get_autosaved = !!Utils::getQueryParam('autosaved');
 
         if (!$post_id) {
-            return new WP_REST_Response(['message' => 'Post not found'], 404);
+            return new \WP_REST_Response(['message' => 'Post not found'], 404);
         }
 
         if ($blog_id) {
@@ -314,7 +314,7 @@ class Router
         $p = Post::get_post($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
 
         if (!$p) {
-            return new WP_REST_Response(['message' => 'Post not found'], 404);
+            return new \WP_REST_Response(['message' => 'Post not found'], 404);
         }
 
         return $p;
@@ -325,13 +325,13 @@ class Router
         $attachment_id = Utils::getRouteParam($data, 'attachment_id');
 
         if (!$attachment_id) {
-            return new WP_REST_Response(['message' => 'Attachment not found'], 404);
+            return new \WP_REST_Response(['message' => 'Attachment not found'], 404);
         }
 
         $attachment_attributes = Utils::get_attachment_image_src($attachment_id);
 
         if (!$attachment_attributes) {
-            return new WP_REST_Response(['message' => 'Attachment not found'], 404);
+            return new \WP_REST_Response(['message' => 'Attachment not found'], 404);
         }
 
         return [

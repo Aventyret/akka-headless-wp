@@ -103,7 +103,7 @@ add_filters('ahw_post_type_data', function($post_type_data) {
   return $post_type_data;
 });
 // v2
-add_filters('akka_taxonomy_term_archive', function($post_type_archive) {
+add_filters('akka_post_type_archive', function($post_type_archive) {
   return $post_type_archive;
 });
 
