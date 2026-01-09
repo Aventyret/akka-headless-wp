@@ -86,7 +86,7 @@ The following functions are new in v2:
 
 ### Migrate hooks
 
-All Akka hooks are renamed with prefix `akka_` replacing `ahw_`. These filters and actions are changed:
+All Akka hooks are renamed with prefix `akka_` replacing `ahw_`. In addition to this change, the following filters are changed as well:
 
 ```
 // v1
@@ -126,75 +126,12 @@ add_filters('akka_post_blurb', function($post_blurb, $post) {
 }, 10, 2);
 
 // v1
-add_filters('ahw_search_query_args', function($query_args) {
-  return $query_args;
-});
-// v2
-add_filters('akka_search_query_args', function($query_args) {
-  return $query_args;
-});
-
-// v1
-add_filters('ahw_search_result', function($search_result_data) {
+add_filters('ahw_search_result_data', function($search_result_data) {
   return $search_result_data;
 });
 // v2
 add_filters('akka_search_result', function($search_result) {
   return $search_result;
-});
-
-// v1
-add_filters('ahw_post_schema_data', function($post_schema, $post_data) {
-  return $post_schema;
-});
-// v2
-add_filters('akka_post_schema', function($post_schema, $akka_post) {
-  return $post_schema;
-});
-
-// v1
-add_filters('ahw_schema_organization_schema_type', function($organization_schema_type) {
-  return $organization_schema_type;
-});
-// v2
-add_filters('akka_schema_organization_schema_type', function($organization_schema_type) {
-  return $organization_schema_type;
-});
-
-// v1
-add_filters('ahw_image_caption', function($caption, $attachment_id) {
-  return $caption;
-});
-// v2
-add_filters('akka_image_caption', function($caption, $attachment_id) {
-  return $caption;
-});
-
-// v1
-add_filters('ahw_term_url', function($term_url, $term, $taxonomy) {
-  return $term_url;
-}, 10, 3);
-// v2
-add_filters('akka_term_url', function($term_url, $term, $taxonomy) {
-  return $term_url;
-}, 10, 3);
-
-// v1
-add_filters('ahw_schema_search_page_url', function($search_page_url) {
-  return $search_page_url;
-});
-// v2
-add_filters('akka_schema_search_page_url', function($search_page_url) {
-  return $search_page_url;
-});
-
-// v1
-add_filters('ahw_schema_organization_contact_point', function($contact_point) {
-  return $contact_point;
-});
-// v2
-add_filters('akka_schema_organization_contact_point', function($contact_point) {
-  return $contact_point;
 });
 
 // v1
@@ -205,48 +142,5 @@ add_filters('ahw_seo_meta', function($seo_meta, $post, $specific_seo_image_is_de
 add_filters('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
   return $seo_meta;
 }, 10, 3);
-
-// v1
-add_filters('ahw_site_meta', function($site_meta) {
-  return $site_meta;
-});
-// v2
-add_filters('akka_site_meta', function($site_meta) {
-  return $site_meta;
-});
-
-// v1
-add_filters('ahw_site_meta_menu_id', function($menu_id, $menu_slug) {
-  return $menu_id;
-}, 10, 2);
-// v2
-add_filters('akka_site_meta_menu_id', function($menu_id, $menu_slug) {
-  return $menu_id;
-}, 10, 2);
-
-// v1
-add_filters('ahw_term_seo_meta', function($seo_meta, $term_data, $specific_seo_image_is_defined, $specific_seo_description_is_defined) {
-  return $seo_meta;
-}, 10, 2);
-// v2
-add_filters('akka_term_seo_meta', function($seo_meta, $term_data, $specific_seo_image_is_defined, $specific_seo_description_is_defined) {
-  return $seo_meta;
-}, 10, 2);
-
-// v1
-add_filters('ahw_primary_term_id_column_key', function($term_id_column_key) {
-  return $term_id_column_key;
-});
-// v2
-add_filters('akka_primary_term_id_column_key', function($term_id_column_key) {
-  return $term_id_column_key;
-});
-
-// v1
-add_action('ahw_pre_post_content', function($akka_post) {
-});
-// v2
-add_action('akka_pre_post_content', function($akka_post) {
-});
 
 ```

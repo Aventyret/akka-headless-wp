@@ -88,7 +88,7 @@ class Router
             $post_object = get_page_by_path(
                 $permalink_parts[count($permalink_parts) - 1],
                 OBJECT,
-                apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page'])
+                apply_filters('akka_custom_post_strucure_post_types', ['post', 'page'])
             );
             if ($post_object && $post_object->post_type !== 'attachment') {
                 $post_id = $post_object->ID;
@@ -125,7 +125,7 @@ class Router
         }
 
         if (!$post_id) {
-            $post_id = apply_filters('ahw_post_pre_redirect_post_id', $post_id, $permalink);
+            $post_id = apply_filters('akka_post_pre_redirect_post_id', $post_id, $permalink);
             if ($post_id) {
                 $redirect_response = null;
             }
@@ -183,7 +183,7 @@ class Router
             if ($redirect_response) {
                 return $redirect_response;
             }
-            $post_data = apply_filters('ahw_post_not_found_post_data', $post_id, $permalink);
+            $post_data = apply_filters('akka_post_not_found_post_data', $post_id, $permalink);
             if ($post_data) {
                 return $post_data;
             }
@@ -214,7 +214,7 @@ class Router
     private static function get_post_types_with_archives()
     {
         $post_types = ['post'];
-        return apply_filters('ahw_post_types_with_archives', $post_types);
+        return apply_filters('akka_post_types_with_archives', $post_types);
     }
 
     private static function get_post_type_archive_from_permalink($permalink)

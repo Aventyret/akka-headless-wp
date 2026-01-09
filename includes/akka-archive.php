@@ -96,7 +96,7 @@ class Archive
         $query_args = [
             'post_type' => $post_type,
         ];
-        $query_args = apply_filters('ahw_' . $post_type . '_archive_query_args', $query_args);
+        $query_args = apply_filters('akka_' . $post_type . '_archive_query_args', $query_args);
 
         $query = self::get_posts_query($query_args, [
             'page' => $page,
@@ -165,7 +165,7 @@ class Archive
             ];
         }
 
-        $query_args = apply_filters('ahw_get_posts_args', $query_args);
+        $query_args = apply_filters('akka_get_posts_args', $query_args);
 
         $query = self::get_posts_query($query_args, [
             'page' => $page,
@@ -199,7 +199,7 @@ class Archive
             ],
         ];
 
-        $query_args = apply_filters('ahw_get_posts_args', $query_args);
+        $query_args = apply_filters('akka_get_posts_args', $query_args);
 
         $query = self::get_posts_query($query_args, [
             'page' => $page,

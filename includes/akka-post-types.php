@@ -49,7 +49,7 @@ class PostTypes
             register_post_type($post_type_slug, $args);
         });
         if ($args['has_archive']) {
-            add_filter('ahw_post_types_with_archives', function ($post_types) use ($post_type_slug) {
+            add_filter('akka_post_types_with_archives', function ($post_types) use ($post_type_slug) {
                 if (!in_array($post_type_slug, $post_types)) {
                     $post_types[] = $post_type_slug;
                 }
@@ -82,7 +82,7 @@ class PostTypes
         }
         if (!empty($options['allowed_core_blocks'])) {
             add_filter(
-                'ahw_allowed_blocks',
+                'akka_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
                     if (get_post_type() === $post_type_slug) {
                         $blocks = Blocks::add_allowed_blocks($blocks, $options['allowed_core_blocks']);
@@ -94,7 +94,7 @@ class PostTypes
         }
         if (!empty($options['unallowed_core_blocks'])) {
             add_filter(
-                'ahw_allowed_blocks',
+                'akka_allowed_blocks',
                 function ($blocks) use ($post_type_slug, $options) {
                     if (get_post_type() === $post_type_slug) {
                         $blocks = Blocks::remove_unallowed_blocks($blocks, $options['unallowed_core_blocks']);

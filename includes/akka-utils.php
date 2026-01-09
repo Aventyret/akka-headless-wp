@@ -30,7 +30,7 @@ class Utils
         if ($url !== '/') {
             $url = rtrim($url, '/');
         }
-        return apply_filters('ahw_post_parse_url', $url);
+        return apply_filters('akka_post_parse_url', $url);
     }
 
     public static function enqueue_editor_assets()
@@ -72,7 +72,7 @@ class Utils
         $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
         $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
-        return apply_filters('ahw_post_replace_hrefs', $content);
+        return apply_filters('akka_post_replace_hrefs', $content);
     }
 
     public static function replaceHtmlCharachters($content)
@@ -246,7 +246,7 @@ class Utils
         if ($include_caption) {
             $img_attributes['caption'] = wp_get_attachment_caption($img_id);
         }
-        return apply_filters('ahw_img_attributes', $img_attributes);
+        return apply_filters('akka_img_attributes', $img_attributes);
     }
 
     public static function internal_img_with_caption_attributes($img_id, $img_attributes = [])
@@ -452,7 +452,7 @@ class Utils
                 'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
             ],
         ]);
-        do_action('ahw_cache_flushed');
+        do_action('akka_cache_flushed');
     }
 
     public static function get_page_template_slug($post)

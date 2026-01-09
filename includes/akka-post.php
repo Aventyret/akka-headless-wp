@@ -164,11 +164,7 @@ class Post
         $thumbnail_id = get_post_thumbnail_id($post->ID);
         $thumbnail_attributes = $thumbnail_id
             ? Utils::internal_img_attributes($thumbnail_id, [
-                // NOTE: Handle both ahw_ and awh_ prefix for legacy reasons
-                'size' => apply_filters(
-                    'ahw_post_in_archive_image_size',
-                    apply_filters('awh_post_in_archive_image_size', 'full')
-                ),
+                'size' => apply_filters('akka_post_in_archive_image_size', 'full'),
             ])
             : null;
 
@@ -185,7 +181,6 @@ class Post
             'description' => get_the_excerpt($post->ID),
             'taxonomy_terms' => Term::get_post_blurb_terms($post),
         ];
-        // NOTE: Handle both ahw_ and awh_ prefix for legacy reasons
         return apply_filters('akka_post_blurb', $post_blurb, $post);
     }
 
@@ -258,7 +253,7 @@ class Post
                         if ($graph_data['@type'] == 'WebSite') {
                             $schema_item['description'] = Resolvers::resolve_field($graph_data, 'description');
                             $schema_item['inLanguage'] = Resolvers::resolve_field($graph_data, 'inLanguage');
-                            if ($search_page_url = apply_filters('ahw_schema_search_page_url', null)) {
+                            if ($search_page_url = apply_filters('akka_schema_search_page_url', null)) {
                                 $schema_item['potentialAction'] = [
                                     '@type' => 'SearchAction',
                                     'target' => [
@@ -271,7 +266,7 @@ class Post
                         }
                         if ($graph_data['@type'] == 'Organization') {
                             $schema_item['@type'] = apply_filters(
-                                'ahw_schema_organization_schema_type',
+                                'akka_schema_organization_schema_type',
                                 'Organization'
                             );
                             if ($search_page_url = apply_filters('akka_schema_search_page_url', null)) {
@@ -289,7 +284,7 @@ class Post
                                 $schema_item['logo']['@id'] =
                                     AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['logo']['@id']);
                                 $schema_item['logo']['url'] = apply_filters(
-                                    'ahw_schema_organization_schema_logo_url',
+                                    'akka_schema_organization_schema_logo_url',
                                     str_replace('wp-content/', 'app/', $graph_data['logo']['url'])
                                 );
                                 $schema_item['logo']['contentUrl'] = $schema_item['logo']['url'];
@@ -297,7 +292,7 @@ class Post
                             if (!empty(Resolvers::resolve_array_field($graph_data, 'sameAs'))) {
                                 $schema_item['sameAs'] = $graph_data['sameAs'][0];
                             }
-                            if ($contact_pont = apply_filters('ahw_schema_organization_contact_point', null)) {
+                            if ($contact_pont = apply_filters('akka_schema_organization_contact_point', null)) {
                                 $schema_item['contactPoint'] = $contact_pont;
                             }
                         }
@@ -359,7 +354,7 @@ class Post
         if (!isset($seo_meta['seo_description']) || !$seo_meta['seo_description']) {
             $seo_meta['seo_description'] = get_the_excerpt($post->ID);
         }
-        $seo_meta['seo_description'] = apply_filters('ahw_seo_description', $seo_meta['seo_description'], $post);
+        $seo_meta['seo_description'] = apply_filters('akka_seo_description', $seo_meta['seo_description'], $post);
         if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
             $specific_seo_image_is_defined = true;
         }
