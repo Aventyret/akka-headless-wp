@@ -84,7 +84,7 @@ class Resolvers
         if (is_numeric($field)) {
             $field = get_post($field);
         }
-        return Content::get_post_in_archive($field);
+        return Post::post_to_blurb($field);
     }
 
     public static function resolve_posts_field($post_data_or_fields, $field_name)
@@ -95,7 +95,7 @@ class Resolvers
         }
         return array_map(function ($post_id) {
             $p = get_post($post_id);
-            return Content::get_post_in_archive($p);
+            return Post::post_to_blurb($p);
         }, $field);
     }
 

@@ -36,8 +36,13 @@ if (!function_exists('str_get_html')) {
     require_once(AKKA_HEADLESS_WP_DIR . 'vendor/simplehtmldom/simple_html_dom.php');
 }
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-utils.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-router.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-site-meta.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-post.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-term.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-archive.php');
+require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-search.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-blocks.php');
-require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-content.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-resolvers.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-akka-blocks.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-meta-fields.php');

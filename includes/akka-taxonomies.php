@@ -48,7 +48,7 @@ class Taxonomies
         });
 
         foreach ($options['post_types'] as $post_type) {
-            add_filter('ahw_headless_post_type_taxonomy_map', function ($taxonomy_map) use (
+            add_filter('akka_post_type_taxonomy_map', function ($taxonomy_map) use (
                 $taxonomy_slug,
                 $post_type
             ) {
@@ -63,7 +63,7 @@ class Taxonomies
         }
 
         foreach ($options['in_archive_post_types'] as $post_type) {
-            add_filter('ahw_headless_in_archive_post_type_taxonomy_map', function ($taxonomy_map) use (
+            add_filter('akka_blurb_post_type_taxonomy_map', function ($taxonomy_map) use (
                 $taxonomy_slug,
                 $post_type
             ) {
