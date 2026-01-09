@@ -12,8 +12,15 @@ class Search
         return $query;
     }
 
-    public static function search($query, $post_type, $category_slugs = [], $term_slugs = [], $taxonomy = 'post_tag', $offset = 0, $page = 1)
-    {
+    public static function search(
+        $query,
+        $post_type,
+        $category_slugs = [],
+        $term_slugs = [],
+        $taxonomy = 'post_tag',
+        $offset = 0,
+        $page = 1
+    ) {
         if ((empty($query) || strlen($query) < 2) && empty($category_slugs) && empty($term_slugs)) {
             return [
                 'count' => 0,
@@ -23,7 +30,7 @@ class Search
         }
 
         $query_args = [
-            'offset' = $offset,
+            'offset' => $offset,
         ];
 
         if ($query) {

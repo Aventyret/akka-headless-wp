@@ -48,10 +48,7 @@ class Taxonomies
         });
 
         foreach ($options['post_types'] as $post_type) {
-            add_filter('akka_post_type_taxonomy_map', function ($taxonomy_map) use (
-                $taxonomy_slug,
-                $post_type
-            ) {
+            add_filter('akka_post_type_taxonomy_map', function ($taxonomy_map) use ($taxonomy_slug, $post_type) {
                 if (!isset($taxonomy_map[$post_type])) {
                     $taxonomy_map[$post_type] = [];
                 }
@@ -63,10 +60,7 @@ class Taxonomies
         }
 
         foreach ($options['in_archive_post_types'] as $post_type) {
-            add_filter('akka_blurb_post_type_taxonomy_map', function ($taxonomy_map) use (
-                $taxonomy_slug,
-                $post_type
-            ) {
+            add_filter('akka_blurb_post_type_taxonomy_map', function ($taxonomy_map) use ($taxonomy_slug, $post_type) {
                 if (!isset($taxonomy_map[$post_type])) {
                     $taxonomy_map[$post_type] = [];
                 }

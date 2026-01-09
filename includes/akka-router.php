@@ -8,7 +8,8 @@ class Router
         return true;
     }
 
-    public static function permalink_request($data) {
+    public static function permalink_request($data)
+    {
         $permalink = Utils::getRouteParam($data, 'permalink');
 
         if (!$permalink) {
@@ -44,7 +45,6 @@ class Router
 
     public static function search_request($data)
     {
-
         $query = urldecode(Utils::getRouteParam($data, 'query'));
         $post_type = Utils::getRouteParam($data, 'post_type');
         if ($post_type) {
