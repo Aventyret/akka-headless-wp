@@ -177,4 +177,50 @@ class Taxonomies
             });
         }
     }
+
+    public static function register_taxonomy_for_post_type($taxonomy, $post_type) {
+        add_action('init', function () use($taxonomy, $post_type) {
+          register_taxonomy_for_object_type($taxonomy, $post_type);
+        });
+        add_filter('akka_post_type_taxonomy_map', function ($taxonomy_map) use($taxonomy, $post_type) {
+          if (!isset($taxonomy_map[$post_type])) {
+            $taxonomy_map[$post_type] = [];
+          }
+          if (!in_array($taxonomy, $taxonomy_map[$post_type])) {
+            $taxonomy_map[$post_type][] = $taxonomy;
+          }
+          return $taxonomy_map;
+        });
+        add_filter('akka_blurb_post_type_taxonomy_map', function ($taxonomy_map) use($taxonomy, $post_type) {
+          if (!isset($taxonomy_map[$post_type])) {
+            $taxonomy_map[$post_type] = [];
+          }
+          if (!in_array($taxonomy, $taxonomy_map[$post_type])) {
+            $taxonomy_map[$post_type][] = $taxonomy;
+          }
+          return $taxonomy_map;
+        });
+    }
+
+    public static function unregister_taxonomy_for_post_type($taxonomy, $post_type) {
+        add_action('init', function () use($taxonomy, $post_type) {
+          unregister_taxonomy_for_object_type($taxonomy, $post_type);
+        });
+        add_filter('akka_post_type_taxonomy_map', function ($taxonomy_map) use($taxonomy, $post_type) {
+          if (isset($taxonomy_map[$post_type]) && in_array($taxonomy, $taxonomy_map[$post_type])) {
+            $taxonomy_map[$post_type] = array_values(array_filter($taxonomy_map[$post_type], function($t) use($taxonomy) {
+                return $t != $taxonomy;
+            }));
+          }
+          return $taxonomy_map;
+        });
+        add_filter('akka_blurb_post_type_taxonomy_map', function ($taxonomy_map) use($taxonomy, $post_type) {
+          if (isset($taxonomy_map[$post_type]) && in_array($taxonomy, $taxonomy_map[$post_type])) {
+            $taxonomy_map[$post_type] = array_values(array_filter($taxonomy_map[$post_type], function($t) use($taxonomy) {
+                return $t != $taxonomy;
+            }));
+          }
+          return $taxonomy_map;
+        });
+    }
 }

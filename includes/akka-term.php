@@ -74,49 +74,6 @@ class Term
         );
     }
 
-    /***
-     * Typically not used since taxonomy term archives are accessed by permalink
-     */
-    public static function get_term($data)
-    {
-        $taxonomy_slug = str_replace('-', '_', Utils::getRouteParam($data, 'taxonomy_slug'));
-        $term_slug = Utils::getRouteParam($data, 'term_slug');
-
-        $term = get_term_by('slug', $term_slug, $taxonomy_slug);
-
-        if (!$term) {
-            return new WP_REST_Response(['message' => 'Term not found'], 404);
-        }
-
-        $query_args = [
-            'tax_query' => [
-                [
-                    'taxonomy' => $taxonomy_slug,
-                    'field' => 'slug',
-                    'terms' => $term_slug,
-                ],
-            ],
-        ];
-        if (Utils::getQueryParam('per_page', null)) {
-            $query_args['posts_per_page'] = Utils::getQueryParam('per_page', null);
-        }
-
-        $page = Utils::getQueryParam('page', 1);
-        $query = self::get_posts_query($query_args, [
-            'page' => $page,
-        ]);
-
-        return [
-            'term_id' => $term->term_id,
-            'slug' => $term->slug,
-            'name' => $term->name,
-            'count' => $term->count,
-            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
-            'posts' => self::posts_to_blurbs($query->posts),
-            'next_page' => '/term/' . $taxonomy_slug . '/' . $term->slug . '/' . ($page + 1),
-        ];
-    }
-
     private static function get_term_seo_meta($term_data)
     {
         $seo_meta = [];
