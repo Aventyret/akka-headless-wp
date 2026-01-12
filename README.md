@@ -41,7 +41,7 @@ AKKA_FRONTEND_URL_INTERNAL
 
 ## Theme
 
-[Akka Headless WP Sage 10 starter theme](https://github.com/Aventyret/akka-headless-wp/tree/main/starter-theme)
+Use the [Akka Bas theme](https://github.com/Aventyret/akka-bas-theme) as a boilerplate for your projects theme.
 
 ## v2 Migration guide
 
@@ -167,4 +167,18 @@ add_filters('akka_post_{$post_type}_single', function($post_single, $post) {
 add_filters('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
   return $post_blurb;
 }, 10, 2);
+```
+
+### Plugin now ships with ACF_Field_Unique_ID
+
+Remove `philipnewcomer/acf-unique-id-field` as a dependency for your akka project (if you have it) since the plugin now ships with it:
+
+```
+composer remove philipnewcomer/acf-unique-id-field
+```
+
+Also remove the following row if you have it in your themes `ThemeSetup.php` file.
+
+```
+\PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID::init();
 ```
