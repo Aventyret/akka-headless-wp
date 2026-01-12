@@ -1,6 +1,8 @@
 <?php
 namespace Akka;
 
+\PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID::init();
+
 class Acf
 {
     public static function register_field_group($field_group)
