@@ -112,7 +112,7 @@ add_filters('akka_taxonomy_term_archive', function($taxonomy_term_archive, $arch
 // v1
 add_filters('ahw_post_type_data', function($post_type_data) {
   return $post_type_data;
-});
+}, 10, 2);
 // v2
 add_filters('akka_post_type_archive', function($post_type_archive) {
   return $post_type_archive;
@@ -122,10 +122,10 @@ add_filters('akka_post_type_archive', function($post_type_archive) {
 add_filters('ahw_post_data', function($post_data) {
   return $post_data;
 });
-// v2
-add_filters('akka_post_single', function($akka_post) {
+// v2 (note that an optional second argument is added)
+add_filters('akka_post_single', function($akka_post, $post) {
   return $akka_post;
-});
+}, 10, 2);
 
 // v1
 add_filters('awh_post_in_archive', function($post_in_archive, $post) {
@@ -154,4 +154,17 @@ add_filters('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image
   return $seo_meta;
 }, 10, 3);
 
+```
+
+The following filters are new in v2:
+
+```
+
+add_filters('akka_post_{$post_type}_single', function($post_single, $post) {
+  return $post_single;
+}, 10, 2);
+
+add_filters('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
+  return $post_blurb;
+}, 10, 2);
 ```

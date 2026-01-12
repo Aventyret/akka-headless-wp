@@ -38,7 +38,8 @@ class Post
             Resolvers::resolve_field($akka_post['featured_image'], 'id')
         );
 
-        $akka_post = apply_filters('akka_post_single', $akka_post);
+        $akka_post = apply_filters('akka_post_' . $akka_post['post_type'] . '_single', $akka_post, $post);
+        $akka_post = apply_filters('akka_post_single', $akka_post, $post);
         $akka_post['seo_meta']['schema'] = apply_filters(
             'akka_post_schema',
             Resolvers::resolve_array_field($akka_post['seo_meta'], 'schema'),
@@ -181,6 +182,7 @@ class Post
             'description' => get_the_excerpt($post->ID),
             'taxonomy_terms' => Term::get_post_blurb_terms($post),
         ];
+        $post_blurb = apply_filters('akka_post_' . $post_blurb['post_type'] . '_blurb', $post_blurb, $post);
         return apply_filters('akka_post_blurb', $post_blurb, $post);
     }
 
