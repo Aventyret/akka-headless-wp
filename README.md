@@ -101,56 +101,56 @@ All Akka hooks are renamed with prefix `akka_` replacing `ahw_`. In addition to 
 
 ```
 // v1
-add_filters('ahw_taxonomy_term_data', function($taxonomy_term_data, $archive_taxonomy_term) {
+add_filter('ahw_taxonomy_term_data', function($taxonomy_term_data, $archive_taxonomy_term) {
   return $taxonomy_term_data;
 }, 10, 2);
 // v2
-add_filters('akka_taxonomy_term_archive', function($taxonomy_term_archive, $archive_taxonomy_term) {
+add_filter('akka_taxonomy_term_archive', function($taxonomy_term_archive, $archive_taxonomy_term) {
   return $taxonomy_term_archive;
 }, 10, 2);
 
 // v1
-add_filters('ahw_post_type_data', function($post_type_data) {
+add_filter('ahw_post_type_data', function($post_type_data) {
   return $post_type_data;
 }, 10, 2);
 // v2
-add_filters('akka_post_type_archive', function($post_type_archive) {
+add_filter('akka_post_type_archive', function($post_type_archive) {
   return $post_type_archive;
 });
 
 // v1
-add_filters('ahw_post_data', function($post_data) {
+add_filter('ahw_post_data', function($post_data) {
   return $post_data;
 });
 // v2 (note that an optional second argument is added)
-add_filters('akka_post_single', function($akka_post, $post) {
+add_filter('akka_post_single', function($akka_post, $post) {
   return $akka_post;
 }, 10, 2);
 
 // v1
-add_filters('awh_post_in_archive', function($post_in_archive, $post) {
+add_filter('awh_post_in_archive', function($post_in_archive, $post) {
   return $post_in_archive;
 }, 10, 2);
 // v2
-add_filters('akka_post_blurb', function($post_blurb, $post) {
+add_filter('akka_post_blurb', function($post_blurb, $post) {
   return $post_blurb;
 }, 10, 2);
 
 // v1
-add_filters('ahw_search_result_data', function($search_result_data) {
+add_filter('ahw_search_result_data', function($search_result_data) {
   return $search_result_data;
 });
 // v2
-add_filters('akka_search_result', function($search_result) {
+add_filter('akka_search_result', function($search_result) {
   return $search_result;
 });
 
 // v1
-add_filters('ahw_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
+add_filter('ahw_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
   return $seo_meta;
 }, 10, 3);
 // v2
-add_filters('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
+add_filter('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
   return $seo_meta;
 }, 10, 3);
 
@@ -160,11 +160,11 @@ The following filters are new in v2:
 
 ```
 
-add_filters('akka_post_{$post_type}_single', function($post_single, $post) {
+add_filter('akka_post_{$post_type}_single', function($post_single, $post) {
   return $post_single;
 }, 10, 2);
 
-add_filters('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
+add_filter('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
   return $post_blurb;
 }, 10, 2);
 ```
