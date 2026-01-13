@@ -16,11 +16,11 @@ class MetaFields
         );
 
         if (!$meta_group['name']) {
-            throw new Exception('Akka meta group name missing!');
+            throw new \Exception('Akka meta group name missing!');
         }
 
         if (!$meta_group['label']) {
-            throw new Exception('Akka meta group label missing!');
+            throw new \Exception('Akka meta group label missing!');
         }
 
         $meta_fields = array_map(function ($meta_field) {
@@ -39,20 +39,20 @@ class MetaFields
             );
 
             if (!$meta_field['name']) {
-                throw new Exception('Akka meta field name missing!');
+                throw new \Exception('Akka meta field name missing!');
             }
 
             if (!$meta_field['label']) {
-                throw new Exception('Akka meta field label missing!');
+                throw new \Exception('Akka meta field label missing!');
             }
 
             $meta_type = self::meta_field_type($meta_field['type']);
             if (!in_array($meta_type, ['string', 'boolean', 'integer', 'number', 'array', 'object'])) {
-                throw new Exception('Akka meta field bad field type!');
+                throw new \Exception('Akka meta field bad field type!');
             }
 
             if ($meta_field['type'] == 'object' && !Resolvers::resolve_field($meta_field['properties'])) {
-                throw new Exception('Akka meta field missing properties for field type object!');
+                throw new \Exception('Akka meta field missing properties for field type object!');
             }
 
             return $meta_field;

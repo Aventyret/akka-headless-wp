@@ -40,7 +40,7 @@ class Taxonomies
         }
 
         if (!$args['label']) {
-            throw new Exception('Akka taxonomy label missing!');
+            throw new \Exception('Akka taxonomy label missing!');
         }
 
         add_action('init', function () use ($taxonomy_slug, $options, $args) {

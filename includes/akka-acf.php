@@ -10,16 +10,16 @@ class Acf
         if (function_exists('acf_add_local_field_group')) {
             add_action('acf/init', function () use ($field_group) {
                 if (!Resolvers::resolve_field($field_group, 'key')) {
-                    throw new Exception('Akka acf field group: key is missing!');
+                    throw new \Exception('Akka acf field group: key is missing!');
                 }
                 if (!Resolvers::resolve_field($field_group, 'title')) {
-                    throw new Exception('Akka acf field group: title is missing!');
+                    throw new \Exception('Akka acf field group: title is missing!');
                 }
                 if (!Resolvers::resolve_field($field_group, 'fields')) {
-                    throw new Exception('Akka acf field group: fields is missing!');
+                    throw new \Exception('Akka acf field group: fields is missing!');
                 }
                 if (!Resolvers::resolve_field($field_group, 'location')) {
-                    throw new Exception('Akka acf field group: location is missing!');
+                    throw new \Exception('Akka acf field group: location is missing!');
                 }
                 $field_group['fields'] = self::set_field_keys($field_group['fields']);
                 $field_group = array_merge(
@@ -41,11 +41,11 @@ class Acf
         foreach ($fields as $index => $field) {
             if (!Resolvers::resolve_field($field, 'name') && !Resolvers::resolve_field($field, 'key')) {
                 error_log(json_encode($field));
-                throw new Exception('Akka acf field: name is missing!');
+                throw new \Exception('Akka acf field: name is missing!');
             }
             if (!Resolvers::resolve_field($field, 'label')) {
                 error_log(json_encode($field));
-                throw new Exception('Akka acf field: label is missing!');
+                throw new \Exception('Akka acf field: label is missing!');
             }
             $fields[$index]['key'] =
                 Resolvers::resolve_field($field, 'key') ?? 'field_' . Resolvers::resolve_field($field, 'name');

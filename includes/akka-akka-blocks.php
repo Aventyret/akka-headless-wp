@@ -8,7 +8,7 @@ class AkkaBlocks
     public static function register_block_type($block_type, $args = [])
     {
         if (!Resolvers::resolve_field($args, 'akka_component_name')) {
-            throw new Exception('Missing akka component name for Akka block ' . $block_type);
+            throw new \Exception('Missing akka component name for Akka block ' . $block_type);
         }
 
         add_filter('akka_allowed_blocks', function ($blocks) use ($block_type, $args) {
@@ -61,16 +61,16 @@ class AkkaBlocks
     public static function register_splx_block_type($block_type, $args = [])
     {
         if (!class_exists('Solarplexus_Helpers')) {
-            throw new Exception('Solarplexus plugin is missing. Could not register block type ' . $block_type);
+            throw new \Exception('Solarplexus plugin is missing. Could not register block type ' . $block_type);
         }
 
         if (!Resolvers::resolve_field($args, 'akka_component_name')) {
-            throw new Exception('Missing akka component name for Solarplexus block ' . $block_type);
+            throw new \Exception('Missing akka component name for Solarplexus block ' . $block_type);
         }
 
         if (!Resolvers::resolve_field($args, 'block_props_callback')) {
             // If no props callback is provided, props are the same as block attributes
-            throw new Exception('Missing block props callback for Solarplexus block ' . $block_type);
+            throw new \Exception('Missing block props callback for Solarplexus block ' . $block_type);
             return;
         }
 
@@ -124,7 +124,7 @@ class AkkaBlocks
     private static function get_block_props($post_id, $block_type, $block_attributes, $block_content = null)
     {
         if (!isset(self::$akka_blocks[$block_type])) {
-            throw new Exception('Missing registration for Akka block ' . $block_type);
+            throw new \Exception('Missing registration for Akka block ' . $block_type);
         }
         $props = $block_attributes;
         // Get props from callback, if one is registered with the block
@@ -141,7 +141,7 @@ class AkkaBlocks
     private static function get_splx_block_props($post_id, $block_type, $block_attributes)
     {
         if (!isset(self::$akka_blocks[$block_type])) {
-            throw new Exception('Missing registration for Akka solarplexus block ' . $block_type);
+            throw new \Exception('Missing registration for Akka solarplexus block ' . $block_type);
         }
         $props = $block_attributes;
         // Get props from callback, if one is registered with the block
@@ -156,7 +156,7 @@ class AkkaBlocks
     private static function get_block_component_name($block_type)
     {
         if (!isset(self::$akka_blocks[$block_type])) {
-            throw new Exception('Missing registration for Akka block ' . $block_type);
+            throw new \Exception('Missing registration for Akka block ' . $block_type);
         }
         return self::$akka_blocks[$block_type]['akka_component_name'];
     }

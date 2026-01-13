@@ -27,7 +27,7 @@ class PostTypes
         );
         $args['supports'] = $supports;
         if (!$args['label']) {
-            throw new Exception('Akka post type label missing!');
+            throw new \Exception('Akka post type label missing!');
         }
         if ($args['public']) {
             $args['rewrite'] = [
@@ -198,7 +198,7 @@ class PostTypes
             return $default_suports;
         }
         if (!is_array($args['supports'])) {
-            throw new Exception('Akka post type supports should be an array!');
+            throw new \Exception('Akka post type supports should be an array!');
         }
         // Return setting in args if array of strings
         if (!empty($args['supports']) && isset($args['supports'][0])) {
