@@ -3,7 +3,7 @@ namespace Akka;
 
 class Term
 {
-    public static function get_post_single_terms($post)
+    public static function get_single_terms($post)
     {
         $post_type_taxonomy_map = apply_filters('akka_post_type_taxonomy_map', [
             'post' => ['category', 'post_tag'],
@@ -12,7 +12,7 @@ class Term
         return self::get_post_terms($post, $taxonomies);
     }
 
-    public static function get_post_blurb_terms($post)
+    public static function get_blurb_terms($post)
     {
         $post_type_taxonomy_map = apply_filters('akka_blurb_post_type_taxonomy_map', []);
         $taxonomies = isset($post_type_taxonomy_map[$post->post_type]) ? $post_type_taxonomy_map[$post->post_type] : [];
@@ -74,7 +74,7 @@ class Term
         );
     }
 
-    private static function get_term_seo_meta($term_data)
+    private static function get_seo_meta($term_data)
     {
         $seo_meta = [];
         $specific_seo_image_is_defined = false;

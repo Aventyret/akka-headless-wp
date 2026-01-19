@@ -38,7 +38,7 @@ class Archive
         if ($archive_post_type == 'post') {
             $post_page = get_option('page_for_posts');
             if ($post_page) {
-                $post_type_archive = array_merge(Post::get_post_data($post_page), $post_type_archive);
+                $post_type_archive = array_merge(Post::get_single($post_page), $post_type_archive);
             }
         }
 
@@ -90,7 +90,7 @@ class Archive
                     : null,
         ];
 
-        $taxonomy_term_archive['seo_meta'] = Term::get_term_seo_meta($taxonomy_term_archive);
+        $taxonomy_term_archive['seo_meta'] = Term::get_seo_meta($taxonomy_term_archive);
 
         return apply_filters('akka_taxonomy_term_archive', $taxonomy_term_archive, $archive_taxonomy_term);
     }

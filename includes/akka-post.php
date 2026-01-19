@@ -3,25 +3,34 @@ namespace Akka;
 
 class Post
 {
-    public static function get_post($post_id, $post_status = ['publish'], $get_autosaved = false)
+    private static $_single_memory = [];
+    public static function get_single($post_id_or_post = null, $post_status = ['publish'], $get_autosaved = false)
     {
         global $post;
-        $posts = get_posts([
-            'post__in' => [$post_id],
-            'post_type' => 'any',
-            'post_status' => $post_status,
-        ]);
-        if (empty($posts)) {
+        if (is_a($post_id_or_post, 'WP_Post')) {
+            $post = $post_id_or_post;
+        } else if($post_id_or_post) {
+            $posts = get_posts([
+                'post__in' => [$post_id_or_post],
+                'post_type' => 'any',
+                'post_status' => $post_status,
+            ]);
+            if (empty($posts)) {
+                return null;
+            }
+            $post = $posts[0];
+        }
+        if (!$post) {
             return null;
         }
         if ($get_autosaved) {
-            $autosaved_post = wp_get_post_autosave($post_id);
+            $autosaved_post = wp_get_post_autosave($post->ID);
             if ($autosaved_post) {
-                $posts[0]->post_content = $autosaved_post->post_content;
+                $post->post_content = $autosaved_post->post_content;
             }
         }
-        $post = $posts[0];
 
+        // TODO: Check this
         if ($post->post_password && !in_array('private', $post_status)) {
             return [
                 'post_id' => $post->ID,
@@ -30,10 +39,72 @@ class Post
             ];
         }
 
-        $akka_post = self::get_post_single();
+        if (isset(self::$_single_memory[$post->ID])) {
+            return self::$_single_memory[$post->ID];
+        }
+
+        $post_thumbnail_id = get_post_thumbnail_id($post->ID);
+        $featured_image_attributes = $post_thumbnail_id
+            ? Utils::internal_img_attributes($post_thumbnail_id, [
+                'priority' => true,
+            ])
+            : null;
+
+        $permalink = Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post->ID)));
+
+        $akka_post = [
+            'post_id' => $post->ID,
+            'post_date' => get_the_date(get_option('date_format'), $post->ID),
+            'post_date_iso' => get_the_date('c', $post->ID),
+            'post_title' => $post->post_title,
+            'post_type' => $post->post_type,
+            'post_password' => $post->post_password,
+            'post_parent_id' => $post->post_parent,
+            'post_status' => $post->post_status,
+            'author' => [
+                'id' => $post->post_author,
+                'name' => get_the_author_meta('display_name', $post->post_author),
+                'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($post->post_author)),
+            ],
+            'slug' => $post->post_name,
+            'excerpt' => post_type_supports($post->post_type, 'excerpt') ? $post->post_excerpt : null,
+            'page_template' => Utils::get_page_template_slug($p),
+            'featured_image' => $featured_image_attributes,
+            'thumbnail_caption' => apply_filters(
+                'akka_image_caption',
+                get_the_post_thumbnail_caption($post->ID),
+                $post_thumbnail_id
+            ),
+            'permalink' => $permalink,
+            'url' => $permalink,
+            'taxonomy_terms' => Term::get_single_terms($p),
+            'fields' => get_fields($post->ID),
+        ];
+        foreach (['category', 'post_tag'] as $taxonomy_slug) {
+            if (isset($data['taxonomy_terms'][$taxonomy_slug])) {
+                $akka_post['primary_' . str_replace('post_tag', 'tag', $taxonomy_slug)] =
+                    $akka_post['taxonomy_terms'][$taxonomy_slug]['primary_term'];
+            }
+        }
+        if (
+            $akka_post['post_type'] == 'page' &&
+            Archive::get_post_type_archive_permalink('post') == $akka_post['slug']
+        ) {
+            $page = Utils::getQueryParam('page', 1);
+            $archive_query = Archive::archive_query('post', $page);
+            $akka_post['archive'] = [
+                'count' => $archive_query->found_posts,
+                'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
+                'posts' => self::posts_to_blurbs($archive_query->posts),
+                'next_page' =>
+                    $archive_query->max_num_pages > $page + 1
+                        ? '/' . Archive::get_post_type_archive_permalink('post') . '?page=' . ($page + 1)
+                        : null,
+            ];
+        }
         do_action('akka_pre_post_content', $akka_post);
         $akka_post['post_content'] = apply_filters('the_content', $post->post_content);
-        $akka_post['seo_meta'] = self::get_post_seo_meta(
+        $akka_post['seo_meta'] = self::get_seo_meta(
             $post,
             Resolvers::resolve_field($akka_post['featured_image'], 'id')
         );
@@ -47,93 +118,18 @@ class Post
         );
 
         unset($akka_post['fields']);
+
+        self::$_single_memory[$post->ID] = $akka_post;
+
         return $akka_post;
     }
 
-    private static $_akka_post_memory = [];
-    public static function get_post_single($post_id = null)
-    {
-        $p = null;
-        if ($post_id) {
-            $p = get_post($post_id);
-        } else {
-            global $post;
-            $p = $post;
-        }
-        if (!$p) {
-            return null;
-        }
-        if (!isset(self::$_akka_post_memory[$p->ID])) {
-            $post_thumbnail_id = get_post_thumbnail_id($p->ID);
-            $featured_image_attributes = $post_thumbnail_id
-                ? Utils::internal_img_attributes($post_thumbnail_id, [
-                    'priority' => true,
-                ])
-                : null;
-
-            $permalink = Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($p->ID)));
-
-            $akka_post = [
-                'post_id' => $p->ID,
-                'post_date' => get_the_date(get_option('date_format'), $p->ID),
-                'post_date_iso' => get_the_date('c', $p->ID),
-                'post_title' => $p->post_title,
-                'post_type' => $p->post_type,
-                'post_password' => $p->post_password,
-                'post_parent_id' => $p->post_parent,
-                'post_status' => $p->post_status,
-                'author' => [
-                    'id' => $p->post_author,
-                    'name' => get_the_author_meta('display_name', $p->post_author),
-                    'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($p->post_author)),
-                ],
-                'slug' => $p->post_name,
-                'excerpt' => post_type_supports($p->post_type, 'excerpt') ? $p->post_excerpt : null,
-                'page_template' => Utils::get_page_template_slug($p),
-                'featured_image' => $featured_image_attributes,
-                'thumbnail_caption' => apply_filters(
-                    'akka_image_caption',
-                    get_the_post_thumbnail_caption($p->ID),
-                    $post_thumbnail_id
-                ),
-                'permalink' => $permalink,
-                'url' => $permalink,
-                'taxonomy_terms' => Term::get_post_single_terms($p),
-                'fields' => get_fields($p->ID),
-            ];
-            foreach (['category', 'post_tag'] as $taxonomy_slug) {
-                if (isset($data['taxonomy_terms'][$taxonomy_slug])) {
-                    $akka_post['primary_' . str_replace('post_tag', 'tag', $taxonomy_slug)] =
-                        $akka_post['taxonomy_terms'][$taxonomy_slug]['primary_term'];
-                }
-            }
-            if (
-                $akka_post['post_type'] == 'page' &&
-                Archive::get_post_type_archive_permalink('post') == $akka_post['slug']
-            ) {
-                $page = Utils::getQueryParam('page', 1);
-                $archive_query = Archive::archive_query('post', $page);
-                $akka_post['archive'] = [
-                    'count' => $archive_query->found_posts,
-                    'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
-                    'posts' => self::posts_to_blurbs($archive_query->posts),
-                    'next_page' =>
-                        $archive_query->max_num_pages > $page + 1
-                            ? '/' . Archive::get_post_type_archive_permalink('post') . '?page=' . ($page + 1)
-                            : null,
-                ];
-            }
-            self::$_akka_post_memory[$p->ID] = $akka_post;
-        }
-        return self::$_akka_post_memory[$p->ID];
-    }
-
-    public static function get_post_blurbs($query_args)
+    public static function get_blurbs($query_args)
     {
         return self::posts_to_blurbs(get_posts($query_args));
     }
 
-    public static function get_post_blurb($post_id)
+    public static function get_blurb($post_id)
     {
         $posts = get_posts([
             'post__in' => [$post_id],
@@ -180,13 +176,13 @@ class Post
             'post_type' => $post->post_type,
             'slug' => $post->post_name,
             'description' => get_the_excerpt($post->ID),
-            'taxonomy_terms' => Term::get_post_blurb_terms($post),
+            'taxonomy_terms' => Term::get_blurb_terms($post),
         ];
         $post_blurb = apply_filters('akka_post_' . $post_blurb['post_type'] . '_blurb', $post_blurb, $post);
         return apply_filters('akka_post_blurb', $post_blurb, $post);
     }
 
-    private static function get_post_seo_meta($post, $post_thumbnail_id = null)
+    private static function get_seo_meta($post, $post_thumbnail_id = null)
     {
         $seo_meta = [];
         $specific_seo_image_is_defined = false;

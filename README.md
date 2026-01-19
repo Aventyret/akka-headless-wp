@@ -56,13 +56,13 @@ All Akka classes are renamed and placed in namespace `Akka`. These public functi
 \Akka_headless_wp_content::get_akka_post(1);
 
 // v2
-\Akka\Post::get_post_single(1);
+\Akka\Post::get_single(1);
 
 // v1
 \Akka_headless_wp_content::get_akka_posts($query_args);
 
 // v2
-\Akka\Post::get_post_blurbs($query_args);
+\Akka\Post::get_blurbs($query_args);
 
 // v1
 \Akka_headless_wp_content::parse_posts($posts);
@@ -81,7 +81,7 @@ All Akka classes are renamed and placed in namespace `Akka`. These public functi
 The following functions are new in v2:
 
 ```
-\Akka\Post::get_post_blurb($post_id);
+\Akka\Post::get_blurb($post_id);
 
 \Akka\PostTypes::unregister_post_post_type();
 

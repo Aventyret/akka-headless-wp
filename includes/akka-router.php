@@ -202,7 +202,7 @@ class Router
             return new \WP_REST_Response(['message' => 'Post not found'], 404);
         }
 
-        $p = Post::get_post($post_id);
+        $p = Post::get_single($post_id);
 
         if (!$p) {
             return new \WP_REST_Response(['message' => 'Post not found'], 404);
@@ -311,7 +311,7 @@ class Router
             switch_to_blog($blog_id);
         }
 
-        $p = Post::get_post($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
+        $p = Post::get_single($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
 
         if (!$p) {
             return new \WP_REST_Response(['message' => 'Post not found'], 404);
