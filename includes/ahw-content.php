@@ -1115,16 +1115,6 @@ class Akka_headless_wp_content
                                 'ahw_schema_organization_schema_type',
                                 'Organization'
                             );
-                            if ($search_page_url = apply_filters('ahw_schema_search_page_url', null)) {
-                                $schema_item['potentialAction'] = [
-                                    '@type' => 'SearchAction',
-                                    'target' => [
-                                        '@type' => 'EntryPoint',
-                                        'urlTemplate' => $search_page_url . '{search_term_string}',
-                                    ],
-                                    'query-input' => 'required name=search_term_string',
-                                ];
-                            }
                             if (Resolvers::resolve_field($graph_data, 'logo')) {
                                 $schema_item['logo'] = $graph_data['logo'];
                                 $schema_item['logo']['@id'] =
