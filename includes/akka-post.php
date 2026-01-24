@@ -9,7 +9,7 @@ class Post
         global $post;
         if (is_a($post_id_or_post, 'WP_Post')) {
             $post = $post_id_or_post;
-        } else if($post_id_or_post) {
+        } elseif ($post_id_or_post) {
             $posts = get_posts([
                 'post__in' => [$post_id_or_post],
                 'post_type' => 'any',
@@ -68,7 +68,7 @@ class Post
             ],
             'slug' => $post->post_name,
             'excerpt' => post_type_supports($post->post_type, 'excerpt') ? $post->post_excerpt : null,
-            'page_template' => Utils::get_page_template_slug($p),
+            'page_template' => Utils::get_page_template_slug($post),
             'featured_image' => $featured_image_attributes,
             'thumbnail_caption' => apply_filters(
                 'akka_image_caption',
@@ -77,7 +77,7 @@ class Post
             ),
             'permalink' => $permalink,
             'url' => $permalink,
-            'taxonomy_terms' => Term::get_single_terms($p),
+            'taxonomy_terms' => Term::get_single_terms($post),
             'fields' => get_fields($post->ID),
         ];
         foreach (['category', 'post_tag'] as $taxonomy_slug) {
@@ -111,7 +111,11 @@ class Post
 
         $akka_post = apply_filters('akka_post_' . $akka_post['post_type'] . '_single', $akka_post, $post);
         if ($akka_post['page_template']) {
-            $akka_post = apply_filters('akka_post_template_' . $akka_post['page_template'] . '_single', $akka_post, $post);
+            $akka_post = apply_filters(
+                'akka_post_template_' . $akka_post['page_template'] . '_single',
+                $akka_post,
+                $post
+            );
         }
         $akka_post = apply_filters('akka_post_single', $akka_post, $post);
         $akka_post['seo_meta']['schema'] = apply_filters(

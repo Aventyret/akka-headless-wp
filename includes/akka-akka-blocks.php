@@ -70,7 +70,14 @@ class AkkaBlocks
 
         if (!Resolvers::resolve_field($args, 'block_props_callback')) {
             // If no props callback is provided, props are the same as block attributes
-            throw new \Exception('Missing block props callback for Solarplexus block ' . $block_type);
+            self::register_splx_block_type(
+                $block_type,
+                array_merge($args, [
+                    'block_props_callback' => function ($post_id, $splx_args) {
+                        return $splx_args;
+                    },
+                ])
+            );
             return;
         }
 
@@ -98,6 +105,7 @@ class AkkaBlocks
                 if ($splx_block_type != $block_type) {
                     return $splx_args;
                 }
+                $splx_args['posts'] = Post::posts_to_blurbs($splx_args['posts']);
                 return array_merge($splx_args, ['props' => $args['block_props_callback'](get_the_ID(), $splx_args)]);
             },
             10,

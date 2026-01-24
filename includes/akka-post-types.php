@@ -117,17 +117,18 @@ class PostTypes
         }
     }
 
-    public static function unregister_post_post_type() {
+    public static function unregister_post_post_type()
+    {
         add_action('admin_menu', function () {
-          remove_menu_page('edit.php');
+            remove_menu_page('edit.php');
         });
 
         add_action('admin_bar_menu', function ($wp_admin_bar) {
-          $wp_admin_bar->remove_node('new-post');
+            $wp_admin_bar->remove_node('new-post');
         });
 
         add_action('admin_footer', function ($wp_admin_bar) {
-          ?>
+            ?>
           <script type="text/javascript">
             const newPostLink = window.document.getElementById('wp-admin-bar-new-post');
             if (newPostLink) {
@@ -138,11 +139,12 @@ class PostTypes
         });
 
         add_action('wp_dashboard_setup', function ($wp_admin_bar) {
-          remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
+            remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
         });
     }
 
-    public static function rename_post_type($post_type, $labels) {
+    public static function rename_post_type($post_type, $labels)
+    {
         add_action('init', function () use ($post_type, $labels) {
             $post_type_object = get_post_type_object($post_type);
             if ($post_type_object) {

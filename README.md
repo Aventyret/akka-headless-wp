@@ -185,6 +185,18 @@ add_filter('akka_post_term', function($term, $taxonomy_slug) {
 }, 10, 2);
 ```
 
+### Solarplexus blocks get Akka post blurbs as props
+
+Solarplexus blocks now get akka post blurbs as their `post` props. This means the following pattern is depracated for Solarplexus blocks (`block_props_callback` can be removed for Solarplexus if they are only used for the posts prop like this):
+
+```
+'block_props_callback' => function ($post_id, $splx_args) {
+  $block_attributes = $splx_args['block_attributes'];
+  $posts = $splx_args['posts'];
+  return ListBlocks::block_props($posts, $block_attributes);
+},
+```
+
 ### Custom post filter no longer needed
 
 The filter `akka_custom_post_strucure_post_types` is no longer needed for public post types (this filter is implemented in the plugin for these post types).

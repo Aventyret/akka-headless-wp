@@ -93,7 +93,11 @@ class Archive
 
         $taxonomy_term_archive['seo_meta'] = Term::get_seo_meta($taxonomy_term_archive);
 
-        $taxonomy_term_archive = apply_filters('akka_taxonomy_term_' . $archive_taxonomy_term->slug . '_archive', $taxonomy_term_archive, $archive_taxonomy_term);
+        $taxonomy_term_archive = apply_filters(
+            'akka_taxonomy_term_' . $archive_taxonomy_term->slug . '_archive',
+            $taxonomy_term_archive,
+            $archive_taxonomy_term
+        );
         return apply_filters('akka_taxonomy_term_archive', $taxonomy_term_archive, $archive_taxonomy_term);
     }
 
