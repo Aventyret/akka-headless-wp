@@ -32,10 +32,9 @@ define('AKKA_CMS_MEDIA_BUCKET_BASE', getenv('AKKA_CMS_MEDIA_BUCKET_HOSTNAME') ? 
 define('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT', getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') :  '/api/cache');
 define('AKKA_FRONTEND_FLUSH_CACHE_KEY', getenv('AKKA_FRONTEND_FLUSH_CACHE_KEY') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_KEY') : "");
 
-if (!function_exists('str_get_html')) {
-    require_once(AKKA_HEADLESS_WP_DIR . 'vendor/simplehtmldom/simple_html_dom.php');
+if(!class_exists('\PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID')) {
+    require_once(AKKA_HEADLESS_WP_DIR . 'vendor/philipnewcomer/acf-unique-id-field/src/ACF_Field_Unique_ID.php');
 }
-require_once(AKKA_HEADLESS_WP_DIR . 'vendor/philipnewcomer/acf-unique-id-field/src/ACF_Field_Unique_ID.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-utils.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-router.php');
 require_once(AKKA_HEADLESS_WP_DIR . 'includes/akka-site-meta.php');
