@@ -110,6 +110,9 @@ class Post
         );
 
         $akka_post = apply_filters('akka_post_' . $akka_post['post_type'] . '_single', $akka_post, $post);
+        if ($akka_post['page_template']) {
+            $akka_post = apply_filters('akka_post_template_' . $akka_post['page_template'] . '_single', $akka_post, $post);
+        }
         $akka_post = apply_filters('akka_post_single', $akka_post, $post);
         $akka_post['seo_meta']['schema'] = apply_filters(
             'akka_post_schema',
