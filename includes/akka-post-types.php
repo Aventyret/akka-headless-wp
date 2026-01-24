@@ -56,6 +56,14 @@ class PostTypes
                 return $post_types;
             });
         }
+        if ($args['public']) {
+            add_filter('akka_custom_post_strucure_post_types', function ($post_types) use ($post_type_slug) {
+                if (!in_array($post_type_slug, $post_types)) {
+                    $post_types[] = $post_type_slug;
+                }
+                return $post_types;
+            });
+        }
         foreach ($options['meta_groups'] as $meta_group) {
             MetaFields::register_post_meta_field(
                 Resolvers::resolve_array_field($meta_group, 'group'),

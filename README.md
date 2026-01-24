@@ -164,10 +164,18 @@ add_filter('akka_post_{$post_type}_single', function($post_single, $post) {
   return $post_single;
 }, 10, 2);
 
+add_filter('akka_post_template_{$page_template}_single', function($post_single, $post) {
+  return $post_single;
+}, 10, 2);
+
 add_filter('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
   return $post_blurb;
 }, 10, 2);
 ```
+
+### Custom post filter no longer needed
+
+The filter `akka_custom_post_strucure_post_types` is no longer needed for public post types (this filter is implemented in the plugin for these post types).
 
 ### Plugin now ships with ACF_Field_Unique_ID
 
