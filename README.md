@@ -182,3 +182,7 @@ Also remove the following row if you have it in your themes `ThemeSetup.php` fil
 ```
 \PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID::init();
 ```
+
+### Plugin no longer ships with simplehtmldom
+
+If you need it: include it in your theme.
