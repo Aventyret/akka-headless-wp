@@ -171,6 +171,18 @@ add_filter('akka_post_template_{$page_template}_single', function($post_single, 
 add_filter('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
   return $post_blurb;
 }, 10, 2);
+
+add_filter('akka_post_type_{$post_type}_archive', function($post_type_archive) {
+  return $post_type_archive;
+});
+
+add_filter('akka_taxonomy_term_{$taxonomy_slug}_archive', function($taxonomy_term_archive, $archive_taxonomy_term) {
+  return $taxonomy_term_archive;
+}, 10, 2);
+
+add_filter('akka_post_term', function($term, $taxonomy_slug) {
+  return $term;
+}, 10, 2);
 ```
 
 ### Custom post filter no longer needed

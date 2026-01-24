@@ -33,15 +33,15 @@ class Term
                         'slug' => $taxonomy_slug,
                     ],
                     'terms' => array_map(
-                        function ($term) use ($taxonomy) {
+                        function ($term) use ($taxonomy_slug, $taxonomy) {
                             $term_url = Utils::parseUrl(get_term_link($term->term_id));
-                            return [
+                            return apply_filters('akka_post_term', [
                                 'term_id' => $term->term_id,
                                 'parent_id' => $term->parent,
                                 'name' => $term->name,
                                 'slug' => $term->slug,
                                 'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy),
-                            ];
+                            ], $taxonomy_slug);
                         },
                         $taxonomy_terms ? $taxonomy_terms : []
                     ),
