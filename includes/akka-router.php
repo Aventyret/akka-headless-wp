@@ -10,7 +10,7 @@ class Router
 
     public static function permalink_request($data)
     {
-        $permalink = Utils::getRouteParam($data, 'permalink');
+        $permalink = Utils::get_route_param($data, 'permalink');
 
         if (!$permalink) {
             return new \WP_REST_Response(['message' => 'Missing permalink'], 400);
@@ -23,44 +23,44 @@ class Router
 
     public static function posts_request($data)
     {
-        $post_types = explode(',', Utils::getQueryParam('post_type', 'post'));
-        $category = Utils::getQueryParam('category', null);
-        $post_tag = Utils::getQueryParam('post_tag', null);
-        $per_page = Utils::getQueryParam('per_page', -1);
-        $offset = Utils::getQueryParam('offset', 0);
-        $page = Utils::getQueryParam('page', 1);
+        $post_types = explode(',', Utils::get_query_param('post_type', 'post'));
+        $category = Utils::get_query_param('category', null);
+        $post_tag = Utils::get_query_param('post_tag', null);
+        $per_page = Utils::get_query_param('per_page', -1);
+        $offset = Utils::get_query_param('offset', 0);
+        $page = Utils::get_query_param('page', 1);
 
         return Archive::get_post_archive($post_types, $category, $post_tag, $per_page, $offset, $page);
     }
 
     public static function feed_request($data)
     {
-        $post_types = explode(',', Utils::getQueryParam('post_type', 'post,podcast,note'));
-        $per_page = Utils::getQueryParam('per_page', 50);
-        $offset = Utils::getQueryParam('offset', 0);
-        $page = Utils::getQueryParam('page', 1);
+        $post_types = explode(',', Utils::get_query_param('post_type', 'post,podcast,note'));
+        $per_page = Utils::get_query_param('per_page', 50);
+        $offset = Utils::get_query_param('offset', 0);
+        $page = Utils::get_query_param('page', 1);
 
         return Archive::get_posts_feed($post_types, $per_page, $offset, $page);
     }
 
     public static function search_request($data)
     {
-        $query = urldecode(Utils::getRouteParam($data, 'query'));
-        $post_type = Utils::getRouteParam($data, 'post_type');
+        $query = urldecode(Utils::get_route_param($data, 'query'));
+        $post_type = Utils::get_route_param($data, 'post_type');
         if ($post_type) {
             $post_type = explode(',', $post_type);
         }
-        $category_slugs = Utils::getRouteParam($data, 'category_slugs');
+        $category_slugs = Utils::get_route_param($data, 'category_slugs');
         if ($category_slugs) {
             $category_slugs = explode(',', $category_slugs);
         }
-        $term_slugs = Utils::getRouteParam($data, 'term_slugs');
+        $term_slugs = Utils::get_route_param($data, 'term_slugs');
         if ($term_slugs) {
             $term_slugs = explode(',', $term_slugs);
         }
-        $taxonomy = Utils::getRouteParam($data, 'taxonomy', 'post_tag');
-        $offset = Utils::getQueryParam('offset', 0);
-        $page = Utils::getQueryParam('page', 1);
+        $taxonomy = Utils::get_route_param($data, 'taxonomy', 'post_tag');
+        $offset = Utils::get_query_param('offset', 0);
+        $page = Utils::get_query_param('page', 1);
 
         return Search::search($query, $post_type, $category_slugs, $term_slugs, $taxonomy, $offset, $page);
     }
@@ -119,7 +119,7 @@ class Router
                 $post_id = null;
                 $redirect_response = [
                     'post_type' => 'redirect',
-                    'redirect' => Utils::parseUrl($correct_permalink),
+                    'redirect' => Utils::parse_url($correct_permalink),
                 ];
             }
         }
@@ -229,7 +229,7 @@ class Router
             return null;
         }
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::get_query_param('page', 1);
 
         return Archive::get_post_type_archive($archive_post_type, $page);
     }
@@ -259,8 +259,8 @@ class Router
             return null;
         }
 
-        $page = Utils::getQueryParam('page', 1);
-        $year = Utils::getQueryParam('year', null);
+        $page = Utils::get_query_param('page', 1);
+        $year = Utils::get_query_param('year', null);
 
         return Archive::get_taxonomy_term_archive($archive_taxonomy, $archive_taxonomy_term, $page);
     }
@@ -299,9 +299,9 @@ class Router
 
     public static function post_by_id_request($data)
     {
-        $post_id = Utils::getRouteParam($data, 'post_id');
-        $blog_id = Utils::getRouteParam($data, 'blog_id');
-        $get_autosaved = !!Utils::getQueryParam('autosaved');
+        $post_id = Utils::get_route_param($data, 'post_id');
+        $blog_id = Utils::get_route_param($data, 'blog_id');
+        $get_autosaved = !!Utils::get_query_param('autosaved');
 
         if (!$post_id) {
             return new \WP_REST_Response(['message' => 'Post not found'], 404);
@@ -322,7 +322,7 @@ class Router
 
     public static function attachment_by_id_request($data)
     {
-        $attachment_id = Utils::getRouteParam($data, 'attachment_id');
+        $attachment_id = Utils::get_route_param($data, 'attachment_id');
 
         if (!$attachment_id) {
             return new \WP_REST_Response(['message' => 'Attachment not found'], 404);

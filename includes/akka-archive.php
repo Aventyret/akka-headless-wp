@@ -5,7 +5,7 @@ class Archive
 {
     public static function get_post_type_archive_permalink($post_type)
     {
-        return ltrim(Utils::parseUrl(get_post_type_archive_link($post_type)), '/');
+        return ltrim(Utils::parse_url(get_post_type_archive_link($post_type)), '/');
     }
 
     public static function get_post_type_archive($archive_post_type, $page)
@@ -77,7 +77,7 @@ class Archive
             'term_id' => $archive_taxonomy_term->term_id,
             'parent_id' => $archive_taxonomy_term->parent,
             'slug' => $archive_taxonomy_term->slug,
-            'url' => Utils::parseUrl(get_term_link($archive_taxonomy_term->term_id)),
+            'url' => Term::get_url($archive_taxonomy_term->term_id),
             'post_title' => $archive_taxonomy_term->name,
             'description' => term_description($archive_taxonomy_term->term_id),
             'name' => $archive_taxonomy_term->name,
@@ -87,7 +87,7 @@ class Archive
             'posts' => $posts,
             'next_page' =>
                 $query->max_num_pages > $page + 1
-                    ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
+                    ? Term::get_url($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
                     : null,
         ];
 

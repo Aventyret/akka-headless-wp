@@ -61,7 +61,7 @@ class Resolvers
         }
         return [
             'text' => $field['title'],
-            'url' => Utils::parseUrl($field['url']),
+            'url' => Utils::parse_url($field['url']),
             'target' => $field['target'],
         ];
     }

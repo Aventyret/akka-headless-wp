@@ -5,7 +5,7 @@ class Blocks
 {
     public static function render_block($parsed_block, $block)
     {
-        if (!Utils::isHeadless()) {
+        if (!Utils::is_headless()) {
             return $parsed_block;
         }
         if ($block['blockName'] == 'core/embed') {

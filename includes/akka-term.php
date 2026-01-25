@@ -34,7 +34,7 @@ class Term
                     ],
                     'terms' => array_map(
                         function ($term) use ($taxonomy_slug, $taxonomy) {
-                            $term_url = Utils::parseUrl(get_term_link($term->term_id));
+                            $term_url = self::get_url($term->term_id);
                             return apply_filters(
                                 'akka_post_term',
                                 [
@@ -66,7 +66,7 @@ class Term
         $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => false]);
         return array_map(
             function ($term) {
-                $term_url = Utils::parseUrl(get_term_link($term->term_id));
+                $term_url = self::get_url($term->term_id);
                 return [
                     'term_id' => $term->term_id,
                     'name' => $term->name,
@@ -76,6 +76,11 @@ class Term
             },
             $taxonomy_terms ? $taxonomy_terms : []
         );
+    }
+
+    public static function get_url($term_id)
+    {
+        return Utils::parse_url(str_replace(WP_HOME, '', get_term_link($term_id)));
     }
 
     private static function get_seo_meta($term_data)
@@ -136,7 +141,7 @@ class Term
             $seo_meta['twitter_description'] = $seo_meta['seo_description'];
         }
         if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
-            $seo_meta['canonical_url'] = get_term_link($term_data['term_id']);
+            $seo_meta['canonical_url'] = Term::get_url($term_data['term_id']);
         }
         if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
             $seo_meta['canonical_url'] = rtrim(

@@ -26,7 +26,7 @@ class SiteMeta
                     return [
                         'id' => $item->ID,
                         'parent_id' => $item->menu_item_parent ? $item->menu_item_parent : null,
-                        'url' => Utils::parseUrl($item->url),
+                        'url' => Utils::parse_url($item->url),
                         'title' => $item->title,
                         'description' => $item->description,
                         'children' => [],
@@ -94,7 +94,7 @@ class SiteMeta
                 [$g, $section, $key] = preg_split('/_/', $field, 3, PREG_SPLIT_NO_EMPTY);
                 if (isset($section) && isset($key)) {
                     if ($value instanceof \WP_Post) {
-                        $permalink = Utils::parseUrl(get_permalink($value));
+                        $permalink = Post::get_url($value->ID);
                         $value = [
                             'post_id' => $value->ID,
                             'permalink' => $permalink,
@@ -107,10 +107,10 @@ class SiteMeta
                 }
             }
         }
-        $site_meta['header']['home_url'] = Utils::parseUrl(home_url());
-        $site_meta['header']['posts_url'] = Utils::parseUrl(get_permalink(get_option('page_for_posts')));
+        $site_meta['header']['home_url'] = Utils::parse_url(home_url());
+        $site_meta['header']['posts_url'] = Post::get_url(get_option('page_for_posts'));
         if (isset($site_meta['cookies']) && isset($site_meta['cookies']['details_link'])) {
-            $site_meta['cookies']['details_link'] = Utils::parseUrl($site_meta['cookies']['details_link']);
+            $site_meta['cookies']['details_link'] = Utils::parse_url($site_meta['cookies']['details_link']);
         }
         if (isset($site_meta['cookies']) && isset($site_meta['cookies']['enabled_cookie_types'])) {
             $site_meta['cookies']['enabled_cookie_types'] = array_reduce(

@@ -90,6 +90,12 @@ These public functions are changed (note that there are breaking changes in both
 // v2
 \Akka\Resolvers::resolve_post_blurbs_field($fields_source, $field_name);
 
+// v1
+\Akka_headless_wp_utils::parseUrl($url);
+
+// v2
+\Akka\Utils::parse_url($url);
+
 ```
 
 The following functions are new in v2:

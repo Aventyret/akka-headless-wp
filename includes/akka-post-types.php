@@ -31,7 +31,7 @@ class PostTypes
         }
         if ($args['public']) {
             $args['rewrite'] = [
-                'slug' => Resolvers::resolve_field($args, 'slug') ?? Utils::stringToRoute($args['label']),
+                'slug' => Resolvers::resolve_field($args, 'slug') ?? Utils::string_to_route($args['label']),
                 'with_front' => false,
             ];
         }

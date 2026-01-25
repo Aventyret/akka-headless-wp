@@ -34,7 +34,7 @@ class Taxonomies
 
         if ($options['has_archive']) {
             $args['rewrite'] = [
-                'slug' => Utils::stringToRoute($args['label']),
+                'slug' => Utils::string_to_route($args['label']),
                 'with_front' => false,
             ];
         }

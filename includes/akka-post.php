@@ -50,7 +50,7 @@ class Post
             ])
             : null;
 
-        $permalink = Utils::parseUrl(str_replace(WP_HOME, '', get_permalink($post->ID)));
+        $permalink = self::get_url($post->ID);
 
         $akka_post = [
             'post_id' => $post->ID,
@@ -64,7 +64,7 @@ class Post
             'author' => [
                 'id' => $post->post_author,
                 'name' => get_the_author_meta('display_name', $post->post_author),
-                'url' => AKKA_FRONTEND_BASE . Utils::parseUrl(get_author_posts_url($post->post_author)),
+                'url' => AKKA_FRONTEND_BASE . Utils::parse_url(get_author_posts_url($post->post_author)),
             ],
             'slug' => $post->post_name,
             'excerpt' => post_type_supports($post->post_type, 'excerpt') ? $post->post_excerpt : null,
@@ -90,7 +90,7 @@ class Post
             $akka_post['post_type'] == 'page' &&
             Archive::get_post_type_archive_permalink('post') == $akka_post['slug']
         ) {
-            $page = Utils::getQueryParam('page', 1);
+            $page = Utils::get_query_param('page', 1);
             $archive_query = Archive::archive_query('post', $page);
             $akka_post['archive'] = [
                 'count' => $archive_query->found_posts,
@@ -177,7 +177,7 @@ class Post
             'post_guid' => $post->guid,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
             'post_date_iso' => get_the_date('c', $post->ID),
-            'url' => Utils::parseUrl(get_permalink($post->ID)),
+            'url' => self::get_url($post->ID),
             'featured_image' => !empty($thumbnail_attributes) ? $thumbnail_attributes : null,
             'post_title' => $post->post_title,
             'post_type' => $post->post_type,
@@ -187,6 +187,11 @@ class Post
         ];
         $post_blurb = apply_filters('akka_post_' . $post_blurb['post_type'] . '_blurb', $post_blurb, $post);
         return apply_filters('akka_post_blurb', $post_blurb, $post);
+    }
+
+    public static function get_url($post_id)
+    {
+        return Utils::parse_url(str_replace(WP_HOME, '', get_permalink($post_id)));
     }
 
     private static function get_seo_meta($post, $post_thumbnail_id = null)
@@ -251,9 +256,9 @@ class Post
                         $schema_item = [
                             '@context' => $yoast_data['schema']['@context'],
                             '@type' => $graph_data['@type'],
-                            '@id' => AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['@id']),
+                            '@id' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['@id']),
                             'name' => $graph_data['name'],
-                            'url' => AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['url']),
+                            'url' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['url']),
                         ];
                         if ($graph_data['@type'] == 'WebSite') {
                             $schema_item['description'] = Resolvers::resolve_field($graph_data, 'description');
@@ -287,7 +292,7 @@ class Post
                             if (Resolvers::resolve_field($graph_data, 'logo')) {
                                 $schema_item['logo'] = $graph_data['logo'];
                                 $schema_item['logo']['@id'] =
-                                    AKKA_FRONTEND_BASE . Utils::parseUrl($graph_data['logo']['@id']);
+                                    AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['logo']['@id']);
                                 $schema_item['logo']['url'] = apply_filters(
                                     'akka_schema_organization_schema_logo_url',
                                     str_replace('wp-content/', 'app/', $graph_data['logo']['url'])

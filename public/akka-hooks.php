@@ -11,11 +11,11 @@ add_filter('max_srcset_image_width', function () {
 
 add_filter('allowed_block_types_all', 'Akka\Blocks::allowed_blocks', 10, 2);
 
-add_action('the_content', 'Akka\Utils::replaceHrefs');
+add_action('the_content', 'Akka\Utils::replace_hrefs');
 
-add_action('the_content', 'Akka\Utils::replaceSrcs');
+add_action('the_content', 'Akka\Utils::replace_srcs');
 
-add_action('the_content', 'Akka\Utils::replaceHtmlCharachters');
+add_action('the_content', 'Akka\Utils::replace_html_charachters');
 
 add_action('init', 'Akka\Utils::check_cms_cookie');
 
