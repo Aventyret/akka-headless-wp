@@ -49,7 +49,9 @@ The api base has changed from `/headless/v1` to `/akka/v2`. Updating to latest `
 
 ### Migrate function calls
 
-All Akka classes are renamed and placed in namespace `Akka`. These public functions are changed (note that there are breaking changes in both class names and function names):
+All Akka classes are renamed and placed in namespace `Akka`. Also `snake_case` instead of `camelCase` is used in php function names.
+
+These public functions are changed (note that there are breaking changes in both class names and function names):
 
 ```
 // v1
@@ -76,6 +78,18 @@ All Akka classes are renamed and placed in namespace `Akka`. These public functi
 // v2
 \Akka\Post::post_to_blurb($post);
 
+// v1
+\Akka_headless_wp_resolvers::resolve_post_field($post_data_or_fields, $field_name);
+
+// v2
+\Akka\Resolvers::resolve_post_blurb_field($fields_source, $field_name);
+
+// v1
+\Akka_headless_wp_resolvers::resolve_posts_field($post_data_or_fields, $field_name);
+
+// v2
+\Akka\Resolvers::resolve_post_blurbs_field($fields_source, $field_name);
+
 ```
 
 The following functions are new in v2:
@@ -89,6 +103,8 @@ The following functions are new in v2:
   'plural' => __('Articles', 'akka-theme'),
   'singular' => __('Article', 'akka-theme'),
 ]);
+
+\Akka\Resolvers::resolve_post_single_field($fields_source, $field_name);
 
 \Akka\Taxonomies::register_taxonomy_for_post_type('category', 'product');
 
