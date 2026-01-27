@@ -146,6 +146,13 @@ class Router
                 return $taxonomy_term_archive;
             }
         }
+        // Is this a taxonomy single?
+        if (!$post_id) {
+            $taxonomy_single = self::get_taxonomy_single_from_permalink($permalink);
+            if ($taxonomy_single) {
+                return $taxonomy_single;
+            }
+        }
 
         // Try polylang translated front page
         if (!$post_id && function_exists('pll_home_url') && strlen($permalink) == 2) {
@@ -263,6 +270,16 @@ class Router
         $year = Utils::get_query_param('year', null);
 
         return Archive::get_taxonomy_term_archive($archive_taxonomy, $archive_taxonomy_term, $page);
+    }
+
+    private static function get_taxonomy_single_from_permalink($permalink)
+    {
+        $taxonomy = Resolvers::resolve_field(apply_filters('akka_taxonomy_singles', []), $permalink);
+        if (!$taxonomy) {
+            return null;
+        }
+
+        return Taxonomies::get_single($taxonomy);
     }
 
     private static function get_hierarchical_page_id($permalink)

@@ -20,7 +20,11 @@ class Utils
 
     public static function string_to_route($string)
     {
-        return str_replace([' ', 'å', 'ä', 'ö', 'æ', 'ø', 'ü', 'ç', 'â', 'é', 'è', 'à'], ['-', 'a', 'a', 'o', 'a', 'o', 'u', 'c', 'a', 'e', 'e', 'a'], mb_strtolower($string));
+        return str_replace(
+            [' ', 'å', 'ä', 'ö', 'æ', 'ø', 'ü', 'ç', 'â', 'é', 'è', 'à'],
+            ['-', 'a', 'a', 'o', 'a', 'o', 'u', 'c', 'a', 'e', 'e', 'a'],
+            mb_strtolower($string)
+        );
     }
 
     public static function parse_url($url)
