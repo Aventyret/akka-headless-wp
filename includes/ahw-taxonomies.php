@@ -45,10 +45,7 @@ class Akka_headless_wp_akka_taxonomies
         }
 
         if ($options['has_single'] && Resolvers::resolve_field($args['rewrite'], 'slug')) {
-            add_filter('ahw_taxonomy_singles', function ($taxonomies) use (
-                $taxonomy_slug,
-                $args
-            ) {
+            add_filter('ahw_taxonomy_singles', function ($taxonomies) use ($taxonomy_slug, $args) {
                 if (!isset($taxonomies[$args['rewrite']['slug']])) {
                     $taxonomies[$args['rewrite']['slug']] = array_merge($args, ['slug' => $taxonomy_slug]);
                 }

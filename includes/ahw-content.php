@@ -733,8 +733,8 @@ class Akka_headless_wp_content
             return null;
         }
 
-        $terms = array_values(self::get_terms($taxonomy['slug'], true));
-        $terms_all = array_values(self::get_terms($taxonomy['slug']));
+        $terms = self::get_terms($taxonomy['slug'], true);
+        $terms_all = self::get_terms($taxonomy['slug']);
 
         $taxonomy_single_data = [
             'post_type' => 'taxonomy',
@@ -811,17 +811,23 @@ class Akka_headless_wp_content
     {
         $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => $hide_empty]);
 
-        return array_map(
-            function ($term) {
-                $term_url = Utils::parseUrl(get_term_link($term->term_id));
-                return [
-                    'term_id' => $term->term_id,
-                    'name' => $term->name,
-                    'slug' => $term->slug,
-                    'url' => apply_filters('ahw_term_url', $term_url, $term, $taxonomy),
-                ];
-            },
-            $taxonomy_terms ? $taxonomy_terms : []
+        return array_values(
+            array_map(
+                function ($term) {
+                    $term_url = Utils::parseUrl(get_term_link($term->term_id));
+                    return apply_filters(
+                        'ahw_term_blurb',
+                        [
+                            'term_id' => $term->term_id,
+                            'name' => $term->name,
+                            'slug' => $term->slug,
+                            'url' => apply_filters('ahw_term_url', $term_url, $term, $taxonomy),
+                        ],
+                        $term
+                    );
+                },
+                $taxonomy_terms ? $taxonomy_terms : []
+            )
         );
     }
 
@@ -1374,11 +1380,7 @@ class Akka_headless_wp_content
             'seo_title' => $taxonomy_data['post_title'],
             'canonical_url' => $taxonomy_data['url'],
         ];
-        return apply_filters(
-            'ahw_taxonomy_seo_meta',
-            $seo_meta,
-            $taxonomy_data
-        );
+        return apply_filters('ahw_taxonomy_seo_meta', $seo_meta, $taxonomy_data);
     }
 
     private static function get_primary_term($taxonomy, $terms, $post)
