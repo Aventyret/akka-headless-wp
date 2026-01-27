@@ -16,6 +16,7 @@ class Akka_headless_wp_akka_taxonomies
                 'admin_column_post_types' => [],
                 'admin_filter_post_types' => [],
                 'has_archive' => false,
+                'has_single' => false,
                 'acf_field_groups' => [],
             ],
             $options
@@ -41,6 +42,18 @@ class Akka_headless_wp_akka_taxonomies
                 'slug' => Utils::stringToRoute($args['label']),
                 'with_front' => false,
             ];
+        }
+
+        if ($options['has_single'] && Resolvers::resolve_field($args['rewrite'], 'slug')) {
+            add_filter('ahw_taxonomy_singles', function ($taxonomies) use (
+                $taxonomy_slug,
+                $args
+            ) {
+                if (!isset($taxonomies[$args['rewrite']['slug']])) {
+                    $taxonomies[$args['rewrite']['slug']] = array_merge($args, ['slug' => $taxonomy_slug]);
+                }
+                return $taxonomies;
+            });
         }
 
         if (!$args['label']) {

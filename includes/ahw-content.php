@@ -243,6 +243,14 @@ class Akka_headless_wp_content
             }
         }
 
+        // Is this a taxonomy single?
+        if (!$post_id) {
+            $taxonomy_single_data = self::get_taxonomy_single_data($permalink);
+            if ($taxonomy_single_data) {
+                return $taxonomy_single_data;
+            }
+        }
+
         // Try polylang translated front page
         if (!$post_id && function_exists('pll_home_url') && strlen($permalink) == 2) {
             $front_page_translations = pll_get_post_translations(get_option('page_on_front'));
@@ -718,6 +726,33 @@ class Akka_headless_wp_content
         return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data, $archive_taxonomy_term);
     }
 
+    private static function get_taxonomy_single_data($permalink)
+    {
+        $taxonomy = Resolvers::resolve_field(apply_filters('ahw_taxonomy_singles', []), $permalink);
+        if (!$taxonomy) {
+            return null;
+        }
+
+        $terms = array_values(self::get_terms($taxonomy['slug'], true));
+        $terms_all = array_values(self::get_terms($taxonomy['slug']));
+
+        $taxonomy_single_data = [
+            'post_type' => 'taxonomy',
+            'taxonomy' => $taxonomy['slug'],
+            'taxonomy_label' => $taxonomy['labels']['singular_name'],
+            'slug' => $taxonomy['slug'],
+            'url' => '/' . $permalink,
+            'post_title' => $taxonomy['labels']['name'],
+            'name' => $taxonomy['labels']['name'],
+            'terms' => $terms,
+            'terms_all' => $terms_all,
+        ];
+
+        $taxonomy_single_data['seo_meta'] = self::get_taxonomy_seo_meta($taxonomy_single_data);
+
+        return apply_filters('ahw_taxonomy_single_data', $taxonomy_single_data, $taxonomy);
+    }
+
     private static function get_post_data_terms($post)
     {
         $post_type_taxonomy_map = apply_filters('ahw_headless_post_type_taxonomy_map', [
@@ -772,9 +807,10 @@ class Akka_headless_wp_content
         );
     }
 
-    public static function get_terms($taxonomy_slug)
+    public static function get_terms($taxonomy_slug, $hide_empty = false)
     {
-        $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => false]);
+        $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => $hide_empty]);
+
         return array_map(
             function ($term) {
                 $term_url = Utils::parseUrl(get_term_link($term->term_id));
@@ -1329,6 +1365,19 @@ class Akka_headless_wp_content
             $term_data,
             $specific_seo_image_is_defined,
             $specific_seo_description_is_defined
+        );
+    }
+
+    private static function get_taxonomy_seo_meta($taxonomy_data)
+    {
+        $seo_meta = [
+            'seo_title' => $taxonomy_data['post_title'],
+            'canonical_url' => $taxonomy_data['url'],
+        ];
+        return apply_filters(
+            'ahw_taxonomy_seo_meta',
+            $seo_meta,
+            $taxonomy_data
         );
     }
 
