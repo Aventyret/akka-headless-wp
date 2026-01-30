@@ -12,6 +12,7 @@ class Taxonomies
                 'admin_column_post_types' => [],
                 'admin_filter_post_types' => [],
                 'has_archive' => false,
+                'has_single' => false,
                 'acf_field_groups' => [],
             ],
             $options
@@ -37,6 +38,15 @@ class Taxonomies
                 'slug' => Utils::string_to_route($args['label']),
                 'with_front' => false,
             ];
+        }
+
+        if ($options['has_single'] && Resolvers::resolve_field($args['rewrite'], 'slug')) {
+            add_filter('akka_taxonomy_singles', function ($taxonomies) use ($taxonomy_slug, $args) {
+                if (!isset($taxonomies[$args['rewrite']['slug']])) {
+                    $taxonomies[$args['rewrite']['slug']] = array_merge($args, ['slug' => $taxonomy_slug]);
+                }
+                return $taxonomies;
+            });
         }
 
         if (!$args['label']) {
@@ -228,5 +238,36 @@ class Taxonomies
             }
             return $taxonomy_map;
         });
+    }
+
+    public static function get_single($taxonomy)
+    {
+        $terms = Term::get_terms($taxonomy['slug'], true);
+        $terms_all = Term::get_terms($taxonomy['slug']);
+
+        $taxonomy_single = [
+            'post_type' => 'taxonomy',
+            'taxonomy' => $taxonomy['slug'],
+            'taxonomy_label' => $taxonomy['labels']['singular_name'],
+            'slug' => $taxonomy['slug'],
+            'url' => '/' . $permalink,
+            'post_title' => $taxonomy['labels']['name'],
+            'name' => $taxonomy['labels']['name'],
+            'terms' => $terms,
+            'terms_all' => $terms_all,
+        ];
+
+        $taxonomy_single['seo_meta'] = self::get_taxonomy_seo_meta($taxonomy_single);
+
+        return apply_filters('akka_taxonomy_single', $taxonomy_single, $taxonomy);
+    }
+
+    private static function get_taxonomy_seo_meta($taxonomy)
+    {
+        $seo_meta = [
+            'seo_title' => $taxonomy['post_title'],
+            'canonical_url' => $taxonomy['url'],
+        ];
+        return apply_filters('akka_taxonomy_seo_meta', $seo_meta, $taxonomy);
     }
 }
