@@ -178,6 +178,15 @@ add_filter('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_
   return $seo_meta;
 }, 10, 3);
 
+// v1
+add_filter('ahw_post_not_found_post_data', function($post_id, $permalink) {
+  return $post_data;
+}, 10, 2);
+// v2 (not that in v2 there is only 1 argument)
+add_filter('akka_post_not_found_response', function($permalink) {
+  return $not_found_reponse;
+});
+
 ```
 
 The following filters are new in v2:

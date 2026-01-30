@@ -183,9 +183,9 @@ class Router
             if ($redirect_response) {
                 return $redirect_response;
             }
-            $post_data = apply_filters('akka_post_not_found_post_data', $post_id, $permalink);
-            if ($post_data) {
-                return $post_data;
+            $not_found_response = apply_filters('akka_post_not_found_response', $permalink);
+            if ($not_found_response) {
+                return $not_found_response;
             }
         }
 
