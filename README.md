@@ -3,6 +3,8 @@
 This plugin enables running headless Wordpress will the full power
 of the Wordpress block editor.
 
+Check out the [docs](docs/README.md) for more information.
+
 ## Installation
 
 Add this repository to you composer.json:
