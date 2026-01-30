@@ -1,4 +1,7 @@
 {
     "name": "aventyret/akka-headless-wp",
-    "type": "wordpress-plugin"
+    "type": "wordpress-plugin",
+    "require": {
+        "philipnewcomer/acf-unique-id-field": "^2.0"
+    }
 }

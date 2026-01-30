@@ -3,6 +3,8 @@
 This plugin enables running headless Wordpress will the full power
 of the Wordpress block editor.
 
+Check out the [docs](docs/README.md) for more information.
+
 ## Installation
 
 Add this repository to you composer.json:
@@ -39,7 +41,222 @@ AKKA_FRONTEND_URL
 AKKA_FRONTEND_URL_INTERNAL
 ```
 
-
 ## Theme
 
-[Akka Headless WP Sage 10 starter theme](https://github.com/Aventyret/akka-headless-wp/tree/main/starter-theme)
+Use the [Akka Bas theme](https://github.com/Aventyret/akka-bas-theme) as a boilerplate for your projects theme.
+
+## v2 Migration guide
+
+The api base has changed from `/headless/v1` to `/akka/v2`. Updating to latest `akka-modules` should take care of this.
+
+### Migrate function calls
+
+All Akka classes are renamed and placed in namespace `Akka`. Also `snake_case` instead of `camelCase` is used in php function names.
+
+These public functions are changed (note that there are breaking changes in both class names and function names):
+
+```
+// v1
+\Akka_headless_wp_content::get_akka_post(1);
+
+// v2
+\Akka\Post::get_single(1);
+
+// v1
+\Akka_headless_wp_content::get_akka_posts($query_args);
+
+// v2
+\Akka\Post::get_blurbs($query_args);
+
+// v1
+\Akka_headless_wp_content::parse_posts($posts);
+
+// v2
+\Akka\Post::posts_to_blurbs($posts);
+
+// v1
+\Akka_headless_wp_content::get_post_in_archive($post);
+
+// v2
+\Akka\Post::post_to_blurb($post);
+
+// v1
+\Akka_headless_wp_resolvers::resolve_post_field($post_data_or_fields, $field_name);
+
+// v2
+\Akka\Resolvers::resolve_post_blurb_field($fields_source, $field_name);
+
+// v1
+\Akka_headless_wp_resolvers::resolve_posts_field($post_data_or_fields, $field_name);
+
+// v2
+\Akka\Resolvers::resolve_post_blurbs_field($fields_source, $field_name);
+
+// v1
+\Akka_headless_wp_utils::parseUrl($url);
+
+// v2
+\Akka\Utils::parse_url($url);
+
+```
+
+The following functions are new in v2:
+
+```
+\Akka\Post::get_blurb($post_id);
+
+\Akka\PostTypes::unregister_post_post_type();
+
+\Akka\PostTypes::rename_post_type('post', [
+  'plural' => __('Articles', 'akka-theme'),
+  'singular' => __('Article', 'akka-theme'),
+]);
+
+\Akka\Resolvers::resolve_post_single_field($fields_source, $field_name);
+
+\Akka\Taxonomies::register_taxonomy_for_post_type('category', 'product');
+
+\Akka\Taxonomies::unregister_taxonomy_for_post_type('category', 'post');
+```
+
+### Migrate hooks
+
+All Akka hooks are renamed with prefix `akka_` replacing `ahw_`. In addition to this change, the following filters are changed as well:
+
+```
+// v1
+add_filter('ahw_taxonomy_term_data', function($taxonomy_term_data, $archive_taxonomy_term) {
+  return $taxonomy_term_data;
+}, 10, 2);
+// v2
+add_filter('akka_taxonomy_term_archive', function($taxonomy_term_archive, $archive_taxonomy_term) {
+  return $taxonomy_term_archive;
+}, 10, 2);
+
+// v1
+add_filter('ahw_post_type_data', function($post_type_data) {
+  return $post_type_data;
+}, 10, 2);
+// v2
+add_filter('akka_post_type_archive', function($post_type_archive) {
+  return $post_type_archive;
+});
+
+// v1
+add_filter('ahw_post_data', function($post_data) {
+  return $post_data;
+});
+// v2 (note that an optional second argument is added)
+add_filter('akka_post_single', function($akka_post, $post) {
+  return $akka_post;
+}, 10, 2);
+
+// v1
+add_filter('awh_post_in_archive', function($post_in_archive, $post) {
+  return $post_in_archive;
+}, 10, 2);
+// v2
+add_filter('akka_post_blurb', function($post_blurb, $post) {
+  return $post_blurb;
+}, 10, 2);
+
+// v1
+add_filter('awh_post_in_archive_image_size', function($image_size) {
+  return $image_size;
+});
+// v2
+add_filter('akka_post_blurb_image_size', function($image_size) {
+  return $image_size;
+});
+
+// v1
+add_filter('ahw_search_result_data', function($search_result_data) {
+  return $search_result_data;
+});
+// v2
+add_filter('akka_search_result', function($search_result) {
+  return $search_result;
+});
+
+// v1
+add_filter('ahw_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
+  return $seo_meta;
+}, 10, 3);
+// v2
+add_filter('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
+  return $seo_meta;
+}, 10, 3);
+
+// v1
+add_filter('ahw_post_not_found_post_data', function($post_id, $permalink) {
+  return $post_data;
+}, 10, 2);
+// v2 (not that in v2 there is only 1 argument)
+add_filter('akka_post_not_found_response', function($permalink) {
+  return $not_found_reponse;
+});
+
+```
+
+The following filters are new in v2:
+
+```
+
+add_filter('akka_post_{$post_type}_single', function($post_single, $post) {
+  return $post_single;
+}, 10, 2);
+
+add_filter('akka_post_template_{$page_template}_single', function($post_single, $post) {
+  return $post_single;
+}, 10, 2);
+
+add_filter('akka_post_{$post_type}_blurb', function($post_blurb, $post) {
+  return $post_blurb;
+}, 10, 2);
+
+add_filter('akka_post_type_{$post_type}_archive', function($post_type_archive) {
+  return $post_type_archive;
+});
+
+add_filter('akka_taxonomy_term_{$taxonomy_slug}_archive', function($taxonomy_term_archive, $archive_taxonomy_term) {
+  return $taxonomy_term_archive;
+}, 10, 2);
+
+add_filter('akka_post_term', function($term, $taxonomy_slug) {
+  return $term;
+}, 10, 2);
+```
+
+### Solarplexus blocks get Akka post blurbs as props
+
+Solarplexus blocks now get akka post blurbs as their `post` props. This means the following pattern is depracated for Solarplexus blocks (`block_props_callback` can be removed for Solarplexus if they are only used for the posts prop like this):
+
+```
+'block_props_callback' => function ($post_id, $splx_args) {
+  $block_attributes = $splx_args['block_attributes'];
+  $posts = $splx_args['posts'];
+  return ListBlocks::block_props($posts, $block_attributes);
+},
+```
+
+### Custom post filter no longer needed
+
+The filter `akka_custom_post_strucure_post_types` is no longer needed for public post types (this filter is implemented in the plugin for these post types).
+
+### Plugin now ships with ACF_Field_Unique_ID
+
+Remove `philipnewcomer/acf-unique-id-field` as a dependency for your akka project (if you have it) since the plugin now ships with it:
+
+```
+composer remove philipnewcomer/acf-unique-id-field
+```
+
+Also remove the following row if you have it in your themes `ThemeSetup.php` file.
+
+```
+\PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID::init();
+```
+
+### Plugin no longer ships with simplehtmldom
+
+If you need it: include it in your theme.
