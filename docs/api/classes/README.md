@@ -160,27 +160,9 @@ Returns the frontend URL for a post.
 
 ---
 
-### get_seo_meta
-
-```php
-\Akka\Post::get_seo_meta($post, $post_thumbnail_id = null)
-```
-
-Returns SEO metadata for a post. Integrates with Yoast, SEO Framework, and All in One SEO.
-
-**Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$post` | `WP_Post` | The post object. |
-| `$post_thumbnail_id` | `int\|null` | Optional thumbnail ID for fallback SEO image. |
-
-**Returns:** `array` — SEO meta object with `seo_title`, `seo_description`, `og_*`, `twitter_*`, `canonical_url`, `schema`, etc.
-
----
-
 ## PostTypes
 
-Utilities for registering and managing custom post types.
+Utilities for registering and managing custom post types and for managing core post types `post` and `page`.
 
 ### register_post_type
 
@@ -216,7 +198,6 @@ Registers a custom post type with Akka conventions.
 **Options:**
 ```php
 [
-    'meta_groups' => [],            // Meta field groups
     'acf_field_groups' => [],       // ACF field group definitions
     'allowed_core_blocks' => [],    // Additional allowed blocks
     'unallowed_core_blocks' => [],  // Blocks to remove
@@ -268,7 +249,7 @@ Renames an existing post type's labels.
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$post_type` | `string` | The post type to rename (e.g., `'post'`). |
-| `$labels` | `array` | Array with `'plural'` and `'singular'` keys. |
+| `$labels` | `array` | Array with Wordpress post type labels. |
 
 **Example:**
 ```php
@@ -295,6 +276,10 @@ Sets a default blocks template for a post type.
 | `$blocks_template` | `array` | Gutenberg blocks template array. |
 
 ---
+**Example:**
+```php
+\Akka\PostTypes::set_post_type_blocks_template('product', [['akka/hero', []]]);
+```
 
 ## Taxonomies
 
@@ -364,7 +349,7 @@ Detaches a taxonomy from a post type.
 
 ## Resolvers
 
-Helper methods for resolving ACF fields and related data.
+Helper methods for resolving ACF fields and related data. These methods can also be used to retreive data from other array objects and is convenient since it is index safe (`isset` checks are not needed).
 
 ### resolve_field
 
@@ -377,7 +362,7 @@ Resolves a field value from a fields array or post object.
 **Parameters:**
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$fields_source` | `array` | Either an array with `'fields'` key, a direct fields array, or a post data array. |
+| `$fields_source` | `array` | Either an array with `'fields'` key, a direct fields array, or a post single or blurb object. |
 | `$field_name` | `string` | The field name to retrieve. |
 
 **Returns:** `mixed` — The field value or null.
@@ -503,75 +488,9 @@ Returns audio/video attributes for a media attachment.
 
 ---
 
-## Archive
-
-Handles archive and listing queries.
-
-### get_post_type_archive
-
-```php
-\Akka\Archive::get_post_type_archive($archive_post_type, $page)
-```
-
-Returns a post type archive with pagination.
-
-**Returns:** Array with `post_type`, `slug`, `url`, `name`, `count`, `pages`, `posts`, `next_page`.
-
----
-
-### get_taxonomy_term_archive
-
-```php
-\Akka\Archive::get_taxonomy_term_archive($archive_taxonomy, $archive_taxonomy_term, $page, $year = null)
-```
-
-Returns a taxonomy term archive with pagination.
-
----
-
-### get_post_archive
-
-```php
-\Akka\Archive::get_post_archive($post_types, $category, $post_tag, $per_page = -1, $offset = 0, $page = 1)
-```
-
-Returns posts filtered by category/tag with pagination.
-
----
-
-### get_posts_feed
-
-```php
-\Akka\Archive::get_posts_feed($post_types, $per_page = 50, $offset = 0, $page = 1)
-```
-
-Returns a feed of posts from the last 12 months.
-
----
-
 ## Term
 
 Handles taxonomy term data.
-
-### get_single_terms
-
-```php
-\Akka\Term::get_single_terms($post)
-```
-
-Returns terms for a Post Single, based on the taxonomy map.
-
----
-
-### get_blurb_terms
-
-```php
-\Akka\Term::get_blurb_terms($post)
-```
-
-Returns terms for a Post Blurb, based on the blurb taxonomy map.
-
----
 
 ### get_terms
 
@@ -603,7 +522,7 @@ Handles registration of Akka Blocks (custom server-rendered blocks).
 \Akka\AkkaBlocks::register_block_type($block_type, $args = [])
 ```
 
-Registers an Akka Block that renders props to a frontend component.
+Registers an Akka Block that renders props to a frontend component. The block needs to be registered in the editor javascript as well with the same block type identifier. Additionaly there needs to be a matching AkkaComponent imported in AkkaComponents.jsx in the frontend application.
 
 **Parameters:**
 | Parameter | Type | Description |
@@ -622,7 +541,7 @@ Registers an Akka Block that renders props to a frontend component.
 
 **Example:**
 ```php
-\Akka\AkkaBlocks::register_block_type('theme/hero', [
+\Akka\AkkaBlocks::register_block_type('akka/hero', [
     'akka_component_name' => 'Hero',
     'block_props_callback' => function($post_id, $block_attributes) {
         return [
@@ -641,7 +560,7 @@ Registers an Akka Block that renders props to a frontend component.
 \Akka\AkkaBlocks::register_splx_block_type($block_type, $args = [])
 ```
 
-Registers a Solarplexus block as an Akka Block.
+Registers a Solarplexus block as an Akka Block. The block needs to be registered in the splx-config.json file of the theme as well, as per the Solarplexus documentation. Additionaly there needs to be a matching AkkaComponent imported in AkkaComponents.jsx in the frontend application.
 
 **Args:**
 ```php
@@ -722,26 +641,6 @@ Converts WordPress internal URLs to frontend-relative URLs.
 
 ---
 
-### is_headless
-
-```php
-\Akka\Utils::is_headless()
-```
-
-Returns `true` if called during a REST API request (headless context).
-
----
-
-### flush_frontend_cache
-
-```php
-\Akka\Utils::flush_frontend_cache()
-```
-
-Triggers a cache flush notification to the frontend application.
-
----
-
 ### get_page_template_slug
 
 ```php
@@ -762,43 +661,6 @@ Wraps left/right aligned blocks for proper rendering.
 
 ---
 
-## Search
-
-Search functionality with Relevanssi integration.
-
-### search
-
-```php
-\Akka\Search::search($query, $post_type, $category_slugs = [], $term_slugs = [], $taxonomy = 'post_tag', $offset = 0, $page = 1)
-```
-
-Performs a search query.
-
-**Returns:**
-```php
-[
-    'count' => int,
-    'pages' => int,
-    'posts' => array,  // Post Blurbs
-]
-```
-
----
-
-## SiteMeta
-
-Site-wide metadata and navigation.
-
-### get_site_meta
-
-```php
-\Akka\SiteMeta::get_site_meta()
-```
-
-Returns site metadata including navigation, global fields, and redirects.
-
----
-
 ## Acf
 
 ACF field group registration utilities.
@@ -812,20 +674,6 @@ ACF field group registration utilities.
 Registers an ACF field group programmatically.
 
 **Required keys:** `key`, `title`, `fields`, `location`.
-
----
-
-## MetaFields
-
-Native WordPress meta field registration.
-
-### register_post_meta_field
-
-```php
-\Akka\MetaFields::register_post_meta_field($meta_group, $meta_fields, $options = [])
-```
-
-Registers a group of post meta fields with editor UI support.
 
 ---
 

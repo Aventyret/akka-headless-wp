@@ -47,6 +47,11 @@ add_action('rest_api_init', function () {
         'callback' => 'Akka\Router::search_request',
         'permission_callback' => 'Akka\Router::can_get_content',
     ]);
+    register_rest_route(AKKA_API_BASE, '/terms', [
+        'methods' => 'GET',
+        'callback' => 'Akka\Router::terms_request',
+        'permission_callback' => 'Akka\Router::can_get_content',
+    ]);
     register_rest_route(AKKA_API_BASE, '/editor/block', [
         'methods' => 'POST',
         'callback' => 'Akka\AkkaBlocks::render_editor_block',

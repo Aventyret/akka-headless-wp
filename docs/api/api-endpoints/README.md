@@ -12,6 +12,8 @@ Returns site-wide metadata including navigation, global ACF fields, and redirect
 
 The response of this endpoint can be adjusted with the filters `akka_site_meta` and `akka_site_meta_menu_id`.
 
+`redirects` is currently only included if Yoast Premium is active.
+
 **Response:**
 ```json
 {
@@ -225,14 +227,14 @@ Renders an Akka Block for the editor preview. **Requires authentication with `ed
 ```json
 {
   "post_id": 123,
-  "block_type": "theme/hero",
+  "block_type": "akka/hero",
   "block_attributes": {
     "title": "Hello World"
   }
 }
 ```
 
-**Response:** Rendered block HTML or props.
+**Response:** Rendered block HTML.
 
 ---
 
@@ -278,38 +280,25 @@ Archives return:
 
 ## Authentication
 
-Most endpoints use the `can_get_content` permission callback which checks for:
-1. A valid `cms_signed_in` cookie (or custom cookie name from `AKKA_CMS_COOKIE_NAME`)
-2. The request coming from an internal URL (`AKKA_FRONTEND_URL_INTERNAL`)
-
-For public content, endpoints are generally accessible. Preview and draft content require authentication.
+Most endpoints use the `can_get_content` permission callback. The apis are currently not protected by any authentication.
 
 ---
 
 ## Error Responses
 
-### 404 Not Found
+Status code should be 200 for all successfull responses.
+
+### 400 Bad requests
 
 ```json
-{
-  "code": "rest_no_route",
-  "message": "No route was found matching the URL and request method.",
-  "data": { "status": 404 }
-}
+{"message":"Missing parameter"}
 ```
 
-### Post Not Found
+### 404 Post Not Found
 
 When a permalink doesn't match any content:
 ```json
-null
-```
-
-Or a redirect response:
-```json
-{
-  "redirect": "/correct-url"
-}
+{"message":"Post not found"}
 ```
 
 ---

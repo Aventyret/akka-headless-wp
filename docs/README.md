@@ -8,17 +8,17 @@ Check out the [api](api/README.md) for comprehensive documentation.
 
 ### Wordpress conventions
 
-The plugin together with them Akka Bas theme comes with a set of customizable wordpress conventions that are meant to facilitate building secure, maintainalble and editor friendly Wordpress solutions. Settings that are provided by the plugin are typically customizable through filters that the plugin exposes.
+The plugin together with the [Akka Bas theme](https://github.com/Aventyret/akka-bas-theme) comes with a set of customizable wordpress conventions that are meant to facilitate building secure, maintainable and editor friendly Wordpress solutions. Settings that are provided by the plugin are typically customizable through filters that the plugin exposes.
 
 ### Routing
 
-The plugin exposes a set of rest endpoints, the main idea is that the frontend application should use the Wordpress settings for routing, so that a post, term archive cusom post archive are accessed in the frontend by their permalink. This login is handled by the `Akka\Router` class.
+The plugin exposes a set of rest endpoints, the main idea is that the frontend application should use the Wordpress settings for routing, so that a post, term archive cusom post archive are accessed in the frontend by their permalink. This routing is handled by the `Akka\Router` class.
 
 ### Post types and posts
 
 The plugin exposes an api to register custom post types and to configure settings and ACF fields for these. This is done through the `Akka\PostTypes` class.
 
-Akka has it's own post absttactions, 'Post Single' and 'Post Blurb'. Single is a representation of a post as a full page, while blurb is a representation of a post as a small preview, typically used in a list or grid. The Akka plugin will provide these objects through it's rest endpoints, and theme developers can adjust the data scheme of these objects through [Filters](api/hooks/README.md).
+Akka has it's own post abstractions, 'Post Single' and 'Post Blurb'. Single is a representation of a post as a full page, while blurb is a representation of a post as a small preview, typically used in a list or grid. The Akka plugin will provide these objects through it's rest endpoints, and theme developers can adjust the data scheme of these objects through [Filters](api/hooks/README.md).
 
 ### Taxonomies and terms
 
