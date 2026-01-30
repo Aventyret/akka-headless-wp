@@ -156,7 +156,7 @@ add_filter('akka_post_blurb_image_size', function($size) {
 
 ### akka_post_type_archive
 
-Filters any post type archive data.
+Filters post type archive responses.
 
 ```php
 add_filter('akka_post_type_archive', function($post_type_archive) {
@@ -168,7 +168,7 @@ add_filter('akka_post_type_archive', function($post_type_archive) {
 
 ### akka_post_type_{$post_type}_archive
 
-Filters archive data for a specific post type.
+Filters post type archive responses for a specific post type. Parameters are the same as for `akka_post_type_archive`.
 
 ```php
 add_filter('akka_post_type_product_archive', function($archive) {
@@ -181,7 +181,7 @@ add_filter('akka_post_type_product_archive', function($archive) {
 
 ### akka_taxonomy_term_archive
 
-Filters taxonomy term archive data.
+Filters taxonomy term archive responses.
 
 ```php
 add_filter('akka_taxonomy_term_archive', function($archive, $term) {
@@ -189,11 +189,22 @@ add_filter('akka_taxonomy_term_archive', function($archive, $term) {
 }, 10, 2);
 ```
 
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$archive` | `array` | The Taxonomy Term Archive object. |
+| `$term` | `WP_Term` | The original WordPress term. |
+
 ---
 
-### akka_taxonomy_term_{$term_slug}_archive
+### akka_taxonomy_term_{$taxonomy_slug}_archive
 
-Filters archive data for a specific term.
+Filters archive data for a specific taxonomy. Parameters are the same as for `akka_taxonomy_term_archive`.
+
+```php
+add_filter('akka_taxonomy_term_post_tag_archive', function($archive, $term) {
+    return $archive;
+}, 10, 2);
+```
 
 ---
 
@@ -203,11 +214,14 @@ Filters WP_Query arguments for a post type archive.
 
 ```php
 add_filter('akka_product_archive_query_args', function($query_args) {
-    $query_args['meta_key'] = 'is_featured';
     $query_args['orderby'] = 'meta_value';
     return $query_args;
 });
 ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$query_args` | `WP_Query_Args` | Query args for post type archives. |
 
 ---
 
@@ -221,18 +235,9 @@ add_filter('akka_get_posts_args', function($query_args) {
 });
 ```
 
----
-
-### akka_post_types_with_archives
-
-Filters the list of post types that have archives.
-
-```php
-add_filter('akka_post_types_with_archives', function($post_types) {
-    $post_types[] = 'product';
-    return $post_types;
-});
-```
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$query_args` | `WP_Query_Args` | Query args for get posts queries. |
 
 ---
 
@@ -244,10 +249,18 @@ Filters individual term data in post term arrays.
 
 ```php
 add_filter('akka_post_term', function($term, $taxonomy_slug) {
+    if ($taxonomy_slug != 'custom_tax') {
+        return $term;
+    }
     $term['icon'] = get_field('icon', 'term_' . $term['term_id']);
     return $term;
 }, 10, 2);
 ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$term` | `array` | Term object. |
+| `$taxonomy_slug` | `string` | Taxonomy slug. |
 
 ---
 
@@ -260,6 +273,12 @@ add_filter('akka_term_url', function($url, $term, $taxonomy) {
     return $url;
 }, 10, 3);
 ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$url` | `string` | Term url. |
+| `$term` | `array` | Term object. |
+| `$taxonomy` | `string` | Taxonomy slug. |
 
 ---
 
@@ -275,36 +294,6 @@ add_filter('akka_term_seo_meta', function($seo_meta, $term_data, $specific_seo_i
 
 ---
 
-### akka_post_type_taxonomy_map
-
-Filters which taxonomies appear in Post Single term data.
-
-```php
-add_filter('akka_post_type_taxonomy_map', function($map) {
-    $map['product'] = ['product_category', 'product_tag'];
-    return $map;
-});
-```
-
-**Default:** `['post' => ['category', 'post_tag']]`
-
----
-
-### akka_blurb_post_type_taxonomy_map
-
-Filters which taxonomies appear in Post Blurb term data.
-
-```php
-add_filter('akka_blurb_post_type_taxonomy_map', function($map) {
-    $map['post'] = ['category'];
-    return $map;
-});
-```
-
-**Default:** `[]` (empty)
-
----
-
 ### akka_primary_term_id_column_key
 
 Filters the array key used for primary term lookup.
@@ -314,21 +303,6 @@ Filters the array key used for primary term lookup.
 ---
 
 ## Routing Filters
-
-### akka_custom_post_strucure_post_types
-
-Filters which post types use custom permalink structures.
-
-```php
-add_filter('akka_custom_post_strucure_post_types', function($post_types) {
-    $post_types[] = 'product';
-    return $post_types;
-});
-```
-
-**Default:** `['post', 'page']`
-
----
 
 ### akka_post_pre_redirect_post_id
 
