@@ -13,7 +13,7 @@ Filters the Post Single object before it's returned.
 ```php
 add_filter('akka_post_single', function($akka_post, $post) {
     // Modify the post single data
-    $akka_post['custom_field'] = get_field('my_field', $post->ID);
+    $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
     return $akka_post;
 }, 10, 2);
 ```
@@ -27,39 +27,39 @@ add_filter('akka_post_single', function($akka_post, $post) {
 
 ### akka_post_{$post_type}_single
 
-Filters the Post Single for a specific post type.
+Filters the Post Single for a specific post type. Parameters are the same as for `akka_post_single`.
 
 ```php
-add_filter('akka_post_product_single', function($akka_post, $post) {
-    $akka_post['price'] = get_field('price', $post->ID);
+add_filter('akka_post_product_single', function($akka_post) {
+    $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
     return $akka_post;
-}, 10, 2);
+});
 ```
 
 ---
 
 ### akka_post_template_{$template}_single
 
-Filters the Post Single for posts with a specific page template.
+Filters the Post Single for posts with a specific page template. Parameters are the same as for `akka_post_single`.
 
 ```php
-add_filter('akka_post_template_landing-page_single', function($akka_post, $post) {
-    $akka_post['hero_blocks'] = get_field('hero_blocks', $post->ID);
+add_filter('akka_post_template_landing-page_single', function($akka_post) {
+    $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
     return $akka_post;
-}, 10, 2);
+});
 ```
 
 ---
 
 ### akka_post_blurb
 
-Filters the Post Blurb object.
+Filters the Post Blurb object before it is included in listings, archives and search results.
 
 ```php
-add_filter('akka_post_blurb', function($post_blurb, $post) {
-    $post_blurb['reading_time'] = calculate_reading_time($post->post_content);
+add_filter('akka_post_blurb', function($post_blurb) {
+    $post_blurb['custom_field'] = Resolvers::resolve_field($post_blurb, 'custom_field');
     return $post_blurb;
-}, 10, 2);
+});
 ```
 
 ---
@@ -75,6 +75,11 @@ add_filter('akka_post_product_blurb', function($post_blurb, $post) {
 }, 10, 2);
 ```
 
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$post_blurb` | `array` | The Post Blurb object. |
+| `$post` | `WP_Post` | The original WordPress post. |
+
 ---
 
 ### akka_post_seo_meta
@@ -82,13 +87,36 @@ add_filter('akka_post_product_blurb', function($post_blurb, $post) {
 Filters the SEO metadata for a post.
 
 ```php
-add_filter('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_is_defined) {
+add_filter('akka_post_seo_meta', function($seo_meta, $pos, $specific_seo_image_is_defined) {
     if (!$specific_seo_image_is_defined) {
-        $seo_meta['seo_image_url'] = get_template_directory_uri() . '/default-og.jpg';
+        $seo_meta['seo_image_url'] = '/images/default-og.jpg';
     }
     return $seo_meta;
 }, 10, 3);
 ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$seo_meta` | `array` | The Post Seo meta object. |
+| `$post` | `WP_Post` | The original WordPress post. |
+| `$specific_seo_image_is_defined` | `boolean` | If a specific SEO image is defined. |
+
+---
+
+### akka_seo_description
+
+Filters the SEO description (meta description).
+
+```php
+add_filter('akka_seo_description', function($description, $post) {
+    return wp_trim_words($description, 30);
+}, 10, 2);
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$description` | `string` | The SEO description. |
+| `$post` | `WP_Post` | The original WordPress post. |
 
 ---
 
@@ -103,27 +131,20 @@ add_filter('akka_post_schema', function($schema, $akka_post) {
 }, 10, 2);
 ```
 
----
-
-### akka_seo_description
-
-Filters the SEO description.
-
-```php
-add_filter('akka_seo_description', function($description, $post) {
-    return wp_trim_words($description, 30);
-}, 10, 2);
-```
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$schema` | `array` | The Json-LD schema object. |
+| `$akka_post` | `array` | The Post Single object. |
 
 ---
 
-### akka_post_in_archive_image_size
+### akka_post_blurb_image_size
 
 Filters the image size used for featured images in Post Blurbs.
 
 ```php
-add_filter('akka_post_in_archive_image_size', function($size) {
-    return 'medium_large';
+add_filter('akka_post_blurb_image_size', function($size) {
+    return 'square';
 });
 ```
 
@@ -321,15 +342,15 @@ add_filter('akka_post_pre_redirect_post_id', function($post_id, $permalink) {
 
 ---
 
-### akka_post_not_found_post_data
+### akka_post_not_found_response
 
 Filters the response when a post is not found. Return a valid post data array to serve fallback content.
 
 ```php
-add_filter('akka_post_not_found_post_data', function($post_id, $permalink) {
-    // Return 404 page data
-    return \Akka\Post::get_single(get_option('page_on_front'));
-}, 10, 2);
+add_filter('akka_post_not_found_response', function($permalink) {
+    // Return 404 page response
+    return \Akka\Post::get_single(get_option('404_page'));
+});
 ```
 
 ---

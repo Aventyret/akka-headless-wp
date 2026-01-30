@@ -168,7 +168,7 @@ class Post
         $thumbnail_id = get_post_thumbnail_id($post->ID);
         $thumbnail_attributes = $thumbnail_id
             ? Utils::internal_img_attributes($thumbnail_id, [
-                'size' => apply_filters('akka_post_in_archive_image_size', 'full'),
+                'size' => apply_filters('akka_post_blurb_image_size', 'full'),
             ])
             : null;
 

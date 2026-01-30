@@ -161,6 +161,15 @@ add_filter('akka_post_blurb', function($post_blurb, $post) {
 }, 10, 2);
 
 // v1
+add_filter('awh_post_in_archive_image_size', function($image_size) {
+  return $image_size;
+});
+// v2
+add_filter('akka_post_blurb_image_size', function($image_size) {
+  return $image_size;
+});
+
+// v1
 add_filter('ahw_search_result_data', function($search_result_data) {
   return $search_result_data;
 });
