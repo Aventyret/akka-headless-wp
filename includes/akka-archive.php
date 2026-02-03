@@ -31,7 +31,7 @@ class Archive
             'posts' => $posts,
             'next_page' =>
                 $query->max_num_pages > $page + 1
-                    ? '/' . self::get_post_type_archive_permalink($post_type) . '?page=' . ($page + 1)
+                    ? '/' . self::get_post_type_archive_permalink($archive_post_type) . '?page=' . ($page + 1)
                     : null,
         ];
 
@@ -101,7 +101,7 @@ class Archive
         return apply_filters('akka_taxonomy_term_archive', $taxonomy_term_archive, $archive_taxonomy_term);
     }
 
-    private static function archive_query($post_type, $page = 1)
+    public static function archive_query($post_type, $page = 1)
     {
         $query_args = [
             'post_type' => $post_type,
@@ -115,7 +115,7 @@ class Archive
         return $query;
     }
 
-    private static function get_posts_query($query_args, $options = [])
+    public static function get_posts_query($query_args, $options = [])
     {
         if (isset($options['page']) && $options['page'] > 0) {
             $query_args = self::set_offset_and_per_page($query_args, $options['page']);

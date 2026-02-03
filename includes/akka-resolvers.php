@@ -93,9 +93,9 @@ class Resolvers
         if (!$field) {
             return [];
         }
-        return array_map(function ($post_id) {
+        return array_map(function ($post_id) use ($field) {
             if (is_numeric($field)) {
-                $p = get_post($p);
+                $p = get_post($post_id);
             }
             return Post::post_to_blurb($p);
         }, $field);
