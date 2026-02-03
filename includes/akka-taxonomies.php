@@ -147,7 +147,7 @@ class Taxonomies
             });
 
             add_filter('query_vars', function ($vars) use ($taxonomy_slug) {
-                $vars[] .= 'term_' . $taxonomy_slug;
+                $vars[] = 'term_' . $taxonomy_slug;
 
                 return $vars;
             });
