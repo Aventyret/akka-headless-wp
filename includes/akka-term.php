@@ -65,13 +65,13 @@ class Term
     {
         $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => false]);
         return array_map(
-            function ($term) {
+            function ($term) use ($taxonomy_slug) {
                 $term_url = self::get_url($term->term_id);
                 return [
                     'term_id' => $term->term_id,
                     'name' => $term->name,
                     'slug' => $term->slug,
-                    'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy),
+                    'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy_slug),
                 ];
             },
             $taxonomy_terms ? $taxonomy_terms : []
@@ -83,7 +83,7 @@ class Term
         return Utils::parse_url(str_replace(WP_HOME, '', get_term_link($term_id)));
     }
 
-    private static function get_seo_meta($term_data)
+    public static function get_seo_meta($term_data)
     {
         $seo_meta = [];
         $specific_seo_image_is_defined = false;
