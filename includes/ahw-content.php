@@ -183,7 +183,7 @@ class Akka_headless_wp_content
         if (!$post_id && $permalink != '/') {
             foreach($post_types_with_custom_structures as $post_type) {
                 $post_type_object = get_post_type_object($post_type);
-                if (Resolvers::resolve_field($post_type_object->rewrite, 'slug') && strpos($permalink, $post_type_object->rewrite['slug'] . '/') !== false) {
+                if (Resolvers::resolve_field($post_type_object->rewrite, 'slug') && $permalink_parts[count($permalink_parts) - 2] == $post_type_object->rewrite['slug']) {
                     $post_object = get_page_by_path(
                         $permalink_parts[count($permalink_parts) - 1],
                         OBJECT,
