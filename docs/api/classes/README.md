@@ -25,37 +25,7 @@ Returns a full "Post Single" object for a given post.
 | `$post_status` | `array` | `['publish']` | Allowed post statuses. |
 | `$get_autosaved` | `bool` | `false` | If true, fetches autosaved content. |
 
-**Returns:** `array|null` — Post Single object or null if not found.
-
-**Post Single Object Structure:**
-
-```php
-[
-    'post_id' => int,
-    'post_date' => string,          // Formatted date
-    'post_date_iso' => string,      // ISO 8601 date
-    'post_title' => string,
-    'post_type' => string,
-    'post_password' => string,
-    'post_parent_id' => int,
-    'post_status' => string,
-    'author' => [
-        'id' => int,
-        'name' => string,
-        'url' => string
-    ],
-    'slug' => string,
-    'excerpt' => string|null,
-    'page_template' => string,
-    'featured_image' => array|null,  // Image attributes
-    'thumbnail_caption' => string,
-    'permalink' => string,
-    'url' => string,
-    'taxonomy_terms' => array,
-    'post_content' => string,        // Rendered HTML
-    'seo_meta' => array,
-]
-```
+**Returns:** `array|null` — [Post Single](../hooks/README.md#akka_post_single) or null if not found.
 
 ---
 
@@ -72,7 +42,7 @@ Returns a "Post Blurb" object for a single post by ID.
 |-----------|------|-------------|
 | `$post_id` | `int` | The post ID. |
 
-**Returns:** `array|null` — Post Blurb object or null.
+**Returns:** `array|null` — [Post Blurb](../hooks/README.md#akka_post_blurb) or null.
 
 ---
 
@@ -82,7 +52,7 @@ Returns a "Post Blurb" object for a single post by ID.
 \Akka\Post::get_blurbs($query_args);
 ```
 
-Returns an array of Post Blurb objects based on WP_Query arguments.
+Returns an array of [Post Blurb](../hooks/README.md#akka_post_blurb) based on WP_Query arguments.
 
 **Parameters:**
 | Parameter | Type | Description |
@@ -106,7 +76,7 @@ Converts an array of WP_Post objects to Post Blurb objects.
 |-----------|------|-------------|
 | `$posts` | `array` | Array of WP_Post objects. |
 
-**Returns:** `array` — Array of Post Blurb objects.
+**Returns:** `array` — Array of [Post Blurb](../hooks/README.md#akka_post_blurb).
 
 ---
 
@@ -123,25 +93,7 @@ Converts a single WP_Post object to a Post Blurb object.
 |-----------|------|-------------|
 | `$post` | `WP_Post` | A WordPress post object. |
 
-**Returns:** `array` — Post Blurb object.
-
-**Post Blurb Object Structure:**
-
-```php
-[
-    'post_id' => int,
-    'post_guid' => string,
-    'post_date' => string,
-    'post_date_iso' => string,
-    'url' => string,
-    'featured_image' => array|null,
-    'post_title' => string,
-    'post_type' => string,
-    'slug' => string,
-    'description' => string,         // Excerpt
-    'taxonomy_terms' => array,
-]
-```
+**Returns:** `array` — [Post Blurb](../hooks/README.md#akka_post_blurb).
 
 ---
 

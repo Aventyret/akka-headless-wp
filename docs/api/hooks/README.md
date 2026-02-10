@@ -11,41 +11,78 @@ This document lists all action and filter hooks provided by the Akka plugin for 
 Filters the Post Single object before it's returned.
 
 ```php
-add_filter('akka_post_single', function($akka_post, $post) {
+add_filter(
+  'akka_post_single',
+  function ($akka_post, $post) {
     // Modify the post single data
     $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
     return $akka_post;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$akka_post` | `array` | The Post Single object. |
-| `$post` | `WP_Post` | The original WordPress post. |
+| Parameter    | Type      | Description                  |
+| ------------ | --------- | ---------------------------- |
+| `$akka_post` | `array`   | The Post Single object.      |
+| `$post`      | `WP_Post` | The original WordPress post. |
+
+**Post Single Object Structure:**
+
+This structure is extended by Akka's single filters and can vary between post types
+
+```php
+[
+    'post_id' => int,
+    'post_date' => string,          // Formatted date
+    'post_date_iso' => string,      // ISO 8601 date
+    'post_title' => string,
+    'post_type' => string,
+    'post_password' => string,
+    'post_parent_id' => int,
+    'post_status' => string,
+    'author' => [
+        'id' => int,
+        'name' => string,
+        'url' => string
+    ],
+    'slug' => string,
+    'excerpt' => string|null,
+    'page_template' => string,
+    'featured_image' => array|null,  // Image attributes
+    'thumbnail_caption' => string,
+    'permalink' => string,
+    'url' => string,
+    'taxonomy_terms' => array,
+    'post_content' => string,        // Rendered HTML
+    'seo_meta' => array,
+]
+```
 
 ---
 
-### akka_post_{$post_type}_single
+### akka*post*{$post_type}\_single
 
 Filters the Post Single for a specific post type. Parameters are the same as for `akka_post_single`.
 
 ```php
-add_filter('akka_post_product_single', function($akka_post) {
-    $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
-    return $akka_post;
+add_filter('akka_post_product_single', function ($akka_post) {
+  $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
+  return $akka_post;
 });
 ```
 
 ---
 
-### akka_post_template_{$template}_single
+### akka*post_template*{$template}\_single
 
 Filters the Post Single for posts with a specific page template. Parameters are the same as for `akka_post_single`.
 
 ```php
-add_filter('akka_post_template_landing-page_single', function($akka_post) {
-    $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
-    return $akka_post;
+add_filter('akka_post_template_landing-page_single', function ($akka_post) {
+  $akka_post['custom_field'] = Resolvers::resolve_field($akka_post, 'custom_field');
+  return $akka_post;
 });
 ```
 
@@ -56,29 +93,54 @@ add_filter('akka_post_template_landing-page_single', function($akka_post) {
 Filters the Post Blurb object before it is included in listings, archives and search results.
 
 ```php
-add_filter('akka_post_blurb', function($post_blurb) {
-    $post_blurb['custom_field'] = Resolvers::resolve_field($post_blurb, 'custom_field');
-    return $post_blurb;
+add_filter('akka_post_blurb', function ($post_blurb) {
+  $post_blurb['custom_field'] = Resolvers::resolve_field($post_blurb, 'custom_field');
+  return $post_blurb;
 });
+```
+
+**Post Blurb Object Structure:**
+
+This structure is extended by Akka's blurb filters and can vary between post types
+
+```php
+[
+    'post_id' => int,
+    'post_guid' => string,
+    'post_date' => string,
+    'post_date_iso' => string,
+    'url' => string,
+    'featured_image' => array|null,
+    'post_title' => string,
+    'post_type' => string,
+    'slug' => string,
+    'description' => string,         // Excerpt
+    'taxonomy_terms' => array,
+]
 ```
 
 ---
 
-### akka_post_{$post_type}_blurb
+### akka*post*{$post_type}\_blurb
 
 Filters the Post Blurb for a specific post type.
 
 ```php
-add_filter('akka_post_product_blurb', function($post_blurb, $post) {
+add_filter(
+  'akka_post_product_blurb',
+  function ($post_blurb, $post) {
     $post_blurb['price'] = get_field('price', $post->ID);
     return $post_blurb;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$post_blurb` | `array` | The Post Blurb object. |
-| `$post` | `WP_Post` | The original WordPress post. |
+| Parameter     | Type      | Description                  |
+| ------------- | --------- | ---------------------------- |
+| `$post_blurb` | `array`   | The Post Blurb object.       |
+| `$post`       | `WP_Post` | The original WordPress post. |
 
 ---
 
@@ -87,18 +149,23 @@ add_filter('akka_post_product_blurb', function($post_blurb, $post) {
 Filters the SEO metadata for a post.
 
 ```php
-add_filter('akka_post_seo_meta', function($seo_meta, $pos, $specific_seo_image_is_defined) {
+add_filter(
+  'akka_post_seo_meta',
+  function ($seo_meta, $pos, $specific_seo_image_is_defined) {
     if (!$specific_seo_image_is_defined) {
-        $seo_meta['seo_image_url'] = '/images/default-og.jpg';
+      $seo_meta['seo_image_url'] = '/images/default-og.jpg';
     }
     return $seo_meta;
-}, 10, 3);
+  },
+  10,
+  3
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$seo_meta` | `array` | The Post Seo meta object. |
-| `$post` | `WP_Post` | The original WordPress post. |
+| Parameter                        | Type      | Description                         |
+| -------------------------------- | --------- | ----------------------------------- |
+| `$seo_meta`                      | `array`   | The Post Seo meta object.           |
+| `$post`                          | `WP_Post` | The original WordPress post.        |
 | `$specific_seo_image_is_defined` | `boolean` | If a specific SEO image is defined. |
 
 ---
@@ -108,15 +175,20 @@ add_filter('akka_post_seo_meta', function($seo_meta, $pos, $specific_seo_image_i
 Filters the SEO description (meta description).
 
 ```php
-add_filter('akka_seo_description', function($description, $post) {
+add_filter(
+  'akka_seo_description',
+  function ($description, $post) {
     return wp_trim_words($description, 30);
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$description` | `string` | The SEO description. |
-| `$post` | `WP_Post` | The original WordPress post. |
+| Parameter      | Type      | Description                  |
+| -------------- | --------- | ---------------------------- |
+| `$description` | `string`  | The SEO description.         |
+| `$post`        | `WP_Post` | The original WordPress post. |
 
 ---
 
@@ -125,16 +197,21 @@ add_filter('akka_seo_description', function($description, $post) {
 Filters the JSON-LD schema array for a post.
 
 ```php
-add_filter('akka_post_schema', function($schema, $akka_post) {
+add_filter(
+  'akka_post_schema',
+  function ($schema, $akka_post) {
     // Add custom schema
     return $schema;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$schema` | `array` | The Json-LD schema object. |
-| `$akka_post` | `array` | The Post Single object. |
+| Parameter    | Type    | Description                |
+| ------------ | ------- | -------------------------- |
+| `$schema`    | `array` | The Json-LD schema object. |
+| `$akka_post` | `array` | The Post Single object.    |
 
 ---
 
@@ -143,8 +220,8 @@ add_filter('akka_post_schema', function($schema, $akka_post) {
 Filters the image size used for featured images in Post Blurbs.
 
 ```php
-add_filter('akka_post_blurb_image_size', function($size) {
-    return 'square';
+add_filter('akka_post_blurb_image_size', function ($size) {
+  return 'square';
 });
 ```
 
@@ -159,21 +236,21 @@ add_filter('akka_post_blurb_image_size', function($size) {
 Filters post type archive responses.
 
 ```php
-add_filter('akka_post_type_archive', function($post_type_archive) {
-    return $post_type_archive;
+add_filter('akka_post_type_archive', function ($post_type_archive) {
+  return $post_type_archive;
 });
 ```
 
 ---
 
-### akka_post_type_{$post_type}_archive
+### akka*post_type*{$post_type}\_archive
 
 Filters post type archive responses for a specific post type. Parameters are the same as for `akka_post_type_archive`.
 
 ```php
-add_filter('akka_post_type_product_archive', function($archive) {
-    $archive['featured_products'] = get_featured_products();
-    return $archive;
+add_filter('akka_post_type_product_archive', function ($archive) {
+  $archive['featured_products'] = get_featured_products();
+  return $archive;
 });
 ```
 
@@ -184,44 +261,58 @@ add_filter('akka_post_type_product_archive', function($archive) {
 Filters taxonomy term archive responses.
 
 ```php
-add_filter('akka_taxonomy_term_archive', function($archive, $term) {
+add_filter(
+  'akka_taxonomy_term_archive',
+  function ($archive, $term) {
     return $archive;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$archive` | `array` | The Taxonomy Term Archive object. |
-| `$term` | `WP_Term` | The original WordPress term. |
+| Parameter  | Type      | Description                       |
+| ---------- | --------- | --------------------------------- |
+| `$archive` | `array`   | The Taxonomy Term Archive object. |
+| `$term`    | `WP_Term` | The original WordPress term.      |
+
+TODO: Add return structure example
 
 ---
 
-### akka_taxonomy_term_{$taxonomy_slug}_archive
+### akka*taxonomy_term*{$taxonomy_slug}\_archive
 
 Filters archive data for a specific taxonomy. Parameters are the same as for `akka_taxonomy_term_archive`.
 
 ```php
-add_filter('akka_taxonomy_term_post_tag_archive', function($archive, $term) {
+add_filter(
+  'akka_taxonomy_term_post_tag_archive',
+  function ($archive, $term) {
     return $archive;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
 ---
 
-### akka_{$post_type}_archive_query_args
+### akka\_{$post_type}\_archive_query_args
 
 Filters WP_Query arguments for a post type archive.
 
 ```php
-add_filter('akka_product_archive_query_args', function($query_args) {
-    $query_args['orderby'] = 'meta_value';
-    return $query_args;
+add_filter('akka_product_archive_query_args', function ($query_args) {
+  $query_args['orderby'] = 'meta_value';
+  return $query_args;
 });
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
+| Parameter     | Type            | Description                        |
+| ------------- | --------------- | ---------------------------------- |
 | `$query_args` | `WP_Query_Args` | Query args for post type archives. |
+
+TODO: Add return structure example
 
 ---
 
@@ -230,13 +321,13 @@ add_filter('akka_product_archive_query_args', function($query_args) {
 Filters WP_Query arguments for general post queries.
 
 ```php
-add_filter('akka_get_posts_args', function($query_args) {
-    return $query_args;
+add_filter('akka_get_posts_args', function ($query_args) {
+  return $query_args;
 });
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
+| Parameter     | Type            | Description                       |
+| ------------- | --------------- | --------------------------------- |
 | `$query_args` | `WP_Query_Args` | Query args for get posts queries. |
 
 ---
@@ -248,18 +339,23 @@ add_filter('akka_get_posts_args', function($query_args) {
 Filters individual term data in post term arrays.
 
 ```php
-add_filter('akka_post_term', function($term, $taxonomy_slug) {
+add_filter(
+  'akka_post_term',
+  function ($term, $taxonomy_slug) {
     if ($taxonomy_slug != 'custom_tax') {
-        return $term;
+      return $term;
     }
     $term['icon'] = get_field('icon', 'term_' . $term['term_id']);
     return $term;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$term` | `array` | Term object. |
+| Parameter        | Type     | Description    |
+| ---------------- | -------- | -------------- |
+| `$term`          | `array`  | Term object.   |
 | `$taxonomy_slug` | `string` | Taxonomy slug. |
 
 ---
@@ -269,15 +365,20 @@ add_filter('akka_post_term', function($term, $taxonomy_slug) {
 Filters the URL for a taxonomy term.
 
 ```php
-add_filter('akka_term_url', function($url, $term, $taxonomy) {
+add_filter(
+  'akka_term_url',
+  function ($url, $term, $taxonomy) {
     return $url;
-}, 10, 3);
+  },
+  10,
+  3
+);
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$url` | `string` | Term url. |
-| `$term` | `array` | Term object. |
+| Parameter   | Type     | Description    |
+| ----------- | -------- | -------------- |
+| `$url`      | `string` | Term url.      |
+| `$term`     | `array`  | Term object.   |
 | `$taxonomy` | `string` | Taxonomy slug. |
 
 ---
@@ -287,9 +388,14 @@ add_filter('akka_term_url', function($url, $term, $taxonomy) {
 Filters SEO metadata for taxonomy terms.
 
 ```php
-add_filter('akka_term_seo_meta', function($seo_meta, $term_data, $specific_seo_image, $specific_description) {
+add_filter(
+  'akka_term_seo_meta',
+  function ($seo_meta, $term_data, $specific_seo_image, $specific_description) {
     return $seo_meta;
-}, 10, 4);
+  },
+  10,
+  4
+);
 ```
 
 ---
@@ -309,9 +415,14 @@ Filters the array key used for primary term lookup.
 Filters the post ID before checking for redirects.
 
 ```php
-add_filter('akka_post_pre_redirect_post_id', function($post_id, $permalink) {
+add_filter(
+  'akka_post_pre_redirect_post_id',
+  function ($post_id, $permalink) {
     return $post_id;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
 ---
@@ -321,9 +432,9 @@ add_filter('akka_post_pre_redirect_post_id', function($post_id, $permalink) {
 Filters the response when a post is not found. Return a valid post data array to serve fallback content.
 
 ```php
-add_filter('akka_post_not_found_response', function($permalink) {
-    // Return 404 page response
-    return \Akka\Post::get_single(get_option('404_page'));
+add_filter('akka_post_not_found_response', function ($permalink) {
+  // Return 404 page response
+  return \Akka\Post::get_single(get_option('404_page'));
 });
 ```
 
@@ -336,9 +447,9 @@ add_filter('akka_post_not_found_response', function($permalink) {
 Filters the complete site meta object.
 
 ```php
-add_filter('akka_site_meta', function($site_meta) {
-    $site_meta['copyright_year'] = date('Y');
-    return $site_meta;
+add_filter('akka_site_meta', function ($site_meta) {
+  $site_meta['copyright_year'] = date('Y');
+  return $site_meta;
 });
 ```
 
@@ -349,9 +460,14 @@ add_filter('akka_site_meta', function($site_meta) {
 Filters menu IDs before fetching menu items.
 
 ```php
-add_filter('akka_site_meta_menu_id', function($menu_id, $menu_slug) {
+add_filter(
+  'akka_site_meta_menu_id',
+  function ($menu_id, $menu_slug) {
     return $menu_id;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
 ---
@@ -363,9 +479,9 @@ add_filter('akka_site_meta_menu_id', function($menu_id, $menu_slug) {
 Filters the list of allowed Gutenberg blocks.
 
 ```php
-add_filter('akka_allowed_blocks', function($blocks) {
-    $blocks[] = 'core/table';
-    return $blocks;
+add_filter('akka_allowed_blocks', function ($blocks) {
+  $blocks[] = 'core/table';
+  return $blocks;
 });
 ```
 
@@ -378,9 +494,9 @@ add_filter('akka_allowed_blocks', function($blocks) {
 Filters search WP_Query arguments.
 
 ```php
-add_filter('akka_search_query_args', function($query_args) {
-    $query_args['posts_per_page'] = 20;
-    return $query_args;
+add_filter('akka_search_query_args', function ($query_args) {
+  $query_args['posts_per_page'] = 20;
+  return $query_args;
 });
 ```
 
@@ -391,8 +507,8 @@ add_filter('akka_search_query_args', function($query_args) {
 Filters search results.
 
 ```php
-add_filter('akka_search_result', function($result) {
-    return $result;
+add_filter('akka_search_result', function ($result) {
+  return $result;
 });
 ```
 
@@ -405,8 +521,8 @@ add_filter('akka_search_result', function($result) {
 Filters parsed URLs.
 
 ```php
-add_filter('akka_post_parse_url', function($url) {
-    return $url;
+add_filter('akka_post_parse_url', function ($url) {
+  return $url;
 });
 ```
 
@@ -417,8 +533,8 @@ add_filter('akka_post_parse_url', function($url) {
 Filters content after href replacement.
 
 ```php
-add_filter('akka_post_replace_hrefs', function($content) {
-    return $content;
+add_filter('akka_post_replace_hrefs', function ($content) {
+  return $content;
 });
 ```
 
@@ -429,9 +545,9 @@ add_filter('akka_post_replace_hrefs', function($content) {
 Filters image attribute arrays.
 
 ```php
-add_filter('akka_img_attributes', function($attributes) {
-    $attributes['loading'] = 'lazy';
-    return $attributes;
+add_filter('akka_img_attributes', function ($attributes) {
+  $attributes['loading'] = 'lazy';
+  return $attributes;
 });
 ```
 
@@ -442,9 +558,14 @@ add_filter('akka_img_attributes', function($attributes) {
 Filters image captions.
 
 ```php
-add_filter('akka_image_caption', function($caption, $image_id) {
+add_filter(
+  'akka_image_caption',
+  function ($caption, $image_id) {
     return $caption;
-}, 10, 2);
+  },
+  10,
+  2
+);
 ```
 
 ---
@@ -456,8 +577,8 @@ add_filter('akka_image_caption', function($caption, $image_id) {
 Provides the search page URL for schema.org SearchAction.
 
 ```php
-add_filter('akka_schema_search_page_url', function() {
-    return '/search?q=';
+add_filter('akka_schema_search_page_url', function () {
+  return '/search?q=';
 });
 ```
 
@@ -468,12 +589,12 @@ add_filter('akka_schema_search_page_url', function() {
 Provides contact point data for schema.org Organization.
 
 ```php
-add_filter('akka_schema_organization_contact_point', function() {
-    return [
-        '@type' => 'ContactPoint',
-        'telephone' => '+1-800-555-1234',
-        'contactType' => 'customer service',
-    ];
+add_filter('akka_schema_organization_contact_point', function () {
+  return [
+    '@type' => 'ContactPoint',
+    'telephone' => '+1-800-555-1234',
+    'contactType' => 'customer service',
+  ];
 });
 ```
 
@@ -486,8 +607,8 @@ add_filter('akka_schema_organization_contact_point', function() {
 Fires before post content is processed. Useful for setting up context.
 
 ```php
-add_action('akka_pre_post_content', function($akka_post) {
-    // Set up any global state needed for content rendering
+add_action('akka_pre_post_content', function ($akka_post) {
+  // Set up any global state needed for content rendering
 });
 ```
 
@@ -498,8 +619,8 @@ add_action('akka_pre_post_content', function($akka_post) {
 Fires after the frontend cache flush is triggered.
 
 ```php
-add_action('akka_cache_flushed', function() {
-    // Perform additional cache invalidation
+add_action('akka_cache_flushed', function () {
+  // Perform additional cache invalidation
 });
 ```
 
