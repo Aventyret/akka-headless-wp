@@ -105,8 +105,17 @@ class AkkaBlocks
                 if ($splx_block_type != $block_type) {
                     return $splx_args;
                 }
+                $splx_args['post_objects'] = $splx_args['posts'];
                 $splx_args['posts'] = Post::posts_to_blurbs($splx_args['posts']);
-                return array_merge($splx_args, ['props' => $args['block_props_callback'](get_the_ID(), $splx_args)]);
+
+                $props = $args['block_props_callback'](get_the_ID(), $splx_args);
+                $block_attributes = $splx_args['block_attributes'];
+                if (isset($block_attributes['searchResults'])) {
+                    unset($block_attributes['searchResults']);
+                }
+                $props = array_merge($block_attributes, $props);
+
+                return array_merge($splx_args, ['props' => $props]);
             },
             10,
             2
@@ -151,13 +160,14 @@ class AkkaBlocks
         if (!isset(self::$akka_blocks[$block_type])) {
             throw new \Exception('Missing registration for Akka solarplexus block ' . $block_type);
         }
-        $props = $block_attributes;
+        $props = [];
         // Get props from callback, if one is registered with the block
         if (isset(self::$akka_blocks[$block_type]['block_props_callback'])) {
             $block_config = \Solarplexus_Helpers::retrieve_block_config(str_replace('splx/', '', $block_type));
             $splx_args = \Solarplexus_Helpers::block_args($block_config, $block_attributes);
             $props = self::$akka_blocks[$block_type]['block_props_callback']($post_id, $splx_args);
         }
+        $props = array_merge($block_attributes, $props);
         return $props;
     }
 

@@ -13,7 +13,7 @@ Handles post data retrieval and transformation.
 ### get_single
 
 ```php
-\Akka\Post::get_single($post_id_or_post = null, $post_status = ['publish'], $get_autosaved = false)
+\Akka\Post::get_single($post_id_or_post = null, $post_status = ['publish'], $get_autosaved = false);
 ```
 
 Returns a full "Post Single" object for a given post.
@@ -28,6 +28,7 @@ Returns a full "Post Single" object for a given post.
 **Returns:** `array|null` — Post Single object or null if not found.
 
 **Post Single Object Structure:**
+
 ```php
 [
     'post_id' => int,
@@ -61,7 +62,7 @@ Returns a full "Post Single" object for a given post.
 ### get_blurb
 
 ```php
-\Akka\Post::get_blurb($post_id)
+\Akka\Post::get_blurb($post_id);
 ```
 
 Returns a "Post Blurb" object for a single post by ID.
@@ -78,7 +79,7 @@ Returns a "Post Blurb" object for a single post by ID.
 ### get_blurbs
 
 ```php
-\Akka\Post::get_blurbs($query_args)
+\Akka\Post::get_blurbs($query_args);
 ```
 
 Returns an array of Post Blurb objects based on WP_Query arguments.
@@ -95,7 +96,7 @@ Returns an array of Post Blurb objects based on WP_Query arguments.
 ### posts_to_blurbs
 
 ```php
-\Akka\Post::posts_to_blurbs($posts)
+\Akka\Post::posts_to_blurbs($posts);
 ```
 
 Converts an array of WP_Post objects to Post Blurb objects.
@@ -112,7 +113,7 @@ Converts an array of WP_Post objects to Post Blurb objects.
 ### post_to_blurb
 
 ```php
-\Akka\Post::post_to_blurb($post)
+\Akka\Post::post_to_blurb($post);
 ```
 
 Converts a single WP_Post object to a Post Blurb object.
@@ -125,6 +126,7 @@ Converts a single WP_Post object to a Post Blurb object.
 **Returns:** `array` — Post Blurb object.
 
 **Post Blurb Object Structure:**
+
 ```php
 [
     'post_id' => int,
@@ -146,7 +148,7 @@ Converts a single WP_Post object to a Post Blurb object.
 ### get_url
 
 ```php
-\Akka\Post::get_url($post_id)
+\Akka\Post::get_url($post_id);
 ```
 
 Returns the frontend URL for a post.
@@ -167,7 +169,7 @@ Utilities for registering and managing custom post types and for managing core p
 ### register_post_type
 
 ```php
-\Akka\PostTypes::register_post_type($post_type_slug, $args, $options = [])
+\Akka\PostTypes::register_post_type($post_type_slug, $args, $options = []);
 ```
 
 Registers a custom post type with Akka conventions.
@@ -180,49 +182,54 @@ Registers a custom post type with Akka conventions.
 | `$options` | `array` | Akka-specific options (see below). |
 
 **Args (merged with defaults):**
+
 ```php
 [
-    'label' => string,              // Required
-    'has_archive' => false,
-    'public' => false,
-    'exclude_from_search' => false,
-    'show_ui' => true,
-    'show_in_nav_menus' => true,
-    'menu_icon' => 'dashicons-admin-post',
-    'hierarchical' => false,
-    'show_in_rest' => true,
-    'menu_position' => 10,
-]
+  'label' => string, // Required
+  'has_archive' => false,
+  'public' => false,
+  'exclude_from_search' => false,
+  'show_ui' => true,
+  'show_in_nav_menus' => true,
+  'menu_icon' => 'dashicons-admin-post',
+  'hierarchical' => false,
+  'show_in_rest' => true,
+  'menu_position' => 10,
+];
 ```
 
 **Options:**
+
 ```php
 [
-    'acf_field_groups' => [],       // ACF field group definitions
-    'allowed_core_blocks' => [],    // Additional allowed blocks
-    'unallowed_core_blocks' => [],  // Blocks to remove
-    'blocks_template' => [],        // Default blocks template
-]
+  'acf_field_groups' => [], // ACF field group definitions
+  'allowed_core_blocks' => [], // Additional allowed blocks
+  'unallowed_core_blocks' => [], // Blocks to remove
+  'blocks_template' => [], // Default blocks template
+];
 ```
 
 **Example:**
+
 ```php
-\Akka\PostTypes::register_post_type('product', [
+\Akka\PostTypes::register_post_type(
+  'product',
+  [
     'label' => __('Products', 'theme'),
     'public' => true,
     'has_archive' => true,
     'menu_icon' => 'dashicons-cart',
-], [
+  ],
+  [
     'acf_field_groups' => [
-        [
-            'key' => 'group_product_fields',
-            'title' => 'Product Details',
-            'fields' => [
-                ['name' => 'price', 'label' => 'Price', 'type' => 'number'],
-            ],
-        ],
+      [
+        'key' => 'group_product_fields',
+        'title' => 'Product Details',
+        'fields' => [['name' => 'price', 'label' => 'Price', 'type' => 'number']],
+      ],
     ],
-]);
+  ]
+);
 ```
 
 ---
@@ -230,7 +237,7 @@ Registers a custom post type with Akka conventions.
 ### unregister_post_post_type
 
 ```php
-\Akka\PostTypes::unregister_post_post_type()
+\Akka\PostTypes::unregister_post_post_type();
 ```
 
 Unregisters the default WordPress 'post' post type.
@@ -240,7 +247,7 @@ Unregisters the default WordPress 'post' post type.
 ### rename_post_type
 
 ```php
-\Akka\PostTypes::rename_post_type($post_type, $labels)
+\Akka\PostTypes::rename_post_type($post_type, $labels);
 ```
 
 Renames an existing post type's labels.
@@ -252,10 +259,11 @@ Renames an existing post type's labels.
 | `$labels` | `array` | Array with Wordpress post type labels. |
 
 **Example:**
+
 ```php
 \Akka\PostTypes::rename_post_type('post', [
-    'plural' => __('Articles', 'theme'),
-    'singular' => __('Article', 'theme'),
+  'plural' => __('Articles', 'theme'),
+  'singular' => __('Article', 'theme'),
 ]);
 ```
 
@@ -264,7 +272,7 @@ Renames an existing post type's labels.
 ### set_post_type_blocks_template
 
 ```php
-\Akka\PostTypes::set_post_type_blocks_template($post_type_slug, $blocks_template)
+\Akka\PostTypes::set_post_type_blocks_template($post_type_slug, $blocks_template);
 ```
 
 Sets a default blocks template for a post type.
@@ -276,7 +284,9 @@ Sets a default blocks template for a post type.
 | `$blocks_template` | `array` | Gutenberg blocks template array. |
 
 ---
+
 **Example:**
+
 ```php
 \Akka\PostTypes::set_post_type_blocks_template('product', [['akka/hero', []]]);
 ```
@@ -288,7 +298,7 @@ Utilities for registering and managing taxonomies.
 ### register_taxonomy
 
 ```php
-\Akka\Taxonomies::register_taxonomy($taxonomy_slug, $args, $options = [])
+\Akka\Taxonomies::register_taxonomy($taxonomy_slug, $args, $options = []);
 ```
 
 Registers a custom taxonomy with Akka conventions.
@@ -301,28 +311,34 @@ Registers a custom taxonomy with Akka conventions.
 | `$options` | `array` | Akka-specific options. |
 
 **Options:**
+
 ```php
 [
-    'post_types' => ['post'],           // Post types to attach taxonomy
-    'in_archive_post_types' => [],      // Include terms in blurbs for these post types
-    'admin_column_post_types' => [],    // Show taxonomy column in admin
-    'admin_filter_post_types' => [],    // Show taxonomy filter in admin
-    'has_archive' => false,             // Enable archive pages
-    'acf_field_groups' => [],           // ACF fields for terms
-]
+  'post_types' => ['post'], // Post types to attach taxonomy
+  'in_archive_post_types' => [], // Include terms in blurbs for these post types
+  'admin_column_post_types' => [], // Show taxonomy column in admin
+  'admin_filter_post_types' => [], // Show taxonomy filter in admin
+  'has_archive' => false, // Enable archive pages
+  'acf_field_groups' => [], // ACF fields for terms
+];
 ```
 
 **Example:**
+
 ```php
-\Akka\Taxonomies::register_taxonomy('product_category', [
+\Akka\Taxonomies::register_taxonomy(
+  'product_category',
+  [
     'label' => __('Product Categories', 'theme'),
     'hierarchical' => true,
-], [
+  ],
+  [
     'post_types' => ['product'],
     'has_archive' => true,
     'in_archive_post_types' => ['product'],
     'admin_column_post_types' => ['product'],
-]);
+  ]
+);
 ```
 
 ---
@@ -330,7 +346,7 @@ Registers a custom taxonomy with Akka conventions.
 ### register_taxonomy_for_post_type
 
 ```php
-\Akka\Taxonomies::register_taxonomy_for_post_type($taxonomy, $post_type)
+\Akka\Taxonomies::register_taxonomy_for_post_type($taxonomy, $post_type);
 ```
 
 Attaches an existing taxonomy to a post type.
@@ -340,7 +356,7 @@ Attaches an existing taxonomy to a post type.
 ### unregister_taxonomy_for_post_type
 
 ```php
-\Akka\Taxonomies::unregister_taxonomy_for_post_type($taxonomy, $post_type)
+\Akka\Taxonomies::unregister_taxonomy_for_post_type($taxonomy, $post_type);
 ```
 
 Detaches a taxonomy from a post type.
@@ -354,7 +370,7 @@ Helper methods for resolving ACF fields and related data. These methods can also
 ### resolve_field
 
 ```php
-\Akka\Resolvers::resolve_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_field($fields_source, $field_name);
 ```
 
 Resolves a field value from a fields array or post object.
@@ -372,7 +388,7 @@ Resolves a field value from a fields array or post object.
 ### resolve_boolean_field
 
 ```php
-\Akka\Resolvers::resolve_boolean_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_boolean_field($fields_source, $field_name);
 ```
 
 Resolves a field as a boolean.
@@ -382,18 +398,19 @@ Resolves a field as a boolean.
 ### resolve_link_field
 
 ```php
-\Akka\Resolvers::resolve_link_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_link_field($fields_source, $field_name);
 ```
 
 Resolves an ACF link field.
 
 **Returns:**
+
 ```php
 [
-    'text' => string,
-    'url' => string,
-    'target' => string
-]
+  'text' => string,
+  'url' => string,
+  'target' => string,
+];
 ```
 
 ---
@@ -401,7 +418,7 @@ Resolves an ACF link field.
 ### resolve_array_field
 
 ```php
-\Akka\Resolvers::resolve_array_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_array_field($fields_source, $field_name);
 ```
 
 Resolves a field as an array (returns `[]` if empty).
@@ -411,7 +428,7 @@ Resolves a field as an array (returns `[]` if empty).
 ### resolve_post_blurb_field
 
 ```php
-\Akka\Resolvers::resolve_post_blurb_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_post_blurb_field($fields_source, $field_name);
 ```
 
 Resolves an ACF post object field to a Post Blurb.
@@ -421,7 +438,7 @@ Resolves an ACF post object field to a Post Blurb.
 ### resolve_post_blurbs_field
 
 ```php
-\Akka\Resolvers::resolve_post_blurbs_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_post_blurbs_field($fields_source, $field_name);
 ```
 
 Resolves an ACF relationship/post object field to multiple Post Blurbs.
@@ -431,7 +448,7 @@ Resolves an ACF relationship/post object field to multiple Post Blurbs.
 ### resolve_post_single_field
 
 ```php
-\Akka\Resolvers::resolve_post_single_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_post_single_field($fields_source, $field_name);
 ```
 
 Resolves an ACF post object field to a Post Single.
@@ -441,7 +458,7 @@ Resolves an ACF post object field to a Post Single.
 ### resolve_global_field
 
 ```php
-\Akka\Resolvers::resolve_global_field($field_name)
+\Akka\Resolvers::resolve_global_field($field_name);
 ```
 
 Resolves a global ACF option field (prefixed with `global_`).
@@ -451,7 +468,7 @@ Resolves a global ACF option field (prefixed with `global_`).
 ### resolve_image_field
 
 ```php
-\Akka\Resolvers::resolve_image_field($fields_source, $field_name, $size = 'full')
+\Akka\Resolvers::resolve_image_field($fields_source, $field_name, $size = 'full');
 ```
 
 Resolves an ACF image field to image attributes.
@@ -461,7 +478,7 @@ Resolves an ACF image field to image attributes.
 ### resolve_wysiwyg_field
 
 ```php
-\Akka\Resolvers::resolve_wysiwyg_field($fields_source, $field_name)
+\Akka\Resolvers::resolve_wysiwyg_field($fields_source, $field_name);
 ```
 
 Resolves an ACF WYSIWYG field with URL parsing applied.
@@ -471,7 +488,7 @@ Resolves an ACF WYSIWYG field with URL parsing applied.
 ### resolve_image
 
 ```php
-\Akka\Resolvers::resolve_image($image_id, $size = 'full', $include_caption = false)
+\Akka\Resolvers::resolve_image($image_id, $size = 'full', $include_caption = false);
 ```
 
 Returns image attributes for a given attachment ID.
@@ -481,7 +498,7 @@ Returns image attributes for a given attachment ID.
 ### resolve_audio_or_video
 
 ```php
-\Akka\Resolvers::resolve_audio_or_video($media_id)
+\Akka\Resolvers::resolve_audio_or_video($media_id);
 ```
 
 Returns audio/video attributes for a media attachment.
@@ -495,7 +512,7 @@ Handles taxonomy term data.
 ### get_terms
 
 ```php
-\Akka\Term::get_terms($taxonomy_slug)
+\Akka\Term::get_terms($taxonomy_slug);
 ```
 
 Returns all terms for a taxonomy.
@@ -505,7 +522,7 @@ Returns all terms for a taxonomy.
 ### get_url
 
 ```php
-\Akka\Term::get_url($term_id)
+\Akka\Term::get_url($term_id);
 ```
 
 Returns the frontend URL for a term.
@@ -519,7 +536,7 @@ Handles registration of Akka Blocks (custom server-rendered blocks).
 ### register_block_type
 
 ```php
-\Akka\AkkaBlocks::register_block_type($block_type, $args = [])
+\Akka\AkkaBlocks::register_block_type($block_type, $args = []);
 ```
 
 Registers an Akka Block that renders props to a frontend component. The block needs to be registered in the editor javascript as well with the same block type identifier. Additionaly there needs to be a matching AkkaComponent imported in AkkaComponents.jsx in the frontend application.
@@ -531,6 +548,7 @@ Registers an Akka Block that renders props to a frontend component. The block ne
 | `$args` | `array` | Block configuration. |
 
 **Args:**
+
 ```php
 [
     'akka_component_name' => string,      // Required: Frontend component name
@@ -540,15 +558,16 @@ Registers an Akka Block that renders props to a frontend component. The block ne
 ```
 
 **Example:**
+
 ```php
 \Akka\AkkaBlocks::register_block_type('akka/hero', [
-    'akka_component_name' => 'Hero',
-    'block_props_callback' => function($post_id, $block_attributes) {
-        return [
-            'title' => $block_attributes['title'],
-            'image' => \Akka\Resolvers::resolve_image($block_attributes['imageId']),
-        ];
-    },
+  'akka_component_name' => 'Hero',
+  'block_props_callback' => function ($post_id, $block_attributes) {
+    return [
+      'title' => $block_attributes['title'],
+      'image' => \Akka\Resolvers::resolve_image($block_attributes['imageId']),
+    ];
+  },
 ]);
 ```
 
@@ -557,17 +576,18 @@ Registers an Akka Block that renders props to a frontend component. The block ne
 ### register_splx_block_type
 
 ```php
-\Akka\AkkaBlocks::register_splx_block_type($block_type, $args = [])
+\Akka\AkkaBlocks::register_splx_block_type($block_type, $args = []);
 ```
 
 Registers a Solarplexus block as an Akka Block. The block needs to be registered in the splx-config.json file of the theme as well, as per the Solarplexus documentation. Additionaly there needs to be a matching AkkaComponent imported in AkkaComponents.jsx in the frontend application.
 
 **Args:**
+
 ```php
 [
     'akka_component_name' => string,      // Required
     'post_types' => array,                // Optional
-    'block_props_callback' => callable,   // Receives ($post_id, $splx_args)
+    'block_props_callback' => callable,   // Receives ($post_id, $splx_args) – $splx_args in Akka have `posts` which is an array of Akka Blurbs and `post_objects` which is an array of `WP_Post`
 ]
 ```
 
@@ -580,7 +600,7 @@ Utilities for managing Gutenberg blocks.
 ### add_allowed_blocks
 
 ```php
-\Akka\Blocks::add_allowed_blocks($blocks, $allowed_blocks)
+\Akka\Blocks::add_allowed_blocks($blocks, $allowed_blocks);
 ```
 
 Adds blocks to the allowed blocks list.
@@ -590,7 +610,7 @@ Adds blocks to the allowed blocks list.
 ### remove_unallowed_blocks
 
 ```php
-\Akka\Blocks::remove_unallowed_blocks($blocks, $unallowed_blocks)
+\Akka\Blocks::remove_unallowed_blocks($blocks, $unallowed_blocks);
 ```
 
 Removes blocks from the allowed blocks list.
@@ -600,7 +620,7 @@ Removes blocks from the allowed blocks list.
 ### register_core_block_style
 
 ```php
-\Akka\Blocks::register_core_block_style($block, $style)
+\Akka\Blocks::register_core_block_style($block, $style);
 ```
 
 Registers a custom style for a core block.
@@ -610,7 +630,7 @@ Registers a custom style for a core block.
 ### register_core_block_variation
 
 ```php
-\Akka\Blocks::register_core_block_variation($block, $variation)
+\Akka\Blocks::register_core_block_variation($block, $variation);
 ```
 
 Registers a variation for a core block.
@@ -620,7 +640,7 @@ Registers a variation for a core block.
 ### get_h2_blocks
 
 ```php
-\Akka\Blocks::get_h2_blocks($content, $level = null)
+\Akka\Blocks::get_h2_blocks($content, $level = null);
 ```
 
 Extracts h2 heading text from HTML content (for table of contents).
@@ -634,7 +654,7 @@ Various utility functions.
 ### parse_url
 
 ```php
-\Akka\Utils::parse_url($url)
+\Akka\Utils::parse_url($url);
 ```
 
 Converts WordPress internal URLs to frontend-relative URLs.
@@ -644,7 +664,7 @@ Converts WordPress internal URLs to frontend-relative URLs.
 ### get_page_template_slug
 
 ```php
-\Akka\Utils::get_page_template_slug($post)
+\Akka\Utils::get_page_template_slug($post);
 ```
 
 Returns the page template slug for a post.
@@ -654,7 +674,7 @@ Returns the page template slug for a post.
 ### wrap_left_and_right_aligned_blocks
 
 ```php
-\Akka\Utils::wrap_left_and_right_aligned_blocks($html_string, $options = [])
+\Akka\Utils::wrap_left_and_right_aligned_blocks($html_string, $options = []);
 ```
 
 Wraps left/right aligned blocks for proper rendering.
@@ -668,7 +688,7 @@ ACF field group registration utilities.
 ### register_field_group
 
 ```php
-\Akka\Acf::register_field_group($field_group)
+\Akka\Acf::register_field_group($field_group);
 ```
 
 Registers an ACF field group programmatically.
