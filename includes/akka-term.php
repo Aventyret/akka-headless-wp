@@ -92,7 +92,7 @@ class Term
             // TODO: Support SEO framework
         }
         if (is_plugin_active('wordpress-seo/wp-seo.php')) {
-            $yoast_class = YoastSEO()->classes->get(Yoast\WP\SEO\Surfaces\Meta_Surface::class);
+            $yoast_class = YoastSEO()->classes->get(\Yoast\WP\SEO\Surfaces\Meta_Surface::class);
             $yoast_meta = $yoast_class->for_term($term_data['term_id']);
             $yoast_data = $yoast_meta->get_head()->json;
             $seo_meta = [
