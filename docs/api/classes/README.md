@@ -267,7 +267,7 @@ Registers a custom taxonomy with Akka conventions.
 ```php
 [
   'post_types' => ['post'], // Post types to attach taxonomy
-  'in_archive_post_types' => [], // Include terms in blurbs for these post types
+  'blurb_post_types' => [], // Include terms in blurbs for these post types
   'admin_column_post_types' => [], // Show taxonomy column in admin
   'admin_filter_post_types' => [], // Show taxonomy filter in admin
   'has_archive' => false, // Enable archive pages
@@ -287,7 +287,7 @@ Registers a custom taxonomy with Akka conventions.
   [
     'post_types' => ['product'],
     'has_archive' => true,
-    'in_archive_post_types' => ['product'],
+    'blurb_post_types' => ['product'],
     'admin_column_post_types' => ['product'],
   ]
 );

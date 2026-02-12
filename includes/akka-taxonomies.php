@@ -8,7 +8,7 @@ class Taxonomies
         $options = array_merge(
             [
                 'post_types' => ['post'],
-                'in_archive_post_types' => [],
+                'blurb_post_types' => [],
                 'admin_column_post_types' => [],
                 'admin_filter_post_types' => [],
                 'has_archive' => false,
@@ -59,7 +59,7 @@ class Taxonomies
             });
         }
 
-        foreach ($options['in_archive_post_types'] as $post_type) {
+        foreach ($options['blurb_post_types'] as $post_type) {
             add_filter('akka_blurb_post_type_taxonomy_map', function ($taxonomy_map) use ($taxonomy_slug, $post_type) {
                 if (!isset($taxonomy_map[$post_type])) {
                     $taxonomy_map[$post_type] = [];
