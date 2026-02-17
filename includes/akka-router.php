@@ -86,14 +86,15 @@ class Router
         $permalink_parts = explode('/', $permalink);
         $post_types_with_custom_structures = apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page']);
         if (!$post_id && $permalink != '/') {
-            foreach($post_types_with_custom_structures as $post_type) {
+            foreach ($post_types_with_custom_structures as $post_type) {
                 $post_type_object = get_post_type_object($post_type);
-                if (Resolvers::resolve_field($post_type_object->rewrite, 'slug') && $permalink_parts[count($permalink_parts) - 2] == $post_type_object->rewrite['slug']) {
-                    $post_object = get_page_by_path(
-                        $permalink_parts[count($permalink_parts) - 1],
-                        OBJECT,
-                        [$post_type]
-                    );
+                if (
+                    Resolvers::resolve_field($post_type_object->rewrite, 'slug') &&
+                    $permalink_parts[count($permalink_parts) - 2] == $post_type_object->rewrite['slug']
+                ) {
+                    $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, [
+                        $post_type,
+                    ]);
                     if ($post_object && $post_object->post_type !== 'attachment') {
                         $post_id = $post_object->ID;
                     }
