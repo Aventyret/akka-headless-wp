@@ -1,422 +1,238 @@
 <?php
 namespace Akka;
 
-class Post
+class PostTypes
 {
-    private static $_single_memory = [];
-    private static $_post_type_memory = [];
-    public static function get_single($post_id_or_post = null, $post_status = ['publish'], $get_autosaved = false)
+    public static function register_post_type($post_type_slug, $args, $options = [])
     {
-        global $post;
-        if (is_a($post_id_or_post, 'WP_Post')) {
-            $post = $post_id_or_post;
-        } elseif ($post_id_or_post) {
-            $posts = get_posts([
-                'post__in' => [$post_id_or_post],
-                'post_type' => 'any',
-                'post_status' => $post_status,
-            ]);
-            if (empty($posts)) {
-                return null;
-            }
-            $post = $posts[0];
-        }
-        if (!$post) {
-            return null;
-        }
-        if ($get_autosaved) {
-            $autosaved_post = wp_get_post_autosave($post->ID);
-            if ($autosaved_post) {
-                $post->post_content = $autosaved_post->post_content;
-            }
-        }
-
-        // TODO: Check this
-        if ($post->post_password && !in_array('private', $post_status)) {
-            return [
-                'post_id' => $post->ID,
-                'post_type' => $post->post_type,
-                'redirect' => '/protected?p=' . $post->ID,
-            ];
-        }
-
-        if (isset(self::$_single_memory[$post->ID])) {
-            return self::$_single_memory[$post->ID];
-        }
-
-        $post_thumbnail_id = get_post_thumbnail_id($post->ID);
-        $featured_image_attributes = $post_thumbnail_id
-            ? Utils::internal_img_attributes($post_thumbnail_id, [
-                'priority' => true,
-            ])
-            : null;
-
-        $permalink = self::get_url($post->ID, $post->post_type);
-
-        $akka_post = [
-            'post_id' => $post->ID,
-            'post_date' => get_the_date(get_option('date_format'), $post->ID),
-            'post_date_iso' => get_the_date('c', $post->ID),
-            'post_title' => $post->post_title,
-            'post_type' => $post->post_type,
-            'post_password' => $post->post_password,
-            'post_parent_id' => $post->post_parent,
-            'post_status' => $post->post_status,
-            'author' => [
-                'id' => $post->post_author,
-                'name' => get_the_author_meta('display_name', $post->post_author),
-                'url' => AKKA_FRONTEND_BASE . Utils::parse_url(get_author_posts_url($post->post_author)),
+        $supports = self::set_supports($args);
+        $args = array_merge(
+            [
+                'label' => null,
+                'has_archive' => false,
+                'public' => false,
+                'exclude_from_search' => false,
+                'show_ui' => true,
+                'show_in_nav_menus' => true,
+                'menu_icon' => 'dashicons-admin-post',
+                'hierarchical' => false,
+                'show_in_rest' => true,
+                'menu_position' => 10,
+                'labels' => [
+                    'name' => Resolvers::resolve_field($args, 'label'),
+                    'singular_name' => Resolvers::resolve_field($args, 'label'),
+                ],
             ],
-            'slug' => $post->post_name,
-            'excerpt' => post_type_supports($post->post_type, 'excerpt') ? $post->post_excerpt : null,
-            'page_template' => Utils::get_page_template_slug($post),
-            'featured_image' => $featured_image_attributes,
-            'thumbnail_caption' => apply_filters(
-                'akka_image_caption',
-                get_the_post_thumbnail_caption($post->ID),
-                $post_thumbnail_id
-            ),
-            'permalink' => $permalink,
-            'url' => $permalink,
-            'taxonomy_terms' => Term::get_single_terms($post),
-            'fields' => get_fields($post->ID),
-        ];
-        foreach (['category', 'post_tag'] as $taxonomy_slug) {
-            if (isset($data['taxonomy_terms'][$taxonomy_slug])) {
-                $akka_post['primary_' . str_replace('post_tag', 'tag', $taxonomy_slug)] =
-                    $akka_post['taxonomy_terms'][$taxonomy_slug]['primary_term'];
-            }
-        }
-        if (
-            $akka_post['post_type'] == 'page' &&
-            Archive::get_post_type_archive_permalink('post') == $akka_post['slug']
-        ) {
-            $page = Utils::get_query_param('page', 1);
-            $archive_query = Archive::archive_query('post', $page);
-            $akka_post['archive'] = [
-                'count' => $archive_query->found_posts,
-                'pages' => $archive_query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
-                'posts' => self::posts_to_blurbs($archive_query->posts),
-                'next_page' =>
-                    $archive_query->max_num_pages > $page + 1
-                        ? '/' . Archive::get_post_type_archive_permalink('post') . '?page=' . ($page + 1)
-                        : null,
-            ];
-        }
-        do_action('akka_pre_post_content', $akka_post);
-        $akka_post['post_content'] = apply_filters('the_content', $post->post_content);
-        $akka_post['seo_meta'] = self::get_seo_meta(
-            $post,
-            Resolvers::resolve_field($akka_post['featured_image'], 'id')
+            $args
         );
-
-        $akka_post = apply_filters('akka_post_' . $akka_post['post_type'] . '_single', $akka_post, $post);
-        if ($akka_post['page_template']) {
-            $akka_post = apply_filters(
-                'akka_post_template_' . $akka_post['page_template'] . '_single',
-                $akka_post,
-                $post
-            );
+        $args['supports'] = $supports;
+        if (!$args['label']) {
+            throw new \Exception('Akka post type label missing!');
         }
-        $akka_post = apply_filters('akka_post_single', $akka_post, $post);
-        $akka_post['seo_meta']['schema'] = apply_filters(
-            'akka_post_schema',
-            Resolvers::resolve_array_field($akka_post['seo_meta'], 'schema'),
-            $akka_post
+        if ($args['public']) {
+            $args['rewrite'] = [
+                'slug' => Resolvers::resolve_field($args, 'slug') ?? Utils::string_to_route($args['label']),
+                'with_front' => false,
+            ];
+        }
+        $options = array_merge(
+            [
+                'meta_groups' => [],
+                'acf_field_groups' => [],
+                'allowed_core_blocks' => [],
+                'unallowed_core_blocks' => [],
+                'blocks_template' => [],
+            ],
+            $options
         );
-
-        unset($akka_post['fields']);
-
-        self::$_single_memory[$post->ID] = $akka_post;
-
-        return $akka_post;
-    }
-
-    public static function get_blurbs($query_args)
-    {
-        return self::posts_to_blurbs(get_posts($query_args));
-    }
-
-    public static function get_blurb($post_id)
-    {
-        $posts = get_posts([
-            'post__in' => [$post_id],
-            'post_type' => 'any',
-            'post_status' => 'publish',
-        ]);
-        if (empty($posts)) {
-            return null;
-        }
-        return self::post_to_blurb($posts[0]);
-    }
-
-    public static function posts_to_blurbs($posts)
-    {
-        $post_datas = array_map(function ($post) {
-            if (is_array($post)) {
-                return $post;
-            }
-            return self::post_to_blurb($post);
-        }, $posts);
-        return $post_datas;
-    }
-
-    public static function post_to_blurb($post)
-    {
-        if (is_array($post)) {
-            return $post;
-        }
-        $thumbnail_id = get_post_thumbnail_id($post->ID);
-        $thumbnail_attributes = $thumbnail_id
-            ? Utils::internal_img_attributes($thumbnail_id, [
-                'size' => apply_filters('akka_post_blurb_image_size', 'full'),
-            ])
-            : null;
-
-        $post_blurb = [
-            'post_id' => $post->ID,
-            'post_guid' => $post->guid,
-            'post_date' => get_the_date(get_option('date_format'), $post->ID),
-            'post_date_iso' => get_the_date('c', $post->ID),
-            'url' => self::get_url($post->ID, $post->post_type),
-            'featured_image' => !empty($thumbnail_attributes) ? $thumbnail_attributes : null,
-            'post_title' => $post->post_title,
-            'post_type' => $post->post_type,
-            'slug' => $post->post_name,
-            'description' => get_the_excerpt($post->ID),
-            'taxonomy_terms' => Term::get_blurb_terms($post),
-        ];
-        $post_blurb = apply_filters('akka_post_' . $post_blurb['post_type'] . '_blurb', $post_blurb, $post);
-        return apply_filters('akka_post_blurb', $post_blurb, $post);
-    }
-
-    public static function get_url($post_id, $post_type = null)
-    {
-        if (!$post_type) {
-            $post_type = Resolvers::resolve_field(self::$_post_type_memory, $post_id);
-        }
-        if (!$post_type) {
-            $post_type = get_post_type($post_id);
-            self::$_post_type_memory = $post_type;
-        }
-        if (!in_array($post_type, apply_filters('akka_custom_post_strucure_post_types', ['post', 'page']))) {
-            return null;
-        }
-        return Utils::parse_url(str_replace(WP_HOME, '', get_permalink($post_id)));
-    }
-
-    private static function get_seo_meta($post, $post_thumbnail_id = null)
-    {
-        $seo_meta = [];
-        $specific_seo_image_is_defined = false;
-        if (function_exists('the_seo_framework')) {
-            $seo_fields = [
-                'seo_title' => '_genesis_title',
-                'seo_description' => '_genesis_description',
-                'seo_image_id' => '_social_image_id',
-                'og_title' => '_open_graph_title',
-                'og_description' => '_open_graph_description',
-                'twitter_title' => '_twitter_title',
-                'twitter_description' => '_twitter_description',
-            ];
-            foreach ($seo_fields as $seo_attr => $meta_key) {
-                $meta_value = get_post_meta($post->ID, $meta_key, true);
-                if ($meta_value) {
-                    $seo_meta[$seo_attr] = $meta_value;
+        add_action('init', function () use ($post_type_slug, $args) {
+            register_post_type($post_type_slug, $args);
+        });
+        if ($args['has_archive']) {
+            add_filter('akka_post_types_with_archives', function ($post_types) use ($post_type_slug) {
+                if (!in_array($post_type_slug, $post_types)) {
+                    $post_types[] = $post_type_slug;
                 }
-            }
+                return $post_types;
+            });
         }
-        if (is_plugin_active('wordpress-seo/wp-seo.php')) {
-            $yoast_class = YoastSEO()->classes->get(\Yoast\WP\SEO\Surfaces\Meta_Surface::class);
-            $yoast_meta = $yoast_class->for_post($post->ID);
-            $yoast_data = $yoast_meta->get_head()->json;
-            $seo_meta = [
-                'seo_title' => $yoast_data['title'],
-                'og_locale' => $yoast_data['og_locale'],
-                'og_type' => $yoast_data['og_type'],
-                'canonical_url' => $yoast_data['og_url'],
-                'og_site_name' => $yoast_data['og_site_name'],
-            ];
-            if (isset($yoast_data['description'])) {
-                $seo_meta['seo_description'] = $yoast_data['description'];
-            }
-            if (isset($yoast_data['og_description'])) {
-                $seo_meta['og_description'] = $yoast_data['og_description'];
-            }
-            if (isset($yoast_data['og_image']) && !empty($yoast_data['og_image'])) {
-                $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
-                $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
-                $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
-            }
-            if (isset($yoast_data['robots'])) {
-                $seo_meta['robots'] = [
-                    'index' =>
-                        isset($yoast_data['robots']['index']) && $yoast_data['robots']['index'] == 'noindex'
-                            ? false
-                            : true,
-                    'follow' =>
-                        isset($yoast_data['robots']['follow']) && $yoast_data['robots']['follow'] == 'nofollow'
-                            ? false
-                            : true,
-                ];
-            }
-            if (Resolvers::resolve_field($yoast_data, 'schema')) {
-                $seo_meta['schema'] = [];
-                foreach (Resolvers::resolve_array_field($yoast_data['schema'], '@graph') as $graph_data) {
-                    if (in_array($graph_data['@type'], ['WebSite', 'Organization'])) {
-                        $schema_item = [
-                            '@context' => $yoast_data['schema']['@context'],
-                            '@type' => $graph_data['@type'],
-                            '@id' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['@id']),
-                            'name' => $graph_data['name'],
-                            'url' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['url']),
-                        ];
-                        if ($graph_data['@type'] == 'WebSite') {
-                            $schema_item['description'] = Resolvers::resolve_field($graph_data, 'description');
-                            $schema_item['inLanguage'] = Resolvers::resolve_field($graph_data, 'inLanguage');
-                            if ($search_page_url = apply_filters('akka_schema_search_page_url', null)) {
-                                $schema_item['potentialAction'] = [
-                                    '@type' => 'SearchAction',
-                                    'target' => [
-                                        '@type' => 'EntryPoint',
-                                        'urlTemplate' => $search_page_url . '{search_term_string}',
-                                    ],
-                                    'query-input' => 'required name=search_term_string',
-                                ];
-                            }
-                        }
-                        if ($graph_data['@type'] == 'Organization') {
-                            $schema_item['@type'] = apply_filters(
-                                'akka_schema_organization_schema_type',
-                                'Organization'
-                            );
-                            if (Resolvers::resolve_field($graph_data, 'logo')) {
-                                $schema_item['logo'] = $graph_data['logo'];
-                                $schema_item['logo']['@id'] =
-                                    AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['logo']['@id']);
-                                $schema_item['logo']['url'] = apply_filters(
-                                    'akka_schema_organization_schema_logo_url',
-                                    str_replace('wp-content/', 'app/', $graph_data['logo']['url'])
-                                );
-                                $schema_item['logo']['contentUrl'] = $schema_item['logo']['url'];
-                            }
-                            if (!empty(Resolvers::resolve_array_field($graph_data, 'sameAs'))) {
-                                $schema_item['sameAs'] = $graph_data['sameAs'][0];
-                            }
-                            if ($contact_pont = apply_filters('akka_schema_organization_contact_point', null)) {
-                                $schema_item['contactPoint'] = $contact_pont;
-                            }
-                        }
-                        $seo_meta['schema'][] = $schema_item;
-                    }
+        if ($args['public']) {
+            add_filter('akka_custom_post_strucure_post_types', function ($post_types) use ($post_type_slug) {
+                if (!in_array($post_type_slug, $post_types)) {
+                    $post_types[] = $post_type_slug;
                 }
-            }
+                return $post_types;
+            });
         }
-        if (is_plugin_active('all-in-one-seo-pack-pro/all_in_one_seo_pack.php')) {
-            global $wpdb;
-            $title = new AIOSEO\Plugin\Common\Meta\Title();
-            $description = new AIOSEO\Plugin\Common\Meta\Description();
-            $seo_meta = [
-                'seo_title' => $title->getTitle($post),
-                'seo_description' => $description->getDescription($post),
-            ];
-            $aio_seo_meta = $wpdb->get_results(
-                sprintf(
-                    'SELECT title, description, canonical_url, og_title, og_description, og_image_url, og_image_width, og_image_height, twitter_title, twitter_description, robots_noindex, robots_nofollow FROM ' .
-                        $wpdb->prefix .
-                        'aioseo_posts WHERE post_id = %d',
-                    $post->ID
+        foreach ($options['meta_groups'] as $meta_group) {
+            MetaFields::register_post_meta_field(
+                Resolvers::resolve_array_field($meta_group, 'group'),
+                Resolvers::resolve_array_field($meta_group, 'fields'),
+                array_merge(
+                    [
+                        'post_types' => [$post_type_slug],
+                    ],
+                    Resolvers::resolve_array_field($meta_group, 'options')
                 )
             );
-            if (!empty($aio_seo_meta)) {
-                if ($aio_seo_meta[0]->canonical_url) {
-                    $seo_meta['seo_canonical_url'] = $aio_seo_meta[0]->canonical_url;
-                }
-                if ($aio_seo_meta[0]->og_title) {
-                    $seo_meta['og_title'] = $aio_seo_meta[0]->og_title;
-                }
-                if ($aio_seo_meta[0]->og_description) {
-                    $seo_meta['og_description'] = $aio_seo_meta[0]->og_description;
-                }
-                if ($aio_seo_meta[0]->twitter_title) {
-                    $seo_meta['twitter_title'] = $aio_seo_meta[0]->twitter_title;
-                }
-                if ($aio_seo_meta[0]->twitter_description) {
-                    $seo_meta['twitter_description'] = $aio_seo_meta[0]->twitter_description;
-                }
-                if ($aio_seo_meta[0]->og_image_url) {
-                    $seo_meta['seo_image_url'] = $aio_seo_meta[0]->og_image_url;
-                    $seo_meta['seo_image_width'] = $aio_seo_meta[0]->og_image_width
-                        ? $aio_seo_meta[0]->og_image_width
-                        : 1200;
-                    $seo_meta['seo_image_height'] = $aio_seo_meta[0]->og_image_height
-                        ? $aio_seo_meta[0]->og_image_height
-                        : 630;
-                }
-                $seo_meta['robots'] = [
-                    'index' => $aio_seo_meta[0]->robots_noindex != '1',
-                    'follow' => $aio_seo_meta[0]->robots_nofollow != '1',
-                ];
-            }
         }
-        if (!isset($seo_meta['seo_title']) || !$seo_meta['seo_title']) {
-            $seo_meta['seo_title'] = $post->post_title;
+        foreach ($options['acf_field_groups'] as $acf_field_group) {
+            $acf_field_group['location'] = Resolvers::resolve_field($acf_field_group, 'location') ?? [
+                [
+                    [
+                        'param' => 'post_type',
+                        'operator' => '==',
+                        'value' => $post_type_slug,
+                    ],
+                ],
+            ];
+            Acf::register_field_group($acf_field_group);
         }
-        if (!isset($seo_meta['seo_description']) || !$seo_meta['seo_description']) {
-            $seo_meta['seo_description'] = get_the_excerpt($post->ID);
-        }
-        $seo_meta['seo_description'] = apply_filters('akka_seo_description', $seo_meta['seo_description'], $post);
-        if (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) {
-            $specific_seo_image_is_defined = true;
-        }
-        if (
-            (!isset($seo_meta['seo_image_id']) || !$seo_meta['seo_image_id']) &&
-            (!isset($seo_meta['seo_image_url']) || !$seo_meta['seo_image_url']) &&
-            $post_thumbnail_id
-        ) {
-            $seo_meta['seo_image_id'] = $post_thumbnail_id;
-        }
-        if (isset($seo_meta['seo_image_id'])) {
-            $image_src = Utils::get_attachment_image_src($seo_meta['seo_image_id'], 'large');
-            $seo_meta['seo_image_url'] = $image_src[0];
-            $seo_meta['seo_image_width'] = $image_src[1];
-            $seo_meta['seo_image_height'] = $image_src[2];
-        }
-        if (!isset($seo_meta['og_title']) || !$seo_meta['og_title']) {
-            $seo_meta['og_title'] = $seo_meta['seo_title'];
-        }
-        if (!isset($seo_meta['og_description']) || !$seo_meta['og_description']) {
-            $seo_meta['og_description'] = $seo_meta['seo_description'];
-        }
-        if (!isset($seo_meta['twitter_title']) || !$seo_meta['twitter_title']) {
-            $seo_meta['twitter_title'] = $seo_meta['seo_title'];
-        }
-        if (!isset($seo_meta['twitter_description']) || !$seo_meta['twitter_description']) {
-            $seo_meta['twitter_description'] = $seo_meta['seo_description'];
-        }
-        if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
-            $seo_meta['canonical_url'] = wp_get_canonical_url($post->ID);
-        }
-        if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
-            $seo_meta['canonical_url'] = rtrim(
-                str_replace(WP_HOME, AKKA_FRONTEND_BASE, $seo_meta['canonical_url']),
-                '/'
+        if (!empty($options['allowed_core_blocks'])) {
+            add_filter(
+                'akka_allowed_blocks',
+                function ($blocks) use ($post_type_slug, $options) {
+                    if (get_post_type() === $post_type_slug) {
+                        $blocks = Blocks::add_allowed_blocks($blocks, $options['allowed_core_blocks']);
+                    }
+                    return $blocks;
+                },
+                11
             );
         }
-        $seo_meta['published_date'] = get_the_date('c', $post->ID);
-        $seo_meta['modified_date'] = get_the_modified_date('c', $post->ID);
-        if (isset($seo_meta['seo_image_url']) && strpos($seo_meta['seo_image_url'], '/') === 0) {
-            $seo_meta['seo_image_url'] = WP_HOME . $seo_meta['seo_image_url'];
+        if (!empty($options['unallowed_core_blocks'])) {
+            add_filter(
+                'akka_allowed_blocks',
+                function ($blocks) use ($post_type_slug, $options) {
+                    if (get_post_type() === $post_type_slug) {
+                        $blocks = Blocks::remove_unallowed_blocks($blocks, $options['unallowed_core_blocks']);
+                    }
+                    return $blocks;
+                },
+                11
+            );
         }
-        foreach (['seo_title', 'og_title', 'twitter_title'] as $title_key) {
-            if (isset($seo_meta[$title_key])) {
-                $seo_meta[$title_key] = str_replace(
-                    ['&shy;', '&ndash;', '&amp;'],
-                    ['', '-', '&'],
-                    $seo_meta[$title_key]
-                );
+        if (!empty($options['blocks_template'])) {
+            self::set_post_type_blocks_template($post_type_slug, $options['blocks_template']);
+        }
+    }
+
+    public static function unregister_post_post_type()
+    {
+        add_action('admin_menu', function () {
+            remove_menu_page('edit.php');
+        });
+
+        add_action('admin_bar_menu', function ($wp_admin_bar) {
+            $wp_admin_bar->remove_node('new-post');
+        });
+
+        add_action('admin_footer', function ($wp_admin_bar) {
+            ?>
+          <script type="text/javascript">
+            const newPostLink = window.document.getElementById('wp-admin-bar-new-post');
+            if (newPostLink) {
+              newPostLink.remove();
+            }
+          </script>
+          <?php
+        });
+
+        add_action('wp_dashboard_setup', function ($wp_admin_bar) {
+            remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
+        });
+    }
+
+    public static function rename_post_type($post_type, $labels)
+    {
+        add_action('init', function () use ($post_type, $labels) {
+            $post_type_object = get_post_type_object($post_type);
+            if ($post_type_object) {
+                if (isset($labels['plural'])) {
+                    $post_type_object->labels->name = $labels['plural'];
+                }
+                if (isset($labels['singular'])) {
+                    $post_type_object->labels->singular_name = $labels['singular'];
+                }
+                if (isset($labels['add_new'])) {
+                    $post_type_object->labels->add_new = $labels['add_new'];
+                }
+                if (isset($labels['add_new_item'])) {
+                    $post_type_object->labels->add_new_item = $labels['add_new_item'];
+                }
+                if (isset($labels['edit_item'])) {
+                    $post_type_object->labels->edit_item = $labels['edit_item'];
+                }
+                if (isset($labels['new_item'])) {
+                    $post_type_object->labels->new_item = $labels['new_item'];
+                }
+                if (isset($labels['view_item'])) {
+                    $post_type_object->labels->view_item = $labels['view_item'];
+                }
+                if (isset($labels['search_items'])) {
+                    $post_type_object->labels->search_items = $labels['search_items'];
+                }
+                if (isset($labels['not_found'])) {
+                    $post_type_object->labels->not_found = $labels['not_found'];
+                }
+                if (isset($labels['not_found_in_trash'])) {
+                    $post_type_object->labels->not_found_in_trash = $labels['not_found_in_trash'];
+                }
+                if (isset($labels['all_items'])) {
+                    $post_type_object->labels->all_items = $labels['all_items'];
+                }
+                if (isset($labels['plural'])) {
+                    $post_type_object->labels->menu_name = $labels['plural'];
+                }
+                if (isset($labels['name_admin_bar'])) {
+                    $post_type_object->labels->name_admin_bar = $labels['name_admin_bar'];
+                }
+            }
+        });
+    }
+
+    public static function is_public($post_type)
+    {
+        return in_array($post_type, apply_filters('akka_custom_post_strucure_post_types', ['post', 'page']));
+    }
+
+    public static function set_post_type_blocks_template($post_type_slug, $blocks_template)
+    {
+        add_action('init', function () use ($post_type_slug, $blocks_template) {
+            $post_type_object = get_post_type_object($post_type_slug);
+            if ($post_type_object) {
+                $post_type_object->template = $blocks_template;
+            }
+        });
+    }
+
+    private static function set_supports($args)
+    {
+        $default_suports = ['title', 'revisions', 'thumbnail', 'editor', 'custom-fields'];
+        if (!Resolvers::resolve_field($args, 'supports')) {
+            return $default_suports;
+        }
+        if (!is_array($args['supports'])) {
+            throw new \Exception('Akka post type supports should be an array!');
+        }
+        // Return setting in args if array of strings
+        if (!empty($args['supports']) && isset($args['supports'][0])) {
+            return $args['supports'];
+        }
+        // Merge with defaults if deep array
+        $supports = $default_suports;
+        foreach ($args['supports'] as $support => $enable) {
+            if ($enable) {
+                if (!in_array($support, $supports)) {
+                    $supports[] = $support;
+                }
+            } else {
+                if (in_array($support, $supports)) {
+                    $index = array_search($support, $supports);
+                    array_splice($supports, $index);
+                }
             }
         }
-        return apply_filters('akka_post_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
+        return $supports;
     }
 }
