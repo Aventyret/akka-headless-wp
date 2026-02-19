@@ -181,14 +181,15 @@ class Akka_headless_wp_content
         $permalink_parts = explode('/', $permalink);
         $post_types_with_custom_structures = apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page']);
         if (!$post_id && $permalink != '/') {
-            foreach($post_types_with_custom_structures as $post_type) {
+            foreach ($post_types_with_custom_structures as $post_type) {
                 $post_type_object = get_post_type_object($post_type);
-                if (Resolvers::resolve_field($post_type_object->rewrite, 'slug') && $permalink_parts[count($permalink_parts) - 2] == $post_type_object->rewrite['slug']) {
-                    $post_object = get_page_by_path(
-                        $permalink_parts[count($permalink_parts) - 1],
-                        OBJECT,
-                        [$post_type]
-                    );
+                if (
+                    Resolvers::resolve_field($post_type_object->rewrite, 'slug') &&
+                    $permalink_parts[count($permalink_parts) - 2] == $post_type_object->rewrite['slug']
+                ) {
+                    $post_object = get_page_by_path($permalink_parts[count($permalink_parts) - 1], OBJECT, [
+                        $post_type,
+                    ]);
                     if ($post_object && $post_object->post_type !== 'attachment') {
                         $post_id = $post_object->ID;
                     }
@@ -685,28 +686,47 @@ class Akka_headless_wp_content
             return null;
         }
 
-        $query_args = [
-            'post_type' => $archive_taxonomy->object_type,
-            'tax_query' => [
-                [
-                    'taxonomy' => $archive_taxonomy->name,
-                    'field' => 'slug',
-                    'terms' => $archive_taxonomy_term->slug,
+        $post_types = array_values(
+            array_filter($archive_taxonomy->object_type, function ($post_type) {
+                $post_type_object = get_post_type_object($post_type);
+                return $post_type_object->public;
+            })
+        );
+        $count = 0;
+        $pages = 1;
+        $posts = [];
+        $next_page = null;
+
+        if (!empty($post_types)) {
+            $query_args = [
+                'post_type' => $post_types,
+                'tax_query' => [
+                    [
+                        'taxonomy' => $archive_taxonomy->name,
+                        'field' => 'slug',
+                        'terms' => $archive_taxonomy_term->slug,
+                    ],
                 ],
-            ],
-        ];
-        if ($year) {
-            $query_args['date_query'] = [
-                'year' => $year,
             ];
+            if ($year) {
+                $query_args['date_query'] = [
+                    'year' => $year,
+                ];
+            }
+
+            $page = Utils::getQueryParam('page', 1);
+            $query = self::get_posts_query($query_args, [
+                'page' => $page,
+            ]);
+
+            $count = $query->found_posts;
+            $pages = $query->max_num_pages - $page + 1; // NOTE: Max num pages adjusts to starting page
+            $posts = self::parse_posts($query->posts);
+            $next_page =
+                $query->max_num_pages > $page + 1
+                    ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
+                    : null;
         }
-
-        $page = Utils::getQueryParam('page', 1);
-        $query = self::get_posts_query($query_args, [
-            'page' => $page,
-        ]);
-
-        $posts = self::parse_posts($query->posts);
 
         $taxonomy_term_data = [
             'post_type' => 'taxonomy_term',
@@ -720,13 +740,10 @@ class Akka_headless_wp_content
             'description' => term_description($archive_taxonomy_term->term_id),
             'name' => $archive_taxonomy_term->name,
             'fields' => get_fields($archive_taxonomy_term),
-            'count' => $query->found_posts,
-            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
+            'count' => $count,
+            'pages' => $pages,
             'posts' => $posts,
-            'next_page' =>
-                $query->max_num_pages > $page + 1
-                    ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
-                    : null,
+            'next_page' => $next_page,
         ];
 
         $taxonomy_term_data['seo_meta'] = self::get_term_seo_meta($taxonomy_term_data);
