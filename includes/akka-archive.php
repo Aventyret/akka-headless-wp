@@ -48,27 +48,45 @@ class Archive
 
     public static function get_taxonomy_term_archive($archive_taxonomy, $archive_taxonomy_term, $page, $year = null)
     {
-        $query_args = [
-            'post_type' => $archive_taxonomy->object_type,
-            'tax_query' => [
-                [
-                    'taxonomy' => $archive_taxonomy->name,
-                    'field' => 'slug',
-                    'terms' => $archive_taxonomy_term->slug,
+        $post_types = array_values(
+            array_filter($archive_taxonomy->object_type, function ($post_type) {
+                return PostTypes::is_public($post_type);
+            })
+        );
+        $count = 0;
+        $pages = 1;
+        $posts = [];
+        $next_page = null;
+
+        if (!empty($post_types)) {
+            $query_args = [
+                'post_type' => $post_types,
+                'tax_query' => [
+                    [
+                        'taxonomy' => $archive_taxonomy->name,
+                        'field' => 'slug',
+                        'terms' => $archive_taxonomy_term->slug,
+                    ],
                 ],
-            ],
-        ];
-        if ($year) {
-            $query_args['date_query'] = [
-                'year' => $year,
             ];
+            if ($year) {
+                $query_args['date_query'] = [
+                    'year' => $year,
+                ];
+            }
+
+            $query = self::get_posts_query($query_args, [
+                'page' => $page,
+            ]);
+
+            $count = $query->found_posts;
+            $pages = $query->max_num_pages - $page + 1; // NOTE: Max num pages adjusts to starting page
+            $posts = Post::posts_to_blurbs($query->posts);
+            $next_page =
+                $query->max_num_pages > $page + 1
+                    ? Term::get_url($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
+                    : null;
         }
-
-        $query = self::get_posts_query($query_args, [
-            'page' => $page,
-        ]);
-
-        $posts = Post::posts_to_blurbs($query->posts);
 
         $taxonomy_term_archive = [
             'post_type' => 'taxonomy_term',
@@ -82,13 +100,10 @@ class Archive
             'description' => term_description($archive_taxonomy_term->term_id),
             'name' => $archive_taxonomy_term->name,
             'fields' => get_fields($archive_taxonomy_term),
-            'count' => $query->found_posts,
-            'pages' => $query->max_num_pages - $page + 1, // NOTE: Max num pages adjusts to starting page
+            'count' => $count,
+            'pages' => $pages,
             'posts' => $posts,
-            'next_page' =>
-                $query->max_num_pages > $page + 1
-                    ? Term::get_url($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
-                    : null,
+            'next_page' => $next_page,
         ];
 
         $taxonomy_term_archive['seo_meta'] = Term::get_seo_meta($taxonomy_term_archive);
