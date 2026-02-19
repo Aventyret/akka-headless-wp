@@ -21,6 +21,9 @@ class Acf
                 if (!Resolvers::resolve_field($field_group, 'location')) {
                     throw new \Exception('Akka acf field group: location is missing!');
                 }
+                if (!self::validate_location(Resolvers::resolve_field($field_group, 'location'))) {
+                    throw new \Exception('Akka acf field group: location is in a bad format! Should be an array of array of arrays');
+                }
                 $field_group['fields'] = self::set_field_keys($field_group['fields']);
                 $field_group = array_merge(
                     [
@@ -54,5 +57,27 @@ class Acf
             }
         }
         return $fields;
+    }
+
+    private static function validate_location($location) {
+        if (empty($location)) {
+            return false;
+        }
+        if (!is_array($location)) {
+            return false;
+        }
+        if (!isset($location[0])) {
+            return false;
+        }
+        if (!is_array($location[0])) {
+            return false;
+        }
+        if (!isset($location[0][0])) {
+            return false;
+        }
+        if (!isset($location[0][0]['param'])) {
+            return false;
+        }
+        return true;
     }
 }
