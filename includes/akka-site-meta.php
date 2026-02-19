@@ -94,7 +94,7 @@ class SiteMeta
                 [$g, $section, $key] = preg_split('/_/', $field, 3, PREG_SPLIT_NO_EMPTY);
                 if (isset($section) && isset($key)) {
                     if ($value instanceof \WP_Post) {
-                        $permalink = Post::get_url($value->ID);
+                        $permalink = Post::get_url($value->ID, $value->post_type);
                         $value = [
                             'post_id' => $value->ID,
                             'permalink' => $permalink,

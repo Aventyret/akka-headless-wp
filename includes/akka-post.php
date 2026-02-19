@@ -4,6 +4,7 @@ namespace Akka;
 class Post
 {
     private static $_single_memory = [];
+    private static $_post_type_memory = [];
     public static function get_single($post_id_or_post = null, $post_status = ['publish'], $get_autosaved = false)
     {
         global $post;
@@ -50,7 +51,7 @@ class Post
             ])
             : null;
 
-        $permalink = self::get_url($post->ID);
+        $permalink = self::get_url($post->ID, $post->post_type);
 
         $akka_post = [
             'post_id' => $post->ID,
@@ -177,7 +178,7 @@ class Post
             'post_guid' => $post->guid,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
             'post_date_iso' => get_the_date('c', $post->ID),
-            'url' => self::get_url($post->ID),
+            'url' => self::get_url($post->ID, $post->post_type),
             'featured_image' => !empty($thumbnail_attributes) ? $thumbnail_attributes : null,
             'post_title' => $post->post_title,
             'post_type' => $post->post_type,
@@ -189,8 +190,18 @@ class Post
         return apply_filters('akka_post_blurb', $post_blurb, $post);
     }
 
-    public static function get_url($post_id)
+    public static function get_url($post_id, $post_type = null)
     {
+        if (!$post_type) {
+            $post_type = Resolvers::resolve_field(self::$_post_type_memory, $post_id);
+        }
+        if (!$post_type) {
+            $post_type = get_post_type($post_id);
+            self::$_post_type_memory = $post_type;
+        }
+        if (!in_array($post_type, apply_filters('akka_custom_post_strucure_post_types', ['post', 'page']))) {
+            return null;
+        }
         return Utils::parse_url(str_replace(WP_HOME, '', get_permalink($post_id)));
     }
 

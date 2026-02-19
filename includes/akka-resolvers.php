@@ -6,7 +6,7 @@ class Resolvers
     public static function resolve_post_base($post)
     {
         return [
-            'url' => Post::get_url($post->ID),
+            'url' => Post::get_url($post->ID, $post->post_type),
             'post_id' => $post->ID,
             'post_title' => $post->post_title,
             'post_type' => $post->post_type,
