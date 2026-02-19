@@ -81,7 +81,7 @@ class Akka_headless_wp_akka_blocks
             });
         }
 
-        add_action('init', function() {
+        add_action('init', function () {
             \Solarplexus_Helpers::use_custom_editor_ssr_component();
         });
 
