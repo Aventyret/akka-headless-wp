@@ -191,6 +191,11 @@ class PostTypes
         });
     }
 
+    public static function is_public($post_type)
+    {
+        return in_array($post_type, apply_filters('akka_custom_post_strucure_post_types', ['post', 'page']));
+    }
+
     public static function set_post_type_blocks_template($post_type_slug, $blocks_template)
     {
         add_action('init', function () use ($post_type_slug, $blocks_template) {

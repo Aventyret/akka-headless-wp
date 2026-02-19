@@ -199,7 +199,7 @@ class Post
             $post_type = get_post_type($post_id);
             self::$_post_type_memory = $post_type;
         }
-        if (!in_array($post_type, apply_filters('akka_custom_post_strucure_post_types', ['post', 'page']))) {
+        if (!PostTypes::is_public($post_type)) {
             return null;
         }
         return Utils::parse_url(str_replace(WP_HOME, '', get_permalink($post_id)));
