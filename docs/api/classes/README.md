@@ -158,6 +158,8 @@ Registers a custom post type with Akka conventions.
   'allowed_core_blocks' => [], // Additional allowed blocks
   'unallowed_core_blocks' => [], // Blocks to remove
   'blocks_template' => [], // Default blocks template
+  'slug' => null, // String for routing, defaults to slugified label (if public is true)
+  'slugs' => [], // Language map for routing, overrides slug if provided. E.g. ['en' => 'products', 'sv' => 'produkter']
 ];
 ```
 
@@ -272,6 +274,8 @@ Registers a custom taxonomy with Akka conventions.
   'admin_filter_post_types' => [], // Show taxonomy filter in admin
   'has_archive' => false, // Enable archive pages
   'acf_field_groups' => [], // ACF fields for terms
+  'slug' => null, // String for routing term archives, defaults to slugified label (if has_archive is true)
+  'slugs' => [], // Language map for routing, overrides slug if provided. E.g. ['en' => 'products', 'sv' => 'produkter']
 ];
 ```
 

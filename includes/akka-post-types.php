@@ -26,15 +26,6 @@ class PostTypes
             $args
         );
         $args['supports'] = $supports;
-        if (!$args['label']) {
-            throw new \Exception('Akka post type label missing!');
-        }
-        if ($args['public']) {
-            $args['rewrite'] = [
-                'slug' => Resolvers::resolve_field($args, 'slug') ?? Utils::string_to_route($args['label']),
-                'with_front' => false,
-            ];
-        }
         $options = array_merge(
             [
                 'meta_groups' => [],
@@ -42,9 +33,24 @@ class PostTypes
                 'allowed_core_blocks' => [],
                 'unallowed_core_blocks' => [],
                 'blocks_template' => [],
+                'slug' => null,
+                'slugs' => [],
             ],
             $options
         );
+        if (!$args['label']) {
+            throw new \Exception('Akka post type label missing!');
+        }
+        if ($args['public']) {
+            $slug = Resolvers::resolve_field($options, 'slug') ?? Utils::stringToRoute($args['label']);
+            if (Resolvers::resolve_field($options['slugs'], Utils::get_lang())) {
+                $slug = $options['slugs'][Utils::get_lang()];
+            }
+            $args['rewrite'] = [
+                'slug' => $slug,
+                'with_front' => false,
+            ];
+        }
         add_action('init', function () use ($post_type_slug, $args) {
             register_post_type($post_type_slug, $args);
         });

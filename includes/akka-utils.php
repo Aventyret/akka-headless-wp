@@ -37,6 +37,12 @@ class Utils
         return apply_filters('akka_post_parse_url', $url);
     }
 
+    public static function get_lang()
+    {
+        $locale = get_locale();
+        return substr($locale, 0, 2);
+    }
+
     public static function enqueue_editor_assets()
     {
         wp_enqueue_script(

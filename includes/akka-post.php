@@ -118,7 +118,14 @@ class Post
                 $post
             );
         }
+        if (!$akka_post) {
+            return null;
+        }
         $akka_post = apply_filters('akka_post_single', $akka_post, $post);
+        if (!$akka_post) {
+            return null;
+        }
+
         $akka_post['seo_meta']['schema'] = apply_filters(
             'akka_post_schema',
             Resolvers::resolve_array_field($akka_post['seo_meta'], 'schema'),

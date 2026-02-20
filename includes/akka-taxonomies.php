@@ -5,18 +5,6 @@ class Taxonomies
 {
     public static function register_taxonomy($taxonomy_slug, $args, $options = [])
     {
-        $options = array_merge(
-            [
-                'post_types' => ['post'],
-                'blurb_post_types' => [],
-                'admin_column_post_types' => [],
-                'admin_filter_post_types' => [],
-                'has_archive' => false,
-                'acf_field_groups' => [],
-            ],
-            $options
-        );
-
         $args = array_merge(
             [
                 'label' => null,
@@ -32,9 +20,27 @@ class Taxonomies
             $args
         );
 
+        $options = array_merge(
+            [
+                'post_types' => ['post'],
+                'blurb_post_types' => [],
+                'admin_column_post_types' => [],
+                'admin_filter_post_types' => [],
+                'has_archive' => false,
+                'acf_field_groups' => [],
+                'slug' => null,
+                'slugs' => [],
+            ],
+            $options
+        );
+
         if ($options['has_archive']) {
+            $slug = Resolvers::resolve_field($options, 'slug') ?? Utils::stringToRoute($args['label']);
+            if (Resolvers::resolve_field($options['slugs'], Utils::get_lang())) {
+                $slug = $options['slugs'][Utils::get_lang()];
+            }
             $args['rewrite'] = [
-                'slug' => Utils::string_to_route($args['label']),
+                'slug' => $slug,
                 'with_front' => false,
             ];
         }
