@@ -510,6 +510,11 @@ class Akka_headless_wp_content
         );
 
         $data = apply_filters('ahw_post_data', $akka_post);
+
+        if (!$data) {
+            return new WP_REST_Response(['message' => 'Post not found'], 404);
+        }
+
         $data['seo_meta']['schema'] = apply_filters(
             'ahw_post_schema_data',
             Resolvers::resolve_array_field($data['seo_meta'], 'schema'),
