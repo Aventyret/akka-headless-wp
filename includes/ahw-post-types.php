@@ -34,8 +34,12 @@ class Akka_headless_wp_akka_post_types
             throw new Exception('Akka post type label missing!');
         }
         if ($args['public']) {
+            $slug = Resolvers::resolve_field($args, 'slug') ?? Utils::stringToRoute($args['label']);
+            if (isset($options['slugs']) && Resolvers::resolve_field($options['slugs'], Utils::get_lang())) {
+                $slug = $options['slugs'][Utils::get_lang()];
+            }
             $args['rewrite'] = [
-                'slug' => Resolvers::resolve_field($args, 'slug') ?? Utils::stringToRoute($args['label']),
+                'slug' => $slug,
                 'with_front' => false,
             ];
         }
