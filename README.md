@@ -119,6 +119,18 @@ The following functions are new in v2:
 \Akka\Taxonomies::unregister_taxonomy_for_post_type('category', 'post');
 ```
 
+The following ENV variables are changed in v2:
+
+```
+# v1
+AKKA_CMS_MEDIA_BUCKET_PROTOCOL=https://
+AKKA_CMS_MEDIA_BUCKET_HOSTNAME=wwwaventyret.blob.core.windows.net
+AKKA_CMS_MEDIA_BUCKET_PORT=
+
+# v2
+AKKA_CMS_MEDIA_BUCKET_URL=https://wwwaventyret.blob.core.windows.net
+```
+
 ### Migrate hooks
 
 All Akka hooks are renamed with prefix `akka_` replacing `ahw_`. In addition to this change, the following filters are changed as well:
