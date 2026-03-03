@@ -105,7 +105,7 @@ class Akka_headless_wp_utils
             $content = str_replace(' src="/', ' src="' . AKKA_CMS_MEDIA_BUCKET_BASE . '/', $content);
         }
 
-        return $content;
+        return apply_filters('ahw_post_replace_srcs', $content);
     }
 
     public static function parseWysiwyg($html)
@@ -137,7 +137,7 @@ class Akka_headless_wp_utils
             $src = str_replace(AKKA_CMS_INTERNAL_BASE, AKKA_CMS_MEDIA_BUCKET_BASE, $src);
             $src = str_replace(WP_HOME, AKKA_CMS_MEDIA_BUCKET_BASE, $src);
         }
-        return $src;
+        return apply_filters('ahw_post_adjust_media_src', $src);
     }
 
     public static function internal_audio_and_video_attributes($media_id, $media_attributes = [])
