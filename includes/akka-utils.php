@@ -111,7 +111,7 @@ class Utils
             $content = str_replace(' src="/', ' src="' . AKKA_CMS_MEDIA_BUCKET_BASE . '/', $content);
         }
 
-        return apply_filters('akka_replace_srcs', $content);
+        return apply_filters('akka_post_replace_srcs', $content);
     }
 
     public static function parse_wysiwyg($html)
@@ -143,7 +143,7 @@ class Utils
             $src = str_replace(AKKA_CMS_INTERNAL_BASE, AKKA_CMS_MEDIA_BUCKET_BASE, $src);
             $src = str_replace(WP_HOME, AKKA_CMS_MEDIA_BUCKET_BASE, $src);
         }
-        return apply_filters('akka_adjust_media_src', $src);
+        return apply_filters('akka_post_adjust_media_src', $src);
     }
 
     public static function internal_audio_and_video_attributes($media_id, $media_attributes = [])
