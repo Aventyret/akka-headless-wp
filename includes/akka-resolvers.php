@@ -126,7 +126,7 @@ class Resolvers
 
     public static function resolve_wysiwyg_field($fields_source, $field_name)
     {
-        return Utils::parseWysiwyg(self::resolve_field($fields_source, $field_name));
+        return Utils::parse_wysiwyg(self::resolve_field($fields_source, $field_name));
     }
 
     public static function resolve_audio_or_video($media_id)

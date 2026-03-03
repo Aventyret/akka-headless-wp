@@ -35,7 +35,7 @@ class Taxonomies
         );
 
         if ($options['has_archive']) {
-            $slug = Resolvers::resolve_field($options, 'slug') ?? Utils::stringToRoute($args['label']);
+            $slug = Resolvers::resolve_field($options, 'slug') ?? Utils::string_to_route($args['label']);
             if (Resolvers::resolve_field($options['slugs'], Utils::get_lang())) {
                 $slug = $options['slugs'][Utils::get_lang()];
             }

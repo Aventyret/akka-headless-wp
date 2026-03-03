@@ -114,7 +114,7 @@ class Utils
         return $content;
     }
 
-    public static function parseWysiwyg($html)
+    public static function parse_wysiwyg($html)
     {
         if (!self::is_headless() || !$html) {
             return $html;
