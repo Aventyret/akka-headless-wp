@@ -114,8 +114,6 @@ The following functions are new in v2:
 
 \Akka\Resolvers::resolve_post_single_field($fields_source, $field_name);
 
-\Akka\Taxonomies::register_taxonomy_for_post_type('category', 'product');
-
 \Akka\Taxonomies::unregister_taxonomy_for_post_type('category', 'post');
 ```
 
