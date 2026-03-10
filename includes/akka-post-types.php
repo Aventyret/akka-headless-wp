@@ -54,7 +54,7 @@ class PostTypes
         add_action('init', function () use ($post_type_slug, $args) {
             register_post_type($post_type_slug, $args);
         });
-        foreach(['category', 'post_tag'] as $core_taxonomy) {
+        foreach (['category', 'post_tag'] as $core_taxonomy) {
             Taxonomies::register_taxonomy_for_post_type($taxonomy, $post_type_slug);
         }
         if ($args['has_archive']) {
