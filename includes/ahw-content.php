@@ -60,10 +60,14 @@ class Akka_headless_wp_content
                 ];
             }
         }
-        $site_meta = array_merge(self::get_site_meta_global_fields(), [
-            'navigation' => $navigation,
-            'navigation_meta' => $navigation_meta,
-        ]);
+        $site_meta = array_merge(
+            [
+                'site_name' => get_bloginfo('name'),
+                'navigation' => $navigation,
+                'navigation_meta' => $navigation_meta,
+            ],
+            self::get_site_meta_global_fields()
+        );
         if (class_exists('WPSEO_Redirect_Manager')) {
             $redirect_manager = new WPSEO_Redirect_Manager();
             $redirects = $redirect_manager->get_all_redirects();
