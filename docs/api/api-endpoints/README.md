@@ -15,6 +15,7 @@ The response of this endpoint can be adjusted with the filters `akka_site_meta` 
 `redirects` is currently only included if Yoast Premium is active.
 
 **Response:**
+
 ```json
 {
   "navigation": {
@@ -72,6 +73,7 @@ The response of this endpoint can be adjusted with the filters `akka_post_single
 **Response:** See [Post Single Object](classes/README.md#get_single)
 
 **Example:**
+
 ```
 GET /wp-json/akka/v2/post/%2F
 GET /wp-json/akka/v2/post/about
@@ -94,6 +96,7 @@ The response of this endpoint can be adjusted with the filters `akka_post_single
 | `permalink` | `string` | Yes | The URL path. |
 
 **Example:**
+
 ```
 GET /wp-json/akka/v2/post/?permalink=/
 GET /wp-json/akka/v2/post/?permalink=about
@@ -113,8 +116,28 @@ Returns a Post Single by its WordPress post ID.
 | `post_id` | `int` | The WordPress post ID. |
 
 **Example:**
+
 ```
 GET /wp-json/akka/v2/post_by_id/123
+```
+
+---
+
+## Posts by IDs
+
+### GET /akka/v2/posts_by_ids/{post_ids}
+
+Returns a Post Single by its WordPress post ID.
+
+**Parameters:**
+| Parameter | Type | Description |
+|-----------|---------|-------------|
+| `post_id` | `sring` | Comma separated WordPress post IDs. |
+
+**Example:**
+
+```
+GET /wp-json/akka/v2/posts_by_ids/123,1234
 ```
 
 ---
@@ -131,6 +154,7 @@ Returns image attributes for an attachment.
 | `attachment_id` | `int` | The attachment ID. |
 
 **Response:**
+
 ```json
 {
   "id": 456,
@@ -160,6 +184,7 @@ Returns a paginated list of Post Blurbs.
 | `page` | `int` | `1` | Page number. |
 
 **Response:**
+
 ```json
 {
   "count": 42,
@@ -203,6 +228,7 @@ Performs a search query.
 | `offset` | `int` | Number of posts to skip. |
 
 **Response:**
+
 ```json
 {
   "count": 15,
@@ -224,6 +250,7 @@ Alternative endpoint using query parameter for search term.
 Renders an Akka Block for the editor preview. **Requires authentication with `edit_posts` capability.**
 
 **Request Body:**
+
 ```json
 {
   "post_id": 123,
@@ -261,6 +288,7 @@ The compact post representation for listings. See [Post.post_to_blurb()](classes
 ### Archive Response
 
 Archives return:
+
 ```json
 {
   "post_type": "post_type|taxonomy_term",
@@ -291,14 +319,15 @@ Status code should be 200 for all successfull responses.
 ### 400 Bad requests
 
 ```json
-{"message":"Missing parameter"}
+{ "message": "Missing parameter" }
 ```
 
 ### 404 Post Not Found
 
 When a permalink doesn't match any content:
+
 ```json
-{"message":"Post not found"}
+{ "message": "Post not found" }
 ```
 
 ---
