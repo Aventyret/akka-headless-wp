@@ -105,6 +105,8 @@ The following functions are new in v2:
 ```
 \Akka\Post::get_blurb($post_id);
 
+\Akka\Taxonomies::register_taxonomy_for_post_type('category', 'product');
+
 \Akka\PostTypes::unregister_post_post_type();
 
 \Akka\PostTypes::rename_post_type('post', [

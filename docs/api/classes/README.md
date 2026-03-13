@@ -305,7 +305,7 @@ Registers a custom taxonomy with Akka conventions.
 \Akka\Taxonomies::register_taxonomy_for_post_type($taxonomy, $post_type);
 ```
 
-Attaches an existing taxonomy to a post type. NOTE: As of v2.3 this is typically not needed. For core taxonomies (`category` and `post_tag`) it is enough to implement `supports` when registering a post type, and for custom taxonomies the way to register a taxonomy on a post type is to use the `post_types` and `blurb_post_types` options in `register_taxonomy`.
+Attaches an existing taxonomy to a post type. Use this if you want to attatch a core taxonomy (`category` or `post_tag`) to a custom post type.
 
 ---
 

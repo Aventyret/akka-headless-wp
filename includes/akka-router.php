@@ -344,7 +344,7 @@ class Router
 
         return Post::get_blurbs([
             'post__in' => $post_ids,
-            'post_type' => 'any'
+            'post_type' => 'any',
         ]);
     }
 
