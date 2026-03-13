@@ -32,6 +32,11 @@ add_action('rest_api_init', function () {
         'callback' => 'Akka\Router::post_by_id_request',
         'permission_callback' => 'Akka\Router::can_get_content',
     ]);
+    register_rest_route(AKKA_API_BASE, '/posts_by_ids/(?P<post_ids>[0-9,]+)', [
+        'methods' => 'GET',
+        'callback' => 'Akka\Router::posts_by_ids_request',
+        'permission_callback' => 'Akka\Router::can_get_content',
+    ]);
     register_rest_route(AKKA_API_BASE, '/attachment_by_id/(?P<attachment_id>[0-9]+)', [
         'methods' => 'GET',
         'callback' => 'Akka\Router::attachment_by_id_request',

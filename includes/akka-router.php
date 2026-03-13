@@ -327,6 +327,27 @@ class Router
         return $p;
     }
 
+    public static function posts_by_ids_request($data)
+    {
+        $post_ids_param = Utils::get_route_param($data, 'post_ids');
+        $blog_id = Utils::get_route_param($data, 'blog_id');
+
+        if (empty($post_ids_param)) {
+            return new \WP_REST_Response(['message' => 'Missing post ids'], 404);
+        }
+
+        $post_ids = explode(',', $post_ids_param);
+
+        if ($blog_id) {
+            switch_to_blog($blog_id);
+        }
+
+        return Post::get_blurbs([
+            'post__in' => $post_ids,
+            'post_type' => 'any'
+        ]);
+    }
+
     public static function attachment_by_id_request($data)
     {
         $attachment_id = Utils::get_route_param($data, 'attachment_id');
