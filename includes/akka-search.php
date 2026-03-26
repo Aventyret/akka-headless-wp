@@ -33,7 +33,8 @@ class Search
             'offset' => $offset,
         ];
 
-        if ($query && $query != '_all') { // NOTE: Hack to allow listing of all posts with same endpoint as search
+        if ($query && $query != '_all') {
+            // NOTE: Hack to allow listing of all posts with same endpoint as search
             $query_args = [
                 's' => $query,
             ];

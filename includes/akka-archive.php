@@ -38,7 +38,10 @@ class Archive
         if ($archive_post_type == 'post') {
             $post_page = get_option('page_for_posts');
             if ($post_page) {
-                $post_type_archive = array_merge($post_type_archive, Post::get_single($post_page));
+                $post_type_archive = array_merge($post_type_archive, Post::get_single($post_page), [
+                    'post_type' => 'post_type',
+                    'slug' => 'post',
+                ]);
             }
         }
 
