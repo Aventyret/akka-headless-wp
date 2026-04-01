@@ -191,7 +191,7 @@ class Router
                 return $redirect_response;
             }
             $not_found_response = apply_filters('akka_post_not_found_response', $permalink);
-            if ($not_found_response) {
+            if ($not_found_response && $not_found_response != $permalink) {
                 return $not_found_response;
             }
         }
