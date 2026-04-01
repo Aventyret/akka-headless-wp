@@ -22,33 +22,8 @@ class SiteMeta
             $navigation[$slug] = null;
             $navigation_meta[$slug] = null;
             if ($menu_items) {
-                $navigation[$slug] = array_map(function ($item) {
-                    return [
-                        'id' => $item->ID,
-                        'parent_id' => $item->menu_item_parent ? $item->menu_item_parent : null,
-                        'url' => Utils::parse_url($item->url),
-                        'title' => $item->title,
-                        'description' => $item->description,
-                        'children' => [],
-                    ];
-                }, $menu_items);
+                $navigation[$slug] = self::menu_items($menu_items);
 
-                $navigation[$slug] = array_reduce(
-                    $navigation[$slug],
-                    function ($menu_items, $menu_item) {
-                        if ($menu_item['parent_id']) {
-                            $ids = array_column($menu_items, 'id');
-                            $parent_index = array_search($menu_item['parent_id'], $ids);
-                            if ($parent_index !== false) {
-                                $menu_items[$parent_index]['children'][] = $menu_item;
-                            }
-                        } else {
-                            $menu_items[] = $menu_item;
-                        }
-                        return $menu_items;
-                    },
-                    []
-                );
                 $navigation_meta[$slug] = [
                     'name' => wp_get_nav_menu_name($slug),
                 ];
@@ -85,6 +60,22 @@ class SiteMeta
             );
         }
         return apply_filters('akka_site_meta', $site_meta);
+    }
+
+    private static function menu_items($all_menu_items, $parent_item_id = 0) {
+        return array_map(function($menu_item) use($all_menu_items) {
+            return [
+                'id' => $menu_item->ID,
+                'parent_id' => $menu_item->menu_item_parent ? $menu_item->menu_item_parent : null,
+                'url' => Utils::parse_url($menu_item->url),
+                'title' => $menu_item->title,
+                'description' => $menu_item->description,
+                'children' => self::menu_items($all_menu_items, $menu_item->ID),
+            ];
+        }, array_values(array_filter($all_menu_items, function ($menu_item) use($parent_item_id) {
+            return $menu_item->menu_item_parent == $parent_item_id;
+        })));
+        return $menu_items;
     }
 
     private static function get_site_meta_global_fields()
