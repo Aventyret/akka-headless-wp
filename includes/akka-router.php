@@ -8,6 +8,17 @@ class Router
         return true;
     }
 
+    public static function can_post_content($request)
+    {
+        // Get the key from the request header.
+        $provided_key = $request->get_header('X-WP-API-Key');
+
+        // Get the expected key from the environment variable.
+        $expected_key = getenv('AKKA_CMS_API_KEY');
+
+        return $provided_key === $expected_key;
+    }
+
     public static function permalink_request($data)
     {
         $permalink = Utils::get_route_param($data, 'permalink');

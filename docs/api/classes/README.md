@@ -637,6 +637,46 @@ Wraps left/right aligned blocks for proper rendering.
 
 ---
 
+## Router
+
+Class that handles REST api routing in Akka.
+
+### can_get_content
+
+```php
+add_action('rest_api_init', function () {
+  register_rest_route('custom/v1', '/products', [
+    'methods' => 'GET',
+    'permission_callback' => '\Akka\Router::can_get_content',
+    'callback' => function ($req) {
+      return [];
+    },
+  ]);
+});
+```
+
+Permission callback for Akka GET requests.
+
+---
+
+### can_post_content
+
+```php
+add_action('rest_api_init', function () {
+  register_rest_route('custom/v1', '/poll', [
+    'methods' => 'POST',
+    'permission_callback' => '\Akka\Router::can_post_content',
+    'callback' => function ($req) {
+      return ['status' => 'ok'];
+    },
+  ]);
+});
+```
+
+Permission callback for Akka POST requests. Requires env variable `AKKA_CMS_API_KEY` to be set to matching values in both Wordpress and the frontend application.
+
+---
+
 ## Acf
 
 ACF field group registration utilities.
