@@ -200,16 +200,6 @@ class Akka_headless_wp_content
                 }
             }
         }
-        if (!$post_id && $permalink != '/') {
-            $post_object = get_page_by_path(
-                $permalink_parts[count($permalink_parts) - 1],
-                OBJECT,
-                $post_types_with_custom_structures
-            );
-            if ($post_object && $post_object->post_type !== 'attachment') {
-                $post_id = $post_object->ID;
-            }
-        }
 
         // Check hierarchical page
         if (!$post_id) {
