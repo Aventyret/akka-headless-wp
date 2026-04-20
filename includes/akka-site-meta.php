@@ -70,6 +70,7 @@ class SiteMeta
                 'url' => Utils::parse_url($menu_item->url),
                 'title' => $menu_item->title,
                 'description' => $menu_item->description,
+                'target' => $menu_item->target,
                 'children' => self::menu_items($all_menu_items, $menu_item->ID),
             ];
         }, array_values(array_filter($all_menu_items, function ($menu_item) use($parent_item_id) {
