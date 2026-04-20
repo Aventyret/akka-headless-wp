@@ -5,7 +5,7 @@ Plugin URI: https://github.com/aventyret/akka-wp/blob/main/plugins/akka-headless
 Description: Use Wordpress as a headless CMS, with Gutenberg as the content provider
 Author: Mediakooperativet, Äventyret
 Author URI: https://aventyret.com
-Version: 2.0.0
+Version: 2.5.0
 */
 
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)){
@@ -20,7 +20,7 @@ if (defined('AKKA_HEADLESS_WP'))
 define('AKKA_HEADLESS_WP',  __FILE__ );
 define('AKKA_HEADLESS_WP_DIR', plugin_dir_path( __FILE__ ));
 define('AKKA_HEADLESS_WP_URL', plugin_dir_url( __FILE__ ));
-define('AKKA_HEADLESS_WP_VER', "2.0.0");
+define('AKKA_HEADLESS_WP_VER', "2.5.0");
 define('AKKA_API_BASE', "akka/v2");
 define('AKKA_LANG', getenv('AKKA_LANG') ? getenv('AKKA_LANG') : "en");
 define('AKKA_CMS_COOKIE_PATH', getenv('AKKA_CMS_COOKIE_PATH') ? getenv('AKKA_CMS_COOKIE_PATH') : NULL);
