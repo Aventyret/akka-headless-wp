@@ -308,7 +308,7 @@ class Post
                                 $schema_item['logo']['contentUrl'] = $schema_item['logo']['url'];
                             }
                             if (!empty(Resolvers::resolve_array_field($graph_data, 'sameAs'))) {
-                                $schema_item['sameAs'] = $graph_data['sameAs'][0];
+                                $schema_item['sameAs'] = $graph_data['sameAs'];
                             }
                             if ($contact_pont = apply_filters('akka_schema_organization_contact_point', null)) {
                                 $schema_item['contactPoint'] = $contact_pont;
