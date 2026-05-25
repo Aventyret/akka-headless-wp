@@ -329,7 +329,7 @@ class Router
             switch_to_blog($blog_id);
         }
 
-        $p = Post::get_single($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
+        $p = Post::get_single($post_id, ['publish', 'draft', 'private', 'pending', 'future'], $get_autosaved);
 
         if (!$p) {
             return new \WP_REST_Response(['message' => 'Post not found'], 404);
