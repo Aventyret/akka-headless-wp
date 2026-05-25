@@ -443,7 +443,7 @@ class Akka_headless_wp_content
             switch_to_blog($blog_id);
         }
 
-        return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending'], $get_autosaved);
+        return self::get_post_data($post_id, ['publish', 'draft', 'private', 'pending', 'future'], $get_autosaved);
     }
 
     public static function get_attachment_by_id($data)
