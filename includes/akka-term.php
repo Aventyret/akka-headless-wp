@@ -80,7 +80,13 @@ class Term
 
     public static function get_url($term_id)
     {
-        return Utils::parse_url(str_replace(WP_HOME, '', get_term_link($term_id)));
+        $term_link = get_term_link($term_id);
+        // get_term_link() returns a WP_Error for a missing/invalid term id;
+        // passing that to str_replace() is a fatal TypeError.
+        if (is_wp_error($term_link)) {
+            return null;
+        }
+        return Utils::parse_url(str_replace(WP_HOME, '', $term_link));
     }
 
     public static function get_seo_meta($term_data)
