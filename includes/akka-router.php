@@ -291,10 +291,10 @@ class Router
             return null;
         }
         $page_result = $wpdb->get_results(
-            sprintf(
+            $wpdb->prepare(
                 'SELECT ID, post_name, post_parent FROM ' .
                     $wpdb->prefix .
-                    "posts WHERE post_name = '%s' and post_parent > 0 and post_type = 'page'",
+                    "posts WHERE post_name = %s and post_parent > 0 and post_type = 'page'",
                 $permalink_parts[count($permalink_parts) - 1]
             )
         );
@@ -302,10 +302,10 @@ class Router
             return null;
         }
         $parent_result = $wpdb->get_results(
-            sprintf(
+            $wpdb->prepare(
                 'SELECT ID, post_name, post_parent FROM ' .
                     $wpdb->prefix .
-                    "posts WHERE post_name = '%s' and post_type = 'page'",
+                    "posts WHERE post_name = %s and post_type = 'page'",
                 $permalink_parts[count($permalink_parts) - 2]
             )
         );
