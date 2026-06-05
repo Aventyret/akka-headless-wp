@@ -310,7 +310,7 @@ class Post
                 'seo_description' => $description->getDescription($post),
             ];
             $aio_seo_meta = $wpdb->get_results(
-                sprintf(
+                $wpdb->prepare(
                     'SELECT title, description, canonical_url, og_title, og_description, og_image_url, og_image_width, og_image_height, twitter_title, twitter_description, robots_noindex, robots_nofollow FROM ' .
                         $wpdb->prefix .
                         'aioseo_posts WHERE post_id = %d',
