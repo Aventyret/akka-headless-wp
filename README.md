@@ -36,10 +36,21 @@ AKKA_CMS_MEDIA_BUCKET_HOSTNAME
 AKKA_CMS_MEDIA_BUCKET_PORT
 AKKA_CMS_MEDIA_BUCKET_PROTOCOL
 AKKA_CMS_URL_INTERNAL
-AKKA_FRONTEND_FLUSH_CACHE_KEY
+AKKA_DRAFT_COOKIE_SECRET
 AKKA_FRONTEND_URL
 AKKA_FRONTEND_URL_INTERNAL
+AKKA_WWW_PROXY_HEADER_NAME
+AKKA_WWW_PROXY_HEADER_SECRET
 ```
+
+`AKKA_WWW_PROXY_HEADER_NAME` and `AKKA_WWW_PROXY_HEADER_SECRET` are required from 3.0. All
+REST routes under `akka/v2/*` (except `/editor/block`, which requires `edit_posts`) reject
+requests that do not present the configured header + a matching secret. The same secret is
+used when the plugin posts cache-flush / editor-block requests back to the frontend.
+Use a comma-separated list in `AKKA_WWW_PROXY_HEADER_SECRET` for no-downtime rotation.
+
+`AKKA_DRAFT_COOKIE_SECRET` is required from 2.6. The `cms_signed_in` cookie value is HMAC-
+signed so the www-side middleware can validate it instead of trusting presence alone.
 
 ## Theme
 

@@ -483,10 +483,12 @@ class Utils
         if (wp_is_post_revision($post_id)) {
             return;
         }
+        $proxy_header = Router::outgoing_proxy_header();
+        if (!$proxy_header) {
+            return;
+        }
         $ok = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
-            ],
+            'headers' => $proxy_header,
         ]);
         do_action('akka_cache_flushed');
     }

@@ -3,21 +3,58 @@ namespace Akka;
 
 class Router
 {
-    public static function can_get_content()
+    public static function require_proxy_header($request)
     {
-        return true;
+        $name = (string) getenv('AKKA_WWW_PROXY_HEADER_NAME');
+        $secret = (string) getenv('AKKA_WWW_PROXY_HEADER_SECRET');
+
+        if ($name === '' || $secret === '') {
+            return false;
+        }
+
+        $provided = (string) $request->get_header($name);
+        if ($provided === '') {
+            return false;
+        }
+
+        foreach (explode(',', $secret) as $candidate) {
+            $candidate = trim($candidate);
+            if ($candidate === '') {
+                continue;
+            }
+            if (hash_equals($candidate, $provided)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function outgoing_proxy_header()
+    {
+        $name = (string) getenv('AKKA_WWW_PROXY_HEADER_NAME');
+        $secret = (string) getenv('AKKA_WWW_PROXY_HEADER_SECRET');
+
+        if ($name === '' || $secret === '') {
+            return null;
+        }
+
+        $first = trim(explode(',', $secret, 2)[0]);
+        if ($first === '') {
+            return null;
+        }
+
+        return [$name => $first];
+    }
+
+    public static function can_get_content($request = null)
+    {
+        return self::require_proxy_header($request);
     }
 
     public static function can_post_content($request)
     {
-        $provided_key = (string) $request->get_header('X-WP-API-Key');
-        $expected_key = (string) getenv('AKKA_CMS_API_KEY');
-
-        if ($expected_key === '') {
-            return false;
-        }
-
-        return hash_equals($expected_key, $provided_key);
+        return self::require_proxy_header($request);
     }
 
     public static function permalink_request($data)

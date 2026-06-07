@@ -192,11 +192,14 @@ class AkkaBlocks
             $props = self::get_block_props($post_id, $blockType, $attributes);
         }
         $props = array_merge($props, ['isEditor' => true]);
+        $proxy_header = Router::outgoing_proxy_header();
+        if (!$proxy_header) {
+            wp_die();
+        }
         $block_response = wp_remote_post(AKKA_FRONTEND_INTERNAL_BASE . '/api/editor/component', [
             'method' => 'POST',
             'timeout' => 10,
-            'headers' => [
-                'Authorization' => 'Bearer ' . AKKA_FRONTEND_FLUSH_CACHE_KEY,
+            'headers' => $proxy_header + [
                 'Content-Type' => 'application/json; charset=utf-8',
             ],
             'body' => json_encode([
