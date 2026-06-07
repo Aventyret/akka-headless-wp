@@ -427,8 +427,27 @@ class Utils
         if (!AKKA_CMS_COOKIE_PATH) {
             return;
         }
+        $secret = (string) getenv('AKKA_DRAFT_COOKIE_SECRET');
+        if ($secret === '') {
+            return;
+        }
         $user = wp_get_current_user();
-        setcookie(AKKA_CMS_COOKIE_NAME, '1', time() + 86400, '/', AKKA_CMS_COOKIE_PATH); // expire in a day
+        if (!$user || !$user->ID) {
+            return;
+        }
+        $exp = time() + 86400;
+        $payload = $user->ID . '.' . $exp;
+        $hmac = hash_hmac('sha256', $payload, $secret, true);
+        $sig = rtrim(strtr(base64_encode($hmac), '+/', '-_'), '=');
+        $value = $payload . '.' . $sig;
+        setcookie(AKKA_CMS_COOKIE_NAME, $value, [
+            'expires'  => $exp,
+            'path'     => '/',
+            'domain'   => AKKA_CMS_COOKIE_PATH,
+            'secure'   => is_ssl(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
     }
 
     public static function remove_cms_cookie()
@@ -436,7 +455,14 @@ class Utils
         if (!AKKA_CMS_COOKIE_PATH) {
             return;
         }
-        setcookie(AKKA_CMS_COOKIE_NAME, '', time() - 3600, '/', AKKA_CMS_COOKIE_PATH);
+        setcookie(AKKA_CMS_COOKIE_NAME, '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'domain'   => AKKA_CMS_COOKIE_PATH,
+            'secure'   => is_ssl(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
     }
 
     public static function flush_frontend_cache()

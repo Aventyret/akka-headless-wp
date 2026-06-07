@@ -10,13 +10,14 @@ class Router
 
     public static function can_post_content($request)
     {
-        // Get the key from the request header.
-        $provided_key = $request->get_header('X-WP-API-Key');
+        $provided_key = (string) $request->get_header('X-WP-API-Key');
+        $expected_key = (string) getenv('AKKA_CMS_API_KEY');
 
-        // Get the expected key from the environment variable.
-        $expected_key = getenv('AKKA_CMS_API_KEY');
+        if ($expected_key === '') {
+            return false;
+        }
 
-        return $provided_key === $expected_key;
+        return hash_equals($expected_key, $provided_key);
     }
 
     public static function permalink_request($data)
@@ -329,7 +330,11 @@ class Router
             switch_to_blog($blog_id);
         }
 
-        $p = Post::get_single($post_id, ['publish', 'draft', 'private', 'pending', 'future'], $get_autosaved);
+        $statuses = current_user_can('edit_posts')
+            ? ['publish', 'draft', 'private', 'pending', 'future']
+            : ['publish'];
+
+        $p = Post::get_single($post_id, $statuses, $get_autosaved);
 
         if (!$p) {
             return new \WP_REST_Response(['message' => 'Post not found'], 404);
