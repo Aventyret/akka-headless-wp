@@ -52,6 +52,12 @@ Use a comma-separated list in `AKKA_WWW_PROXY_HEADER_SECRET` for no-downtime rot
 `AKKA_DRAFT_COOKIE_SECRET` is required from 2.6. The `cms_signed_in` cookie value is HMAC-
 signed so the www-side middleware can validate it instead of trusting presence alone.
 
+From 3.0.1 the plugin boot-validates its required env on `plugins_loaded` and renders an
+admin notice (and `error_log` entry) listing any missing or placeholder values. A
+placeholder is a value that equals its variable name — catches the case where a template
+line like `AKKA_X='AKKA_X'` was copied without being filled in. The canonical reference
+for the full env contract lives in `@aventyret/akka-headless-wp/.env.example`.
+
 ## Theme
 
 Use the [Akka Bas theme](https://github.com/Aventyret/akka-bas-theme) as a boilerplate for your projects theme.
