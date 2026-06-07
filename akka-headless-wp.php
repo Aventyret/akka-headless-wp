@@ -29,7 +29,7 @@ define('AKKA_FRONTEND_BASE', getenv('AKKA_FRONTEND_URL') ? getenv('AKKA_FRONTEND
 define('AKKA_FRONTEND_INTERNAL_BASE', getenv('AKKA_FRONTEND_URL_INTERNAL') ? getenv('AKKA_FRONTEND_URL_INTERNAL') : AKKA_FRONTEND_BASE);
 define('AKKA_CMS_INTERNAL_BASE', getenv('AKKA_CMS_URL_INTERNAL') ? getenv('AKKA_CMS_URL_INTERNAL') : WP_HOME);
 define('AKKA_CMS_MEDIA_BUCKET_BASE', getenv('AKKA_CMS_MEDIA_BUCKET_URL'));
-define('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT', getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') :  '/api/cache');
+define('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT', getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') ? getenv('AKKA_FRONTEND_FLUSH_CACHE_ENDPOINT') :  '/api/services/headless-wp/cache/flush');
 
 if(!class_exists('\PhilipNewcomer\ACF_Unique_ID_Field\ACF_Field_Unique_ID')) {
     require_once(AKKA_HEADLESS_WP_DIR . 'vendor/philipnewcomer/acf-unique-id-field/src/ACF_Field_Unique_ID.php');
