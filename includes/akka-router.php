@@ -52,6 +52,27 @@ class Router
         return self::require_proxy_header($request);
     }
 
+    /**
+     * Grant read access when EITHER the internal proxy header is valid
+     * (www -> cms server-to-server) OR the request comes from a logged-in
+     * editor, proven by the HMAC-signed `cms_signed_in` cookie.
+     *
+     * The cookie check is used instead of current_user_can(), because for a
+     * plain browser navigation (e.g. the AdminBar debug link) WordPress' REST
+     * nonce guard resets the current user to 0 when no X-WP-Nonce is present,
+     * so current_user_can() would always be false. Utils::verify_cms_signed_in()
+     * validates the signed cookie independently and yields the user id, which
+     * user_can() then checks without relying on the (reset) current user.
+     */
+    public static function require_proxy_header_or_editor($request)
+    {
+        if (self::require_proxy_header($request)) {
+            return true;
+        }
+        $user_id = \Akka\Utils::verify_cms_signed_in();
+        return $user_id > 0 && user_can($user_id, 'edit_posts');
+    }
+
     public static function can_post_content($request)
     {
         return self::require_proxy_header($request);

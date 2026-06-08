@@ -450,6 +450,55 @@ class Utils
         ]);
     }
 
+    /**
+     * Verify the HMAC-signed `cms_signed_in` cookie and return the WP user id
+     * it was issued for, or 0 if missing/expired/invalid.
+     *
+     * This is the PHP counterpart to the www draft middleware. It validates
+     * the cookie independently of WordPress' REST nonce machinery, so it works
+     * for a plain browser navigation (where no X-WP-Nonce can be sent).
+     *
+     * @return int
+     */
+    public static function verify_cms_signed_in()
+    {
+        $name = AKKA_CMS_COOKIE_NAME;
+        if (empty($_COOKIE[$name])) {
+            return 0;
+        }
+        $secret = (string) getenv('AKKA_DRAFT_COOKIE_SECRET');
+        if ($secret === '') {
+            return 0;
+        }
+        $parts = explode('.', (string) $_COOKIE[$name]);
+        if (count($parts) !== 3) {
+            return 0;
+        }
+        list($user_id, $exp, $sig) = $parts;
+        if (!ctype_digit($user_id) || !ctype_digit($exp)) {
+            return 0;
+        }
+        if (time() > (int) $exp) {
+            return 0;
+        }
+        $expected = hash_hmac('sha256', $user_id . '.' . $exp, $secret, true);
+        $provided = self::base64url_decode($sig);
+        if ($provided === false || !hash_equals($expected, $provided)) {
+            return 0;
+        }
+        return (int) $user_id;
+    }
+
+    private static function base64url_decode($value)
+    {
+        $value = strtr($value, '-_', '+/');
+        $pad = strlen($value) % 4;
+        if ($pad) {
+            $value .= str_repeat('=', 4 - $pad);
+        }
+        return base64_decode($value, true);
+    }
+
     public static function remove_cms_cookie()
     {
         if (!AKKA_CMS_COOKIE_PATH) {
