@@ -32,11 +32,11 @@ These environment variables are used by the plugin:
 ```
 AKKA_CMS_COOKIE_NAME
 AKKA_CMS_COOKIE_PATH
+AKKA_CMS_COOKIE_SECRET
 AKKA_CMS_MEDIA_BUCKET_HOSTNAME
 AKKA_CMS_MEDIA_BUCKET_PORT
 AKKA_CMS_MEDIA_BUCKET_PROTOCOL
 AKKA_CMS_URL_INTERNAL
-AKKA_DRAFT_COOKIE_SECRET
 AKKA_FRONTEND_URL
 AKKA_FRONTEND_URL_INTERNAL
 AKKA_WWW_PROXY_HEADER_NAME
@@ -49,8 +49,11 @@ requests that do not present the configured header + a matching secret. The same
 used when the plugin posts cache-flush / editor-block requests back to the frontend.
 Use a comma-separated list in `AKKA_WWW_PROXY_HEADER_SECRET` for no-downtime rotation.
 
-`AKKA_DRAFT_COOKIE_SECRET` is required from 2.6. The `cms_signed_in` cookie value is HMAC-
-signed so the www-side middleware can validate it instead of trusting presence alone.
+`AKKA_CMS_COOKIE_SECRET` is required. The `cms_signed_in` cookie value is HMAC-signed so
+the www-side middleware can validate it instead of trusting presence alone. This secret was
+named `AKKA_DRAFT_COOKIE_SECRET` up to 3.1 — that name is still accepted as a fallback, so
+existing deployments keep working, but `AKKA_CMS_COOKIE_SECRET` takes precedence when both
+are set.
 
 From 3.0.1 the plugin boot-validates its required env on `plugins_loaded` and renders an
 admin notice (and `error_log` entry) listing any missing or placeholder values. A

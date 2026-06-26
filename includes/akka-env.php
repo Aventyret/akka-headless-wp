@@ -33,6 +33,22 @@ class Env
     }
 
     /**
+     * Resolve the cookie-signing secret. The canonical env var is
+     * AKKA_CMS_COOKIE_SECRET; AKKA_DRAFT_COOKIE_SECRET is still accepted
+     * for backwards compatibility (it was the original name up to 3.1).
+     *
+     * @return string Empty string when neither is set.
+     */
+    public static function cookie_secret(): string
+    {
+        $secret = getenv('AKKA_CMS_COOKIE_SECRET');
+        if ($secret === false || $secret === '') {
+            $secret = getenv('AKKA_DRAFT_COOKIE_SECRET');
+        }
+        return (string) $secret;
+    }
+
+    /**
      * Boot-time validator. Runs the required-env check and surfaces
      * failures as an admin notice. Does NOT block plugin load — that
      * would lock the user out of the admin where they need to fix it.
@@ -42,11 +58,15 @@ class Env
         $errors = self::require_env([
             'AKKA_WWW_PROXY_HEADER_NAME',
             'AKKA_WWW_PROXY_HEADER_SECRET',
-            'AKKA_DRAFT_COOKIE_SECRET',
             'AKKA_FRONTEND_URL',
             'AKKA_FRONTEND_URL_INTERNAL',
             'AKKA_CMS_COOKIE_PATH',
         ]);
+        // AKKA_CMS_COOKIE_SECRET is the canonical name; AKKA_DRAFT_COOKIE_SECRET
+        // is still accepted as a fallback. Require that at least one is set.
+        if (self::cookie_secret() === '') {
+            $errors[] = 'AKKA_CMS_COOKIE_SECRET: required, but not set';
+        }
         if (empty($errors)) {
             return;
         }

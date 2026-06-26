@@ -427,7 +427,7 @@ class Utils
         if (!AKKA_CMS_COOKIE_PATH) {
             return;
         }
-        $secret = (string) getenv('AKKA_DRAFT_COOKIE_SECRET');
+        $secret = \Akka\Env::cookie_secret();
         if ($secret === '') {
             return;
         }
@@ -466,7 +466,7 @@ class Utils
         if (empty($_COOKIE[$name])) {
             return 0;
         }
-        $secret = (string) getenv('AKKA_DRAFT_COOKIE_SECRET');
+        $secret = \Akka\Env::cookie_secret();
         if ($secret === '') {
             return 0;
         }
