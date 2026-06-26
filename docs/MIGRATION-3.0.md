@@ -45,6 +45,11 @@ openssl rand -base64 32
 | `AKKA_DRAFT_COOKIE_SECRET` | HMAC for `cms_signed_in` cookie | cms and www |
 | (optional) `AKKA_SESSION_ID_SALT`, `AKKA_SHARE_ID_SALT` | session/share-id hashing | www only — rotate if currently placeholders |
 
+> **Renamed in 3.2:** the cms-side cookie secret is now read from `AKKA_CMS_COOKIE_SECRET`.
+> `AKKA_DRAFT_COOKIE_SECRET` is still accepted as a fallback, so you can migrate without
+> downtime — keep the value identical between cms and www regardless of which name you use.
+> New deployments should set `AKKA_CMS_COOKIE_SECRET`.
+
 Store all in 1Password under the site's vault. Record the `op://...` references.
 
 The proxy header secret supports comma-separated rotation later: `AKKA_WWW_PROXY_HEADER_SECRET="new,old"`. Both are accepted; remove the old value after a deploy cycle.
