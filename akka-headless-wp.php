@@ -23,6 +23,9 @@ define('AKKA_HEADLESS_WP_URL', plugin_dir_url( __FILE__ ));
 define('AKKA_HEADLESS_WP_VER', "3.2.1");
 define('AKKA_API_BASE', "akka/v2");
 define('AKKA_LANG', getenv('AKKA_LANG') ? getenv('AKKA_LANG') : "en");
+// OBS: trots namnet `_PATH` håller denna cookie-DOMÄNEN (setcookie 'domain'),
+// inte en cookie-path. Den sätter scopet så att `cms_signed_in` delas mellan
+// cms- och www-subdomänerna. Namnet behålls för bakåtkompatibilitet med sajternas env.
 define('AKKA_CMS_COOKIE_PATH', getenv('AKKA_CMS_COOKIE_PATH') ? getenv('AKKA_CMS_COOKIE_PATH') : NULL);
 define('AKKA_CMS_COOKIE_NAME', getenv('AKKA_CMS_COOKIE_NAME') ? getenv('AKKA_CMS_COOKIE_NAME') : "cms_signed_in");
 define('AKKA_FRONTEND_BASE', getenv('AKKA_FRONTEND_URL') ?: null);
