@@ -388,7 +388,12 @@ class Router
             switch_to_blog($blog_id);
         }
 
-        $statuses = current_user_can('edit_posts')
+        // Use the same trust check as the route's permission_callback, not
+        // current_user_can(): the www -> cms content fetch is authenticated by
+        // the internal proxy header (no WP login session), so current_user_can()
+        // is always false there and drafts would 404 on preview. See
+        // require_proxy_header_or_editor().
+        $statuses = self::require_proxy_header_or_editor($data)
             ? ['publish', 'draft', 'private', 'pending', 'future']
             : ['publish'];
 
