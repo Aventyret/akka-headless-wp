@@ -44,7 +44,7 @@ class AkkaBlocks
 
         add_action('init', function () use ($block_type, $args) {
             register_block_type($block_type, [
-                'api_version' => 2,
+                'api_version' => 3,
                 'editor_script' => 'editor',
                 'render_callback' => function ($block_attributes, $block_content) use ($block_type, $args) {
                     $props = self::get_block_props(get_the_ID(), $block_type, $block_attributes, $block_content);

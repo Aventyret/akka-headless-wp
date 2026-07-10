@@ -23,7 +23,7 @@ add_action('wp_login', 'Akka\Utils::set_cms_cookie');
 
 add_action('wp_logout', 'Akka\Utils::remove_cms_cookie');
 
-add_action('enqueue_block_editor_assets', 'Akka\Utils::enqueue_frontend_styles');
+add_action('enqueue_block_assets', 'Akka\Utils::enqueue_frontend_styles');
 
 add_action('enqueue_block_editor_assets', 'Akka\Utils::enqueue_editor_assets');
 
