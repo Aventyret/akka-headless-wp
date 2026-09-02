@@ -17,6 +17,16 @@ class Blocks
                 '
       </div>';
         }
+		if ($block['blockName'] == 'core/video') {
+            $parsed_block =
+                '
+      <div class="wp-video-responsive">
+	  <div class="wp-video-wrapper">
+        ' .
+                $parsed_block .
+                '
+      </div></div>';
+        }
         return $parsed_block;
     }
 
