@@ -94,7 +94,7 @@ class Blocks
     {
         $heading_blocks = [];
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $content);
 
         foreach ($dom->getElementsByTagName('h2') as $h2) {
