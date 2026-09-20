@@ -82,6 +82,18 @@ class Utils
         $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
         $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
+        // Relativa länkar som redaktören skrivit för hand ("/kontakt/") passerar
+        // WP_HOME-reglerna ovan omärkta, men är interna likafullt. Utan märkning får de
+        // varken Next-routing eller språkprefix i frontend. Uploads görs absoluta först,
+        // så de inte märks som sidlänkar. Lookbehind hindrar dubbelmärkning av de
+        // länkar raderna ovan redan tagit hand om; (?!/) lämnar protokollrelativa.
+        $content = str_replace('href="/wp-content/uploads/', 'href="' . WP_HOME . '/app/uploads/', $content);
+        $content = preg_replace(
+            '~(?<!data-internal-link="true" )href="/(?!/)~',
+            'data-internal-link="true" href="/',
+            $content
+        );
+
         return apply_filters('akka_post_replace_hrefs', $content);
     }
 
