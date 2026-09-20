@@ -82,6 +82,13 @@ class Utils
         $content = str_replace('data-internal-link="true" href="/app/', 'href="' . WP_HOME . '/app/', $content);
         $content = str_replace('href="/app/', 'href="' . WP_HOME . '/app/', $content);
 
+        // Hand-written relative links are internal too.
+        $content = preg_replace(
+            '~(?<!data-internal-link="true" )href="/(?!/)~',
+            'data-internal-link="true" href="/',
+            $content
+        );
+
         return apply_filters('akka_post_replace_hrefs', $content);
     }
 
