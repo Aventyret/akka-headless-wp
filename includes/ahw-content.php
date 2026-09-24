@@ -643,6 +643,9 @@ class Akka_headless_wp_content
             }
         }
 
+        // Add ?page= param to get unique canonical_url:s for archive pages
+        $post_type_data = self::add_page_to_canonical_url($post_type_data, $page);
+
         return apply_filters('ahw_post_type_data', $post_type_data);
     }
 
@@ -695,6 +698,7 @@ class Akka_headless_wp_content
         $pages = 1;
         $posts = [];
         $next_page = null;
+        $page = Utils::getQueryParam('page', 1);
 
         if (!empty($post_types)) {
             $query_args = [
@@ -713,7 +717,6 @@ class Akka_headless_wp_content
                 ];
             }
 
-            $page = Utils::getQueryParam('page', 1);
             $query = self::get_posts_query($query_args, [
                 'page' => $page,
             ]);
@@ -747,7 +750,22 @@ class Akka_headless_wp_content
 
         $taxonomy_term_data['seo_meta'] = self::get_term_seo_meta($taxonomy_term_data);
 
+        // Add ?page= param to get unique canonical_url:s for archive pages
+        $taxonomy_term_data = self::add_page_to_canonical_url($taxonomy_term_data, $page);
+
         return apply_filters('ahw_taxonomy_term_data', $taxonomy_term_data, $archive_taxonomy_term);
+    }
+
+    private static function add_page_to_canonical_url($data, $page)
+    {
+        $page = (int) $page;
+        if ($page <= 1 || empty($data['seo_meta']['canonical_url'])) {
+            return $data;
+        }
+        $canonical_url = $data['seo_meta']['canonical_url'];
+        $data['seo_meta']['canonical_url'] =
+            $canonical_url . (strpos($canonical_url, '?') === false ? '?' : '&') . 'page=' . $page;
+        return $data;
     }
 
     private static function get_post_data_terms($post)
