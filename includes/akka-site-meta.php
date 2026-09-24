@@ -62,20 +62,26 @@ class SiteMeta
         return apply_filters('akka_site_meta', $site_meta);
     }
 
-    private static function menu_items($all_menu_items, $parent_item_id = 0) {
-        return array_map(function($menu_item) use($all_menu_items) {
-            return [
-                'id' => $menu_item->ID,
-                'parent_id' => $menu_item->menu_item_parent ? $menu_item->menu_item_parent : null,
-                'url' => Utils::parse_url($menu_item->url),
-                'title' => $menu_item->title,
-                'description' => $menu_item->description,
-                'target' => $menu_item->target,
-                'children' => self::menu_items($all_menu_items, $menu_item->ID),
-            ];
-        }, array_values(array_filter($all_menu_items, function ($menu_item) use($parent_item_id) {
-            return $menu_item->menu_item_parent == $parent_item_id;
-        })));
+    private static function menu_items($all_menu_items, $parent_item_id = 0)
+    {
+        return array_map(
+            function ($menu_item) use ($all_menu_items) {
+                return [
+                    'id' => $menu_item->ID,
+                    'parent_id' => $menu_item->menu_item_parent ? $menu_item->menu_item_parent : null,
+                    'url' => Utils::parse_url($menu_item->url),
+                    'title' => $menu_item->title,
+                    'description' => $menu_item->description,
+                    'target' => $menu_item->target,
+                    'children' => self::menu_items($all_menu_items, $menu_item->ID),
+                ];
+            },
+            array_values(
+                array_filter($all_menu_items, function ($menu_item) use ($parent_item_id) {
+                    return $menu_item->menu_item_parent == $parent_item_id;
+                })
+            )
+        );
         return $menu_items;
     }
 
