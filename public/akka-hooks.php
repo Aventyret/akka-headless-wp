@@ -30,3 +30,5 @@ add_action('enqueue_block_editor_assets', 'Akka\Utils::enqueue_editor_assets');
 add_action('save_post', 'Akka\Utils::flush_frontend_cache');
 
 add_action('acf/save_post', 'Akka\Utils::flush_frontend_cache');
+
+add_filter('update_post_metadata', 'Akka\Post::check_post_metadata', 10, 5);

@@ -441,10 +441,10 @@ class Utils
         $sig = rtrim(strtr(base64_encode($hmac), '+/', '-_'), '=');
         $value = $payload . '.' . $sig;
         setcookie(AKKA_CMS_COOKIE_NAME, $value, [
-            'expires'  => $exp,
-            'path'     => '/',
-            'domain'   => AKKA_CMS_COOKIE_PATH,
-            'secure'   => is_ssl(),
+            'expires' => $exp,
+            'path' => '/',
+            'domain' => AKKA_CMS_COOKIE_PATH,
+            'secure' => is_ssl(),
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -505,10 +505,10 @@ class Utils
             return;
         }
         setcookie(AKKA_CMS_COOKIE_NAME, '', [
-            'expires'  => time() - 3600,
-            'path'     => '/',
-            'domain'   => AKKA_CMS_COOKIE_PATH,
-            'secure'   => is_ssl(),
+            'expires' => time() - 3600,
+            'path' => '/',
+            'domain' => AKKA_CMS_COOKIE_PATH,
+            'secure' => is_ssl(),
             'httponly' => true,
             'samesite' => 'Lax',
         ]);

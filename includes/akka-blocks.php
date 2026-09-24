@@ -17,7 +17,7 @@ class Blocks
                 '
       </div>';
         }
-		if ($block['blockName'] == 'core/video') {
+        if ($block['blockName'] == 'core/video') {
             $parsed_block =
                 '
       <div class="wp-video-responsive">

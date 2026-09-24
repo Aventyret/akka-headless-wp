@@ -426,4 +426,19 @@ class Post
         }
         return apply_filters('akka_post_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
     }
+
+    public static function check_post_metadata($check, $object_id, $meta_key, $meta_value, $prev_value)
+    {
+        if ($meta_key === '_yoast_wpseo_canonical' && !empty($meta_value)) {
+            $post_url = self::get_url($object_id);
+            $canonical_url = wp_parse_url($meta_value, PHP_URL_PATH);
+            // We want to prevent saving a posts frontend path as canonical since this will remove it from xml sitemaps
+            if (rtrim($post_url, '/') === rtrim($canonical_url, '/')) {
+                // Delete cannonical post meta if it was set to the frontend url of the post
+                delete_post_meta($object_id, '_yoast_wpseo_canonical');
+                return true;
+            }
+        }
+        return $check;
+    }
 }
