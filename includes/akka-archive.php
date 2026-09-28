@@ -110,6 +110,7 @@ class Archive
         ];
 
         $taxonomy_term_archive['seo_meta'] = Term::get_seo_meta($taxonomy_term_archive);
+        $taxonomy_term_archive = self::add_page_to_canonical_url($taxonomy_term_archive, $page);
 
         $taxonomy_term_archive = apply_filters(
             'akka_taxonomy_term_' . $archive_taxonomy->name . '_archive',
@@ -240,5 +241,16 @@ class Archive
             'pages' => $query->max_num_pages,
             'posts' => $posts,
         ];
+    }
+
+    private static function add_page_to_canonical_url($archive, $page)
+    {
+        $page = (int) $page;
+        if ($page <= 1 || empty($archive['seo_meta']['canonical_url'])) {
+            return $archive;
+        }
+        $archive['seo_meta']['canonical_url'] =
+            $archive['seo_meta']['canonical_url'] . (strpos($archive['seo_meta']['canonical_url'], '?') === false ? '?' : '&') . 'page=' . $page;
+        return $archive;
     }
 }
