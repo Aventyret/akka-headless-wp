@@ -264,7 +264,10 @@ class Archive
             return $archive;
         }
         $archive['seo_meta']['canonical_url'] =
-            $archive['seo_meta']['canonical_url'] . (strpos($archive['seo_meta']['canonical_url'], '?') === false ? '?' : '&') . 'page=' . $page;
+            $archive['seo_meta']['canonical_url'] .
+            (strpos($archive['seo_meta']['canonical_url'], '?') === false ? '?' : '&') .
+            'page=' .
+            $page;
         return $archive;
     }
 }
