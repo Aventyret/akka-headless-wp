@@ -656,7 +656,7 @@ class Akka_headless_wp_content
         $seo_meta = [
             'seo_title' => $archive_post_type['post_title'],
             'og_title' => $archive_post_type['post_title'],
-            'canonical_url' => $archive_post_type['url'],
+            'canonical_url' => AKKA_FRONTEND_BASE . $archive_post_type['url'],
         ];
         return $seo_meta;
     }
