@@ -35,6 +35,8 @@ class Archive
                     : null,
         ];
 
+        $post_type_archive['seo_meta'] = self::get_post_type_archive_seo_meta($post_type_archive);
+
         if ($archive_post_type == 'post') {
             $post_page = get_option('page_for_posts');
             if ($post_page) {
@@ -44,6 +46,8 @@ class Archive
                 ]);
             }
         }
+
+        $post_type_archive = self::add_page_to_canonical_url($post_type_archive, $page);
 
         $post_type_archive = apply_filters('akka_post_type_' . $archive_post_type . '_archive', $post_type_archive);
         return apply_filters('akka_post_type_archive', $post_type_archive);
@@ -241,6 +245,16 @@ class Archive
             'pages' => $query->max_num_pages,
             'posts' => $posts,
         ];
+    }
+
+    private static function get_post_type_archive_seo_meta($archive)
+    {
+        $seo_meta = [
+            'seo_title' => $archive['post_title'],
+            'og_title' => $archive['post_title'],
+            'canonical_url' => AKKA_FRONTEND_BASE . $archive['url'],
+        ];
+        return $seo_meta;
     }
 
     private static function add_page_to_canonical_url($archive, $page)
