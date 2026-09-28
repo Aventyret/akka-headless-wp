@@ -636,6 +636,8 @@ class Akka_headless_wp_content
                     : null,
         ];
 
+        $post_type_data['seo_meta'] = self::get_post_type_seo_meta($post_type_data);
+
         if ($archive_post_type == 'post') {
             $post_page = get_option('page_for_posts');
             if ($post_page) {
@@ -647,6 +649,16 @@ class Akka_headless_wp_content
         $post_type_data = self::add_page_to_canonical_url($post_type_data, $page);
 
         return apply_filters('ahw_post_type_data', $post_type_data);
+    }
+
+    private static function get_post_type_seo_meta($archive_post_type)
+    {
+        $seo_meta = [
+            'seo_title' => $archive_post_type['post_title'],
+            'og_title' => $archive_post_type['post_title'],
+            'canonical_url' => $archive_post_type['url'],
+        ];
+        return $seo_meta;
     }
 
     private static function archive_query($post_type, $page = 1)
