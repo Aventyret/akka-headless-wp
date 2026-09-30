@@ -225,12 +225,21 @@ class Post
                 'og_description' => '_open_graph_description',
                 'twitter_title' => '_twitter_title',
                 'twitter_description' => '_twitter_description',
+                'canonical_url' => '_genesis_canonical_uri',
             ];
             foreach ($seo_fields as $seo_attr => $meta_key) {
                 $meta_value = get_post_meta($post->ID, $meta_key, true);
                 if ($meta_value) {
                     $seo_meta[$seo_attr] = $meta_value;
                 }
+            }
+            $noindex = get_post_meta($post->ID, '_genesis_noindex', true);
+            $nofollow = get_post_meta($post->ID, '_genesis_nofollow', true);
+            if ($noindex || $nofollow) {
+                $seo_meta['robots'] = [
+                    'index' => $noindex ? false : true,
+                    'follow' => $nofollow ? false : true,
+                ];
             }
         }
         if (is_plugin_active('wordpress-seo/wp-seo.php')) {
@@ -382,6 +391,23 @@ class Post
             $post_thumbnail_id
         ) {
             $seo_meta['seo_image_id'] = $post_thumbnail_id;
+        }
+        if (function_exists('the_seo_framework')) {
+            // SEO framework plugin defaults
+            $plugin_settings = get_option('autodescription-site-settings');
+            if (
+                !Resolvers::resolve_field($seo_fields, 'seo_image_id') &&
+                Resolvers::resolve_field($plugin_settings, 'social_image_fb_id')
+            ) {
+                $seo_fields['seo_image_id'] = $plugin_settings['social_image_fb_id'];
+            }
+            if (
+                Resolvers::resolve_field($plugin_settings, 'homepage_title') &&
+                !get_post_meta($post->ID, '_tsf_title_no_blogname')
+            ) {
+                $separator = $plugin_settings['title_separator'] == 'pipe' ? ' | ' : ' - ';
+                $seo_meta['seo_title'] .= $separator . $plugin_settings['homepage_title'];
+            }
         }
         if (isset($seo_meta['seo_image_id'])) {
             $image_src = Utils::get_attachment_image_src($seo_meta['seo_image_id'], 'large');
