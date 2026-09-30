@@ -225,12 +225,21 @@ class Post
                 'og_description' => '_open_graph_description',
                 'twitter_title' => '_twitter_title',
                 'twitter_description' => '_twitter_description',
+                'canonical_url' => '_genesis_canonical_uri',
             ];
             foreach ($seo_fields as $seo_attr => $meta_key) {
                 $meta_value = get_post_meta($post->ID, $meta_key, true);
                 if ($meta_value) {
                     $seo_meta[$seo_attr] = $meta_value;
                 }
+            }
+            $noindex = get_post_meta($post->ID, '_genesis_noindex', true);
+            $nofollow = get_post_meta($post->ID, '_genesis_nofollow', true);
+            if ($noindex || $nofollow) {
+                $seo_meta['robots'] = [
+                    'index' => $noindex ? false : true,
+                    'follow' => $nofollow ? false : true,
+                ];
             }
         }
         if (is_plugin_active('wordpress-seo/wp-seo.php')) {
