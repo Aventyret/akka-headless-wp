@@ -410,6 +410,27 @@ Filters the array key used for primary term lookup.
 
 ## Routing Filters
 
+### akka_router_pre_content_from_permalink
+
+Filters permalink requests, use for early exceptions to bypass Akkas default router
+
+```php
+add_filter(
+  'akka_post_pre_redirect_post_id',
+  function ($permalink_response, $permalink) {
+    if ($permalink == 'example')
+      return [
+        'post_type' => 'redirect',
+        'redirect' => 'https://example.com'
+      ];
+    }
+    return $permalink_response;
+  },
+  10,
+  2
+);
+```
+
 ### akka_post_pre_redirect_post_id
 
 Filters the post ID before checking for redirects.

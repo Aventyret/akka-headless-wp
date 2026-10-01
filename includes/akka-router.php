@@ -137,6 +137,11 @@ class Router
 
     private static function get_content_from_permalink($permalink)
     {
+        $permalink_response = apply_filters('akka_router_pre_content_from_permalink', null, $permalink);
+        if ($permalink_response) {
+            return $permalink_response;
+        }
+
         // Check if multisite and remove sub site prefix from permalink
         if (is_multisite() && (strlen($permalink) == 2 || strpos($permalink, '/') == 2)) {
             $lang_in_permalink = substr($permalink, 0, 2);
