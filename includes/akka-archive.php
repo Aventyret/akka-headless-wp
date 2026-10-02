@@ -148,6 +148,8 @@ class Archive
             return Search::get_relevanssi_query($query_args);
         }
 
+        $query_args = apply_filters('akka_get_posts_args', $query_args);
+
         $query = new \WP_Query($query_args);
 
         // For relevanssi: recalculate max_num_pages if there is an offset
