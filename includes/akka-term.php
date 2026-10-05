@@ -128,6 +128,20 @@ class Term
             $seo_meta['seo_description'] = term_description($term_data['term_id']);
             $specific_seo_description_is_defined = true;
         }
+        if (function_exists('the_seo_framework')) {
+            // SEO framework plugin defaults
+            $plugin_settings = tsf()->get_options();
+            if (
+                !Resolvers::resolve_field($seo_meta, 'seo_image_id') &&
+                Resolvers::resolve_field($plugin_settings, 'social_image_fb_id')
+            ) {
+                $seo_meta['seo_image_id'] = $plugin_settings['social_image_fb_id'];
+            }
+            if (Resolvers::resolve_field($plugin_settings, 'homepage_title')) {
+                $separator = $plugin_settings['title_separator'] == 'pipe' ? ' | ' : ' - ';
+                $seo_meta['seo_title'] .= $separator . $plugin_settings['homepage_title'];
+            }
+        }
         if (isset($seo_meta['seo_image_id'])) {
             $image_src = Utils::get_attachment_image_src($seo_meta['seo_image_id'], 'large');
             $seo_meta['seo_image_url'] = $image_src[0];

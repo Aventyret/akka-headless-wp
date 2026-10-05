@@ -394,7 +394,7 @@ class Post
         }
         if (function_exists('the_seo_framework')) {
             // SEO framework plugin defaults
-            $plugin_settings = get_option('autodescription-site-settings');
+            $plugin_settings = tsf()->get_options();
             if (
                 !Resolvers::resolve_field($seo_meta, 'seo_image_id') &&
                 Resolvers::resolve_field($plugin_settings, 'social_image_fb_id')
