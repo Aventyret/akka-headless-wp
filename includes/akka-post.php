@@ -396,10 +396,10 @@ class Post
             // SEO framework plugin defaults
             $plugin_settings = get_option('autodescription-site-settings');
             if (
-                !Resolvers::resolve_field($seo_fields, 'seo_image_id') &&
+                !Resolvers::resolve_field($seo_meta, 'seo_image_id') &&
                 Resolvers::resolve_field($plugin_settings, 'social_image_fb_id')
             ) {
-                $seo_fields['seo_image_id'] = $plugin_settings['social_image_fb_id'];
+                $seo_meta['seo_image_id'] = $plugin_settings['social_image_fb_id'];
             }
             if (
                 Resolvers::resolve_field($plugin_settings, 'homepage_title') &&
