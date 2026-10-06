@@ -98,7 +98,7 @@ class Router
         $post_tag = Utils::get_query_param('post_tag', null);
         $per_page = Utils::get_query_param('per_page', -1);
         $offset = Utils::get_query_param('offset', 0);
-        $page = Utils::get_query_param('page', 1);
+        $page = Utils::get_page_query_param();
 
         return Archive::get_post_archive($post_types, $category, $post_tag, $per_page, $offset, $page);
     }
@@ -108,7 +108,7 @@ class Router
         $post_types = explode(',', Utils::get_query_param('post_type', 'post,podcast,note'));
         $per_page = Utils::get_query_param('per_page', 50);
         $offset = Utils::get_query_param('offset', 0);
-        $page = Utils::get_query_param('page', 1);
+        $page = Utils::get_page_query_param();
 
         return Archive::get_posts_feed($post_types, $per_page, $offset, $page);
     }
@@ -130,7 +130,7 @@ class Router
         }
         $taxonomy = Utils::get_route_param($data, 'taxonomy', 'post_tag');
         $offset = Utils::get_query_param('offset', 0);
-        $page = Utils::get_query_param('page', 1);
+        $page = Utils::get_page_query_param();
 
         return Search::search($query, $post_type, $category_slugs, $term_slugs, $taxonomy, $offset, $page);
     }
@@ -311,7 +311,7 @@ class Router
             return null;
         }
 
-        $page = Utils::get_query_param('page', 1);
+        $page = Utils::get_page_query_param();
 
         return Archive::get_post_type_archive($archive_post_type, $page);
     }
@@ -341,7 +341,7 @@ class Router
             return null;
         }
 
-        $page = Utils::get_query_param('page', 1);
+        $page = Utils::get_page_query_param();
         $year = Utils::get_query_param('year', null);
 
         return Archive::get_taxonomy_term_archive($archive_taxonomy, $archive_taxonomy_term, $page);

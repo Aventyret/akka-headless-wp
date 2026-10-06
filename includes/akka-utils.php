@@ -18,6 +18,12 @@ class Utils
         return isset($_GET[$param]) ? $_GET[$param] : $default;
     }
 
+    public static function get_page_query_param()
+    {
+        //Force page param to be number greater than 0. Non valid values get casted to 1
+        return max(1, (int) self::get_query_param('page', 1));
+    }
+
     public static function string_to_route($string)
     {
         return str_replace(

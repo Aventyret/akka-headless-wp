@@ -12,6 +12,11 @@ class Archive
     {
         $query = self::archive_query($archive_post_type, $page);
 
+        // NOTE: Pages beyond the last one do not exist (same as native WordPress paged archives)
+        if ((int) $page > 1 && empty($query->posts)) {
+            return null;
+        }
+
         $posts = Post::posts_to_blurbs($query->posts);
 
         $post_type_object = get_post_type_object($archive_post_type);
@@ -93,6 +98,11 @@ class Archive
                 $query->max_num_pages > $page + 1
                     ? Term::get_url($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
                     : null;
+        }
+
+        // NOTE: Pages beyond the last one do not exist (same as native WordPress paged archives)
+        if ((int) $page > 1 && empty($posts)) {
+            return null;
         }
 
         $taxonomy_term_archive = [
