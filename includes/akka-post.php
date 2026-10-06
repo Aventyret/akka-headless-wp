@@ -91,7 +91,7 @@ class Post
             $akka_post['post_type'] == 'page' &&
             Archive::get_post_type_archive_permalink('post') == $akka_post['slug']
         ) {
-            $page = Utils::get_query_param('page', 1);
+            $page = Utils::get_page_query_param();
             $archive_query = Archive::archive_query('post', $page);
             $akka_post['archive'] = [
                 'count' => $archive_query->found_posts,
