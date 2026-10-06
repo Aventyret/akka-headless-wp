@@ -346,7 +346,7 @@ class Akka_headless_wp_content
 
         $query_args = apply_filters('ahw_get_posts_args', $query_args);
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::getPageQueryParam();
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -383,7 +383,7 @@ class Akka_headless_wp_content
 
         $query_args = apply_filters('ahw_get_posts_args', $query_args);
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::getPageQueryParam();
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -580,7 +580,7 @@ class Akka_headless_wp_content
                 $akka_post['post_type'] == 'page' &&
                 self::get_post_type_archive_permalink('post') == $akka_post['slug']
             ) {
-                $page = Utils::getQueryParam('page', 1);
+                $page = Utils::getPageQueryParam();
                 $archive_query = self::archive_query('post', $page);
                 $akka_post['archive'] = [
                     'count' => $archive_query->found_posts,
@@ -614,8 +614,13 @@ class Akka_headless_wp_content
             return null;
         }
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::getPageQueryParam();
         $query = self::archive_query($archive_post_type, $page);
+
+        // NOTE: Pages beyond the last one do not exist (same as native WordPress paged archives)
+        if ($page > 1 && empty($query->posts)) {
+            return null;
+        }
 
         $posts = self::parse_posts($query->posts);
 
@@ -710,7 +715,7 @@ class Akka_headless_wp_content
         $pages = 1;
         $posts = [];
         $next_page = null;
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::getPageQueryParam();
 
         if (!empty($post_types)) {
             $query_args = [
@@ -740,6 +745,11 @@ class Akka_headless_wp_content
                 $query->max_num_pages > $page + 1
                     ? '/' . get_term_link($archive_taxonomy_term->term_id) . '?page=' . ($page + 1)
                     : null;
+        }
+
+        // NOTE: Pages beyond the last one do not exist (same as native WordPress paged archives)
+        if ($page > 1 && empty($posts)) {
+            return null;
         }
 
         $taxonomy_term_data = [
@@ -878,7 +888,7 @@ class Akka_headless_wp_content
             $query_args['posts_per_page'] = Utils::getQueryParam('per_page', null);
         }
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::getPageQueryParam();
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);
@@ -923,7 +933,7 @@ class Akka_headless_wp_content
         }
 
         $query = self::get_posts_query($query_args, [
-            'page' => Utils::getQueryParam('page', 1),
+            'page' => Utils::getPageQueryParam(),
         ]);
 
         return [
@@ -1076,7 +1086,7 @@ class Akka_headless_wp_content
 
         $query_args = apply_filters('ahw_search_query_args', $query_args);
 
-        $page = Utils::getQueryParam('page', 1);
+        $page = Utils::getPageQueryParam();
         $query = self::get_posts_query($query_args, [
             'page' => $page,
         ]);

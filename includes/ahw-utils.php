@@ -16,6 +16,12 @@ class Akka_headless_wp_utils
         return isset($_GET[$param]) ? $_GET[$param] : $default;
     }
 
+    public static function getPageQueryParam()
+    {
+        // Force page param to be number greater than 0. Non valid values get casted to 1
+        return max(1, (int) self::getQueryParam('page', 1));
+    }
+
     public static function stringToRoute($string)
     {
         return str_replace([' ', 'å', 'ä', 'ö'], ['-', 'a', 'a', 'o'], mb_strtolower($string));
