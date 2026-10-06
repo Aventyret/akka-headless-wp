@@ -431,6 +431,23 @@ add_filter(
 );
 ```
 
+### akka_resolve_unmatched_permalink
+
+Filters the post ID for a permalink that `url_to_postid()` could not resolve. Use it to support custom permalink structures. It only runs when no post was matched, before Akka's own custom post structure and hierarchical page fallbacks. Return `0` to let those fallbacks run.
+
+```php
+add_filter(
+  'akka_resolve_unmatched_permalink',
+  function ($post_id, $permalink_parts) {
+    // e.g. /opinion/my-post → ['opinion', 'my-post']
+    $post = get_page_by_path(end($permalink_parts), OBJECT, 'post');
+    return $post ? $post->ID : $post_id;
+  },
+  10,
+  2
+);
+```
+
 ### akka_post_pre_redirect_post_id
 
 Filters the post ID before checking for redirects.
