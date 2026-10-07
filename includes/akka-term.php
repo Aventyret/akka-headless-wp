@@ -34,18 +34,7 @@ class Term
                     ],
                     'terms' => array_map(
                         function ($term) use ($taxonomy_slug, $taxonomy) {
-                            $term_url = self::get_url($term->term_id);
-                            return apply_filters(
-                                'akka_post_term',
-                                [
-                                    'term_id' => $term->term_id,
-                                    'parent_id' => $term->parent,
-                                    'name' => $term->name,
-                                    'slug' => $term->slug,
-                                    'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy),
-                                ],
-                                $taxonomy_slug
-                            );
+                            return self::get_post_term($term, $taxonomy_slug, $taxonomy);
                         },
                         $taxonomy_terms && !is_wp_error($taxonomy_terms) ? $taxonomy_terms : []
                     ),
@@ -102,10 +91,29 @@ class Term
         }
 
         $term = get_term($primary_term['term_id']);
-        while ($term && $term->parent) {
+        while ($term && !is_wp_error($term) && $term->parent) {
             $term = get_term($term->parent);
         }
-        return $term;
+        if (!$term || is_wp_error($term)) {
+            return null;
+        }
+        return self::get_post_term($term, $taxonomy_slug, get_taxonomy($taxonomy_slug));
+    }
+
+    private static function get_post_term($term, $taxonomy_slug, $taxonomy)
+    {
+        $term_url = self::get_url($term->term_id);
+        return apply_filters(
+            'akka_post_term',
+            [
+                'term_id' => $term->term_id,
+                'parent_id' => $term->parent,
+                'name' => $term->name,
+                'slug' => $term->slug,
+                'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy),
+            ],
+            $taxonomy_slug
+        );
     }
 
     public static function get_url($term_id)
