@@ -66,7 +66,7 @@ class Term
         $taxonomy_terms = get_terms(['taxonomy' => $taxonomy_slug, 'hide_empty' => false]);
         return array_map(
             function ($term) use ($taxonomy_slug) {
-                $term_url = self::get_url($term->term_id);
+                $term_url = self::get_url($term->term_id, $taxonomy_slug);
                 return [
                     'term_id' => $term->term_id,
                     'name' => $term->name,
@@ -78,8 +78,12 @@ class Term
         );
     }
 
-    public static function get_url($term_id)
+    public static function get_url($term_id, $taxonomy_slug = null)
     {
+        // Return null for taxonomies without archives
+        if ($taxonomy_slug && !Taxonomies::has_archive($taxonomy_slug)) {
+            return null;
+        }
         $term_link = get_term_link($term_id);
         // get_term_link() returns a WP_Error for a missing/invalid term id;
         // passing that to str_replace() is a fatal TypeError.
@@ -161,7 +165,7 @@ class Term
             $seo_meta['twitter_description'] = $seo_meta['seo_description'];
         }
         if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
-            $seo_meta['canonical_url'] = AKKA_FRONTEND_BASE . Term::get_url($term_data['term_id']);
+            $seo_meta['canonical_url'] = AKKA_FRONTEND_BASE . self::get_url($term_data['term_id'], $term_data['taxonomy']);
         }
         if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
             $seo_meta['canonical_url'] = rtrim(
