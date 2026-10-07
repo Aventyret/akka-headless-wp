@@ -182,7 +182,7 @@ class Post
 
         $post_blurb = [
             'post_id' => $post->ID,
-            'post_guid' => $post->guid,
+            'post_guid' => $post->post_type . '_' . $post->ID,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
             'post_date_iso' => get_the_date('c', $post->ID),
             'url' => self::get_url($post->ID, $post->post_type),
