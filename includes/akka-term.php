@@ -165,7 +165,8 @@ class Term
             $seo_meta['twitter_description'] = $seo_meta['seo_description'];
         }
         if (!isset($seo_meta['canonical_url']) || !$seo_meta['canonical_url']) {
-            $seo_meta['canonical_url'] = AKKA_FRONTEND_BASE . self::get_url($term_data['term_id'], $term_data['taxonomy']);
+            $seo_meta['canonical_url'] =
+                AKKA_FRONTEND_BASE . self::get_url($term_data['term_id'], $term_data['taxonomy']);
         }
         if (isset($seo_meta['canonical_url']) && $seo_meta['canonical_url']) {
             $seo_meta['canonical_url'] = rtrim(
