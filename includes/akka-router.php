@@ -159,6 +159,9 @@ class Router
 
         // Check custom post structure
         $permalink_parts = explode('/', $permalink);
+        if (!$post_id) {
+            $post_id = apply_filters('akka_resolve_unmatched_permalink', $post_id, $permalink_parts);
+        }
         $post_types_with_custom_structures = apply_filters('ahw_custom_post_strucure_post_types', ['post', 'page']);
         if (!$post_id && $permalink != '/' && count($permalink_parts) > 1) {
             foreach ($post_types_with_custom_structures as $post_type) {
