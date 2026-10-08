@@ -144,6 +144,18 @@ add_filter(
 
 ---
 
+### akka_og_article_post_types
+
+Filters what post types should have `article` as their og type. Defaults to`['post']`.
+
+```php
+add_filter('akka_og_article_post_types', function ($post_types) {
+  return ['news_article'];
+});
+```
+
+---
+
 ### akka_post_seo_meta
 
 Filters the SEO metadata for a post.
@@ -151,7 +163,7 @@ Filters the SEO metadata for a post.
 ```php
 add_filter(
   'akka_post_seo_meta',
-  function ($seo_meta, $pos, $specific_seo_image_is_defined) {
+  function ($seo_meta, $post, $specific_seo_image_is_defined) {
     if (!$specific_seo_image_is_defined) {
       $seo_meta['seo_image_url'] = '/images/default-og.jpg';
     }
