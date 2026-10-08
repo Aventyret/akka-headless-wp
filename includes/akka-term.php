@@ -34,20 +34,9 @@ class Term
                     ],
                     'terms' => array_map(
                         function ($term) use ($taxonomy_slug, $taxonomy) {
-                            $term_url = self::get_url($term->term_id);
-                            return apply_filters(
-                                'akka_post_term',
-                                [
-                                    'term_id' => $term->term_id,
-                                    'parent_id' => $term->parent,
-                                    'name' => $term->name,
-                                    'slug' => $term->slug,
-                                    'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy),
-                                ],
-                                $taxonomy_slug
-                            );
+                            return self::get_post_term($term, $taxonomy_slug, $taxonomy);
                         },
-                        $taxonomy_terms ? $taxonomy_terms : []
+                        $taxonomy_terms && !is_wp_error($taxonomy_terms) ? $taxonomy_terms : []
                     ),
                 ];
                 $terms[$taxonomy_slug]['primary_term'] = self::get_primary_term(
@@ -74,7 +63,56 @@ class Term
                     'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy_slug),
                 ];
             },
-            $taxonomy_terms ? $taxonomy_terms : []
+            $taxonomy_terms && !is_wp_error($taxonomy_terms) ? $taxonomy_terms : []
+        );
+    }
+
+    public static function get_top_level_term($post_id, $taxonomy_slug)
+    {
+        $post = get_post($post_id);
+        $taxonomy_terms = get_the_terms($post, $taxonomy_slug);
+        if (!$taxonomy_terms || is_wp_error($taxonomy_terms)) {
+            return null;
+        }
+
+        $terms = array_map(
+            function ($term) {
+                return [
+                    'id' => $term->term_id,
+                    'term_id' => $term->term_id,
+                    'parent' => $term->parent,
+                ];
+            },
+            $taxonomy_terms
+        );
+        $primary_term = self::get_primary_term($taxonomy_slug, $terms, $post);
+        if (!$primary_term) {
+            return null;
+        }
+
+        $term = get_term($primary_term['term_id']);
+        while ($term && !is_wp_error($term) && $term->parent) {
+            $term = get_term($term->parent);
+        }
+        if (!$term || is_wp_error($term)) {
+            return null;
+        }
+        return self::get_post_term($term, $taxonomy_slug, get_taxonomy($taxonomy_slug));
+    }
+
+    private static function get_post_term($term, $taxonomy_slug, $taxonomy)
+    {
+        $term_url = self::get_url($term->term_id);
+        return apply_filters(
+            'akka_post_term',
+            [
+                'term_id' => $term->term_id,
+                'parent_id' => $term->parent,
+                'name' => $term->name,
+                'slug' => $term->slug,
+                'url' => apply_filters('akka_term_url', $term_url, $term, $taxonomy),
+            ],
+            $taxonomy_slug
         );
     }
 

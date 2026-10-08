@@ -475,6 +475,35 @@ Returns all terms for a taxonomy.
 
 ---
 
+### get_top_level_term
+
+```php
+\Akka\Term::get_top_level_term($post_id, $taxonomy_slug);
+```
+
+Returns the top-level ancestor of a post's primary term in the given taxonomy, or `null` if the post has no terms there. If the primary term has no parent, that term is returned. Useful for permalinks that start with a post's top-level term, for example `/opinion/my-post`.
+
+The term has the same shape as the terms in a post's `terms` and is passed through the `akka_post_term` filter:
+
+```php
+[
+    'term_id' => int,
+    'parent_id' => int,
+    'name' => string,
+    'slug' => string,
+    'url' => string,
+]
+```
+
+**Example:**
+
+```php
+$term = \Akka\Term::get_top_level_term($post_id, 'category');
+$path = $term ? $term['slug'] . '/' . get_post_field('post_name', $post_id) : null;
+```
+
+---
+
 ### get_url
 
 ```php
