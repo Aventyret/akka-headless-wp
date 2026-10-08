@@ -1314,6 +1314,9 @@ class Akka_headless_wp_content
                 );
             }
         }
+        if (in_array($post->post_type, apply_filters('ahw_og_article_post_types', ['post']))) {
+            $seo_meta['og_type'] = 'article';
+        }
         return apply_filters('ahw_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
     }
 
