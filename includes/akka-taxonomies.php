@@ -43,6 +43,12 @@ class Taxonomies
                 'slug' => $slug,
                 'with_front' => false,
             ];
+            add_filter('akka_taxonomies_with_archives', function ($taxonomies) use ($taxonomy_slug) {
+                if (!in_array($taxonomy_slug, $taxonomies)) {
+                    $taxonomies[] = $taxonomy_slug;
+                }
+                return $taxonomies;
+            });
         }
 
         if (!$args['label']) {
@@ -234,5 +240,10 @@ class Taxonomies
             }
             return $taxonomy_map;
         });
+    }
+
+    public static function has_archive($taxonomy)
+    {
+        return in_array($taxonomy, apply_filters('akka_taxonomies_with_archives', ['category', 'post_tag']));
     }
 }
