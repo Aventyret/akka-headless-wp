@@ -400,7 +400,7 @@ class Akka_headless_wp_utils
                 $redirect_uri = '/draft/' . substr($redirect_uri, strpos($redirect_uri, '?'));
             }
         }
-        wp_redirect(AKKA_FRONTEND_BASE . $redirect_uri);
+        wp_redirect(AKKA_FRONTEND_BASE . $redirect_uri, 301);
     }
 
     public static function enqueue_frontend_styles()
