@@ -1017,7 +1017,7 @@ class Akka_headless_wp_content
 
         $post_in_archive = [
             'post_id' => $post->ID,
-            'post_guid' => $post->guid,
+            'post_guid' => $post->post_type . '_' . $post->ID,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
             'post_date_iso' => get_the_date('c', $post->ID),
             'url' => Utils::parseUrl(get_permalink($post->ID)),
