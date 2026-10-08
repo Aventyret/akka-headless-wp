@@ -450,6 +450,9 @@ class Post
                 );
             }
         }
+        if (in_array($post->post_type, apply_filters('akka_og_article_post_types', ['post']))) {
+            $seo_meta['og_type'] = 'article';
+        }
         return apply_filters('akka_post_seo_meta', $seo_meta, $post, $specific_seo_image_is_defined);
     }
 

@@ -75,16 +75,13 @@ class Term
             return null;
         }
 
-        $terms = array_map(
-            function ($term) {
-                return [
-                    'id' => $term->term_id,
-                    'term_id' => $term->term_id,
-                    'parent' => $term->parent,
-                ];
-            },
-            $taxonomy_terms
-        );
+        $terms = array_map(function ($term) {
+            return [
+                'id' => $term->term_id,
+                'term_id' => $term->term_id,
+                'parent' => $term->parent,
+            ];
+        }, $taxonomy_terms);
         $primary_term = self::get_primary_term($taxonomy_slug, $terms, $post);
         if (!$primary_term) {
             return null;
