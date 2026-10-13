@@ -94,8 +94,13 @@ class Blocks
     {
         $heading_blocks = [];
 
+        $prev_internal_errors = libxml_use_internal_errors(true);
+
         $dom = new \DOMDocument();
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $content);
+
+        libxml_clear_errors();
+        libxml_use_internal_errors($prev_internal_errors);
 
         foreach ($dom->getElementsByTagName('h2') as $h2) {
             $heading_blocks[] = $h2->textContent;
