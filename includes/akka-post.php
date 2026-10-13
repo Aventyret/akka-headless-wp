@@ -245,85 +245,87 @@ class Post
         if (is_plugin_active('wordpress-seo/wp-seo.php')) {
             $yoast_class = YoastSEO()->classes->get(\Yoast\WP\SEO\Surfaces\Meta_Surface::class);
             $yoast_meta = $yoast_class->for_post($post->ID);
-            $yoast_data = $yoast_meta->get_head()->json;
-            $seo_meta = [
-                'seo_title' => $yoast_data['title'],
-                'og_locale' => $yoast_data['og_locale'],
-                'og_type' => $yoast_data['og_type'],
-                'canonical_url' => $yoast_data['og_url'],
-                'og_site_name' => $yoast_data['og_site_name'],
-            ];
-            if (isset($yoast_data['description'])) {
-                $seo_meta['seo_description'] = $yoast_data['description'];
-            }
-            if (isset($yoast_data['og_description'])) {
-                $seo_meta['og_description'] = $yoast_data['og_description'];
-            }
-            if (isset($yoast_data['og_image']) && !empty($yoast_data['og_image'])) {
-                $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
-                $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
-                $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
-            }
-            if (isset($yoast_data['robots'])) {
-                $seo_meta['robots'] = [
-                    'index' =>
-                        isset($yoast_data['robots']['index']) && $yoast_data['robots']['index'] == 'noindex'
-                            ? false
-                            : true,
-                    'follow' =>
-                        isset($yoast_data['robots']['follow']) && $yoast_data['robots']['follow'] == 'nofollow'
-                            ? false
-                            : true,
+            if ($yoast_meta) {
+                $yoast_data = $yoast_meta->get_head()->json;
+                $seo_meta = [
+                    'seo_title' => $yoast_data['title'],
+                    'og_locale' => $yoast_data['og_locale'],
+                    'og_type' => $yoast_data['og_type'],
+                    'canonical_url' => $yoast_data['og_url'],
+                    'og_site_name' => $yoast_data['og_site_name'],
                 ];
-            }
-            if (Resolvers::resolve_field($yoast_data, 'schema')) {
-                $seo_meta['schema'] = [];
-                foreach (Resolvers::resolve_array_field($yoast_data['schema'], '@graph') as $graph_data) {
-                    if (in_array($graph_data['@type'], ['WebSite', 'Organization'])) {
-                        $schema_item = [
-                            '@context' => $yoast_data['schema']['@context'],
-                            '@type' => $graph_data['@type'],
-                            '@id' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['@id']),
-                            'name' => $graph_data['name'],
-                            'url' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['url']),
-                        ];
-                        if ($graph_data['@type'] == 'WebSite') {
-                            $schema_item['description'] = Resolvers::resolve_field($graph_data, 'description');
-                            $schema_item['inLanguage'] = Resolvers::resolve_field($graph_data, 'inLanguage');
-                            if ($search_page_url = apply_filters('akka_schema_search_page_url', null)) {
-                                $schema_item['potentialAction'] = [
-                                    '@type' => 'SearchAction',
-                                    'target' => [
-                                        '@type' => 'EntryPoint',
-                                        'urlTemplate' => $search_page_url . '{search_term_string}',
-                                    ],
-                                    'query-input' => 'required name=search_term_string',
-                                ];
+                if (isset($yoast_data['description'])) {
+                    $seo_meta['seo_description'] = $yoast_data['description'];
+                }
+                if (isset($yoast_data['og_description'])) {
+                    $seo_meta['og_description'] = $yoast_data['og_description'];
+                }
+                if (isset($yoast_data['og_image']) && !empty($yoast_data['og_image'])) {
+                    $seo_meta['seo_image_url'] = $yoast_data['og_image'][0]['url'];
+                    $seo_meta['seo_image_width'] = $yoast_data['og_image'][0]['width'];
+                    $seo_meta['seo_image_height'] = $yoast_data['og_image'][0]['height'];
+                }
+                if (isset($yoast_data['robots'])) {
+                    $seo_meta['robots'] = [
+                        'index' =>
+                            isset($yoast_data['robots']['index']) && $yoast_data['robots']['index'] == 'noindex'
+                                ? false
+                                : true,
+                        'follow' =>
+                            isset($yoast_data['robots']['follow']) && $yoast_data['robots']['follow'] == 'nofollow'
+                                ? false
+                                : true,
+                    ];
+                }
+                if (Resolvers::resolve_field($yoast_data, 'schema')) {
+                    $seo_meta['schema'] = [];
+                    foreach (Resolvers::resolve_array_field($yoast_data['schema'], '@graph') as $graph_data) {
+                        if (in_array($graph_data['@type'], ['WebSite', 'Organization'])) {
+                            $schema_item = [
+                                '@context' => $yoast_data['schema']['@context'],
+                                '@type' => $graph_data['@type'],
+                                '@id' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['@id']),
+                                'name' => $graph_data['name'],
+                                'url' => AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['url']),
+                            ];
+                            if ($graph_data['@type'] == 'WebSite') {
+                                $schema_item['description'] = Resolvers::resolve_field($graph_data, 'description');
+                                $schema_item['inLanguage'] = Resolvers::resolve_field($graph_data, 'inLanguage');
+                                if ($search_page_url = apply_filters('akka_schema_search_page_url', null)) {
+                                    $schema_item['potentialAction'] = [
+                                        '@type' => 'SearchAction',
+                                        'target' => [
+                                            '@type' => 'EntryPoint',
+                                            'urlTemplate' => $search_page_url . '{search_term_string}',
+                                        ],
+                                        'query-input' => 'required name=search_term_string',
+                                    ];
+                                }
                             }
-                        }
-                        if ($graph_data['@type'] == 'Organization') {
-                            $schema_item['@type'] = apply_filters(
-                                'akka_schema_organization_schema_type',
-                                'Organization'
-                            );
-                            if (Resolvers::resolve_field($graph_data, 'logo')) {
-                                $schema_item['logo'] = $graph_data['logo'];
-                                $schema_item['logo']['@id'] =
-                                    AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['logo']['@id']);
-                                $schema_item['logo']['url'] = apply_filters(
-                                    'akka_schema_organization_schema_logo_url',
-                                    str_replace('wp-content/', 'app/', $graph_data['logo']['url'])
+                            if ($graph_data['@type'] == 'Organization') {
+                                $schema_item['@type'] = apply_filters(
+                                    'akka_schema_organization_schema_type',
+                                    'Organization'
                                 );
-                                $schema_item['logo']['contentUrl'] = $schema_item['logo']['url'];
+                                if (Resolvers::resolve_field($graph_data, 'logo')) {
+                                    $schema_item['logo'] = $graph_data['logo'];
+                                    $schema_item['logo']['@id'] =
+                                        AKKA_FRONTEND_BASE . Utils::parse_url($graph_data['logo']['@id']);
+                                    $schema_item['logo']['url'] = apply_filters(
+                                        'akka_schema_organization_schema_logo_url',
+                                        str_replace('wp-content/', 'app/', $graph_data['logo']['url'])
+                                    );
+                                    $schema_item['logo']['contentUrl'] = $schema_item['logo']['url'];
+                                }
+                                if (!empty(Resolvers::resolve_array_field($graph_data, 'sameAs'))) {
+                                    $schema_item['sameAs'] = $graph_data['sameAs'];
+                                }
+                                if ($contact_pont = apply_filters('akka_schema_organization_contact_point', null)) {
+                                    $schema_item['contactPoint'] = $contact_pont;
+                                }
                             }
-                            if (!empty(Resolvers::resolve_array_field($graph_data, 'sameAs'))) {
-                                $schema_item['sameAs'] = $graph_data['sameAs'];
-                            }
-                            if ($contact_pont = apply_filters('akka_schema_organization_contact_point', null)) {
-                                $schema_item['contactPoint'] = $contact_pont;
-                            }
+                            $seo_meta['schema'][] = $schema_item;
                         }
-                        $seo_meta['schema'][] = $schema_item;
                     }
                 }
             }
