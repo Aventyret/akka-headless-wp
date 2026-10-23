@@ -432,6 +432,7 @@ class Router
         return Post::get_blurbs([
             'post__in' => $post_ids,
             'post_type' => 'any',
+            'posts_per_page' => count($post_ids),
         ]);
     }
 
