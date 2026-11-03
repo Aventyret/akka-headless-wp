@@ -57,6 +57,8 @@ class Post
             'post_id' => $post->ID,
             'post_date' => get_the_date(get_option('date_format'), $post->ID),
             'post_date_iso' => get_the_date('c', $post->ID),
+            'post_modified_date' => get_the_modified_date(get_option('date_format'), $post->ID),
+            'post_modified_date_iso' => get_the_modified_date('c', $post->ID),
             'post_title' => $post->post_title,
             'post_type' => $post->post_type,
             'post_password' => $post->post_password,
