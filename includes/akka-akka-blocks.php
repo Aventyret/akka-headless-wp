@@ -179,17 +179,44 @@ class AkkaBlocks
         return self::$akka_blocks[$block_type]['akka_component_name'];
     }
 
+    // Render editor previews in the context of the edited post, as on the frontend
+    private static function set_editor_post_context($post_id)
+    {
+        global $post;
+        $previous_post = $post;
+        $editor_post = $post_id ? get_post($post_id) : null;
+        if ($editor_post && current_user_can('edit_post', $editor_post->ID)) {
+            $post = $editor_post;
+            setup_postdata($post);
+        }
+        return $previous_post;
+    }
+
+    private static function restore_editor_post_context($previous_post)
+    {
+        global $post;
+        $post = $previous_post;
+        if ($post) {
+            setup_postdata($post);
+        }
+    }
+
     public static function render_editor_block($request)
     {
         $data = $request->get_json_params();
-        $post_id = Resolvers::resolve_field($data, 'postId');
+        $post_id = absint(Resolvers::resolve_field($data, 'postId'));
         $blockType = Resolvers::resolve_field($data, 'blockType');
         $attributes = Resolvers::resolve_array_field($data, 'attributes');
         $akka_component_name = self::get_block_component_name($blockType);
-        if (str_starts_with($blockType, 'splx/')) {
-            $props = self::get_splx_block_props($post_id, $blockType, $attributes);
-        } else {
-            $props = self::get_block_props($post_id, $blockType, $attributes);
+        $previous_post = self::set_editor_post_context($post_id);
+        try {
+            if (str_starts_with($blockType, 'splx/')) {
+                $props = self::get_splx_block_props($post_id, $blockType, $attributes);
+            } else {
+                $props = self::get_block_props($post_id, $blockType, $attributes);
+            }
+        } finally {
+            self::restore_editor_post_context($previous_post);
         }
         $props = array_merge($props, ['isEditor' => true]);
         $proxy_header = Router::outgoing_proxy_header();
