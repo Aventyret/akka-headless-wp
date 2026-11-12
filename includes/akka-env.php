@@ -67,6 +67,10 @@ class Env
         if (self::cookie_secret() === '') {
             $errors[] = 'AKKA_CMS_COOKIE_SECRET: required, but not set';
         }
+        // Akka v3.7 has a breaking change that requires Akka Redirection v3 or higher.
+        if (defined('AKKA_HEADLESS_WP_REDIRECTS_VER') && AKKA_HEADLESS_WP_REDIRECTS_VER < '3') {
+            $errors[] = 'AKKA_HEADLESS_WP_REDIRECTS_VER: Upgrade aventyret/akka-headless-wp-redirects to v3 or higher';
+        }
         if (empty($errors)) {
             return;
         }

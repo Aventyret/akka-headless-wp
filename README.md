@@ -65,6 +65,14 @@ for the full env contract lives in `@aventyret/akka-headless-wp/.env.example`.
 
 Use the [Akka Bas theme](https://github.com/Aventyret/akka-bas-theme) as a boilerplate for your projects theme.
 
+## v3.7 Migration guide
+
+This minor version has a breaking change in the `akka_post_not_found_response` filter.
+
+The filter now has 2 arguments. See [docs](https://github.com/Aventyret/akka-headless-wp/tree/main/docs/api/hooks#akka_post_not_found_response).
+
+If you use the `akka-headless-wp-redirects` plugin, this needs to be upgraded to >= v2.1.
+
 ## v2 Migration guide
 
 The api base has changed from `/headless/v1` to `/akka/v2`. Updating to latest `akka-modules` should take care of this.
@@ -223,10 +231,14 @@ add_filter('akka_post_seo_meta', function($seo_meta, $post, $specific_seo_image_
 add_filter('ahw_post_not_found_post_data', function($post_id, $permalink) {
   return $post_data;
 }, 10, 2);
-// v2 (not that in v2 there is only 1 argument)
+// v2 (note that in v2 there is only 1 argument)
 add_filter('akka_post_not_found_response', function($permalink) {
   return $not_found_reponse;
 });
+// v3.7 (note that in v3.7 there are 2 arguments again but we return the first argument)
+add_filter('akka_post_not_found_response', function($response, $permalink) {
+  return $not_found_reponse;
+}, 10, 2);
 
 ```
 

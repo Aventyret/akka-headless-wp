@@ -482,9 +482,12 @@ add_filter(
 Filters the response when a post is not found. Return a valid post data array to serve fallback content.
 
 ```php
-add_filter('akka_post_not_found_response', function ($permalink) {
-  // Return 404 page response
-  return \Akka\Post::get_single(get_option('404_page'));
+add_filter('akka_post_not_found_response', function ($reponse, $permalink) {
+  if ($permalink = !'some-exception-path') {
+    // Return 404 page response
+    return \Akka\Post::get_single(get_option('404_page'));
+  }
+  return $response;
 });
 ```
 
