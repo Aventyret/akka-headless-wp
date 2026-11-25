@@ -5,7 +5,30 @@ class Post
 {
     private static $_single_memory = [];
     private static $_post_type_memory = [];
+
+    /**
+     * Build the Akka representation of a single post.
+     *
+     * Side effect: the global $post points to the requested post while it is built
+     * and is restored to its previous value before the method returns.
+     *
+     * @param int|\WP_Post|null $post_id_or_post Post ID or post. Null uses the global $post.
+     * @param string[] $post_status Allowed post statuses.
+     * @param bool $get_autosaved Use the latest autosave's content when one exists.
+     * @return array|null The Akka post, a redirect array for a password protected post, or null.
+     */
     public static function get_single($post_id_or_post = null, $post_status = ['publish'], $get_autosaved = false)
+    {
+        global $post;
+        $previous_post = $post;
+        try {
+            return self::build_single($post_id_or_post, $post_status, $get_autosaved);
+        } finally {
+            $post = $previous_post;
+        }
+    }
+
+    private static function build_single($post_id_or_post, $post_status, $get_autosaved)
     {
         global $post;
         if (is_a($post_id_or_post, 'WP_Post')) {
@@ -206,7 +229,7 @@ class Post
         }
         if (!$post_type) {
             $post_type = get_post_type($post_id);
-            self::$_post_type_memory = $post_type;
+            self::$_post_type_memory[$post_id] = $post_type;
         }
         if (!PostTypes::is_public($post_type)) {
             return null;
