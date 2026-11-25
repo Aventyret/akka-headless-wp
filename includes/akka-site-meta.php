@@ -38,7 +38,7 @@ class SiteMeta
             self::get_site_meta_global_fields()
         );
         if (class_exists('WPSEO_Redirect_Manager')) {
-            $redirect_manager = new WPSEO_Redirect_Manager();
+            $redirect_manager = new \WPSEO_Redirect_Manager();
             $redirects = $redirect_manager->get_all_redirects();
             $site_meta['redirects'] = array_reduce(
                 $redirects,
